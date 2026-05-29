@@ -1,0 +1,93 @@
+Found training files: ['IC_Longdescr.csv', 'IC_longdescription_parameters.csv', 'IC_variants.csv', 'IGBT_Longdescr.csv', 'IGBT_longdescription_parameters.csv', 'IGBT_variants.csv', 'MOSFET_Longdescr.csv', 'MOSFET_longdescription_parameters.csv', 'MOSFET_variants.csv', 'syntheticIC.csv', 'syntheticIGBT.csv', 'synthetic_mosfet.csv']
+Loaded 3000 total sequences
+Val sequences: 300
+Loading: gpt2
+Device: cpu
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights: 100%|██████████| 148/148 [00:00<00:00, 3942.47it/s]
+Model loaded: gpt2
+
+Evaluating next-step prediction (n=100)...
+  Task 1: 20/100
+  Task 1: 40/100
+Traceback (most recent call last):
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_llm_zeroshot.py", line 298, in <module>
+    main()
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_llm_zeroshot.py", line 275, in main
+    m1, sample_rows = evaluate_next_step(model, val_seqs, n_examples=args.max_eval_examples)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_llm_zeroshot.py", line 166, in evaluate_next_step
+    raw = model.generate(prompt)
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_llm_zeroshot.py", line 110, in generate
+    outputs = self.model.generate(
+              ^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\generation\utils.py", line 2580, in generate
+    result = decoding_method(
+             ^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\generation\utils.py", line 2787, in _sample
+    outputs = model_forward(**model_inputs, return_dict=True)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\utils\generic.py", line 903, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\models\gpt2\modeling_gpt2.py", line 691, in forward
+    transformer_outputs: BaseModelOutputWithPastAndCrossAttentions = self.transformer(
+                                                                     ^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\utils\generic.py", line 1032, in wrapper
+    output = func(self, *args, **kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\utils\output_capturing.py", line 252, in wrapper
+    outputs = func(self, *args, **kwargs)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\models\gpt2\modeling_gpt2.py", line 617, in forward
+    hidden_states = block(
+                    ^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\modeling_layers.py", line 93, in __call__
+    return super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\models\gpt2\modeling_gpt2.py", line 305, in forward
+    feed_forward_hidden_states = self.mlp(hidden_states)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\models\gpt2\modeling_gpt2.py", line 239, in forward
+    hidden_states = self.c_fc(hidden_states)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1778, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\torch\nn\modules\module.py", line 1789, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\transformers\pytorch_utils.py", line 121, in forward
+    x = torch.addmm(self.bias, x.view(-1, x.size(-1)), self.weight)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+[0m
