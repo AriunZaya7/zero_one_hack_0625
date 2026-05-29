@@ -8,3 +8,13 @@ Vocab size: 151643 | Pad token id: 151643
 
 Loading model: Qwen/Qwen2-0.5B
 [transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights: 100%|██████████| 290/290 [00:00<00:00, 622.69it/s]
+Model parameters: 494.0M
+  Loaded 5400 records from ../data\dataset_train.jsonl
+  Loaded 600 records from ../data\dataset_id_val.jsonl
+  Loaded 1000 records from ../data\dataset_ood_test.jsonl
+
+Total optimizer steps : 3370
+Warmup steps          : 168
+
+Evaluating baseline (before training)...
