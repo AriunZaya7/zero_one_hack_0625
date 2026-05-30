@@ -9,23 +9,22 @@ The data covers three semiconductor product families — **MOSFET**, **IGBT**, a
 
 ## Files
 
-| File | Description |
-|---|---|
-| `synthetic_mosfet.csv` | Original reference sequence — MOSFET, 126 steps |
-| `syntheticIGBT.csv` | Original reference sequence — IGBT, 151 steps |
-| `syntheticIC.csv` | Original reference sequence — IC, 107 steps |
-| `MOSFET_Longdescr.csv` | MOSFET steps with text descriptions |
-| `IGBT_Longdescr.csv` | IGBT steps with text descriptions |
-| `IC_Longdescr.csv` | IC steps with text descriptions |
-| `MOSFET_longdescription_parameters.csv` | MOSFET steps with descriptions + realistic fab-level parameters |
-| `IGBT_longdescription_parameters.csv` | IGBT steps with descriptions + realistic fab-level parameters |
-| `IC_longdescription_parameters.csv` | IC steps with descriptions + realistic fab-level parameters |
-| `MOSFET_variants.csv` | 1,000 valid MOSFET process sequences (~125 steps each, 125k rows total) |
-| `IGBT_variants.csv` | 1,000 valid IGBT process sequences (~148 steps each, 148k rows total) |
-| `IC_variants.csv` | 1,000 valid IC process sequences (~115 steps each, 115k rows total) |
-| `generate_sequences.py` | Script to generate and validate additional sequences |
-| `eval_metrics.py` | Official scoring script — use to self-evaluate your model against all three tasks |
-| `generation_rules.md` | Full grammar reference, forbidden-pattern documentation, and eval protocol |
+| File                                    | Description                                                                |
+| --------------------------------------- | -------------------------------------------------------------------------- |
+| `synthetic_mosfet.csv`                  | Original reference sequence — MOSFET, 126 steps                            |
+| `syntheticIGBT.csv`                     | Original reference sequence — IGBT, 151 steps                              |
+| `syntheticIC.csv`                       | Original reference sequence — IC, 107 steps                                |
+| `MOSFET_Longdescr.csv`                  | MOSFET steps with text descriptions                                        |
+| `IGBT_Longdescr.csv`                    | IGBT steps with text descriptions                                          |
+| `IC_Longdescr.csv`                      | IC steps with text descriptions                                            |
+| `MOSFET_longdescription_parameters.csv` | MOSFET steps with descriptions + realistic fab-level parameters            |
+| `IGBT_longdescription_parameters.csv`   | IGBT steps with descriptions + realistic fab-level parameters              |
+| `IC_longdescription_parameters.csv`     | IC steps with descriptions + realistic fab-level parameters                |
+| `MOSFET_variants.csv`                   | 1,000 valid MOSFET process sequences (~125 steps each, 125k rows total)    |
+| `IGBT_variants.csv`                     | 1,000 valid IGBT process sequences (~148 steps each, 148k rows total)      |
+| `IC_variants.csv`                       | 1,000 valid IC process sequences (~115 steps each, 115k rows total)        |
+| `generate_sequences.py`                 | Script to generate and validate additional sequences                       |
+| `generation_rules.md`                   | Full grammar reference, forbidden-pattern documentation, and eval protocol |
 
 ---
 
@@ -93,18 +92,18 @@ Understanding the grammar helps interpret why sequences look the way they do and
 
 The organizers will distribute two eval input files at the start of the hackathon:
 
-| File | Used for | Contents |
-|---|---|---|
-| `eval_input_valid.csv` | Tasks 1 & 2 | 600 partial sequences — `EXAMPLE_ID, FAMILY, COMPLETION_FRACTION, PARTIAL_SEQUENCE` |
-| `eval_input_anomaly.csv` | Task 3 | 987 unlabeled sequences — `EXAMPLE_ID, FAMILY, SEQUENCE` |
+| File                     | Used for    | Contents                                                                            |
+| ------------------------ | ----------- | ----------------------------------------------------------------------------------- |
+| `eval_input_valid.csv`   | Tasks 1 & 2 | 600 partial sequences — `EXAMPLE_ID, FAMILY, COMPLETION_FRACTION, PARTIAL_SEQUENCE` |
+| `eval_input_anomaly.csv` | Task 3      | 987 unlabeled sequences — `EXAMPLE_ID, FAMILY, SEQUENCE`                            |
 
 Three tasks are scored by the organizers against a fixed ground truth:
 
-| # | Task | Input | Metric(s) |
-|---|---|---|---|
-| 1 | **Next-step prediction** | `eval_input_valid.csv` — given a partial sequence, rank the 5 most likely next steps | Top-1 Accuracy, Top-3 Accuracy, Top-5 Accuracy, MRR |
-| 2 | **Sequence completion** | `eval_input_valid.csv` — given a partial sequence (60% or 80% complete), predict all remaining steps | Exact Match Rate, Normalized Edit Distance, Token Accuracy, Block-level Accuracy |
-| 3 | **Anomaly detection** | `eval_input_anomaly.csv` — given a full sequence, determine if it is valid or contains a process-rule violation | Binary Accuracy, Precision, Recall, F1, Confusion Matrix, ROC-AUC, Rule Attribution Accuracy |
+| #   | Task                     | Input                                                                                                           | Metric(s)                                                                                    |
+| --- | ------------------------ | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1   | **Next-step prediction** | `eval_input_valid.csv` — given a partial sequence, rank the 5 most likely next steps                            | Top-1 Accuracy, Top-3 Accuracy, Top-5 Accuracy, MRR                                          |
+| 2   | **Sequence completion**  | `eval_input_valid.csv` — given a partial sequence (60% or 80% complete), predict all remaining steps            | Exact Match Rate, Normalized Edit Distance, Token Accuracy, Block-level Accuracy             |
+| 3   | **Anomaly detection**    | `eval_input_anomaly.csv` — given a full sequence, determine if it is valid or contains a process-rule violation | Binary Accuracy, Precision, Recall, F1, Confusion Matrix, ROC-AUC, Rule Attribution Accuracy |
 
 Submission file formats for all three tasks are documented in `generation_rules.md` (Section 5).
 
