@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit Solution 19</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; color: #1f2933; background: #f7f9fb; }
+    main { max-width: 980px; margin: 0 auto; padding: 34px 22px 64px; }
+    section { background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 24px; margin: 18px 0; }
+    h1, h2 { color: #102a43; line-height: 1.2; }
+    code { background: #f3f6f9; padding: 1px 4px; border-radius: 4px; }
+    pre { background: #102a43; color: #f8fafc; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    .warning { border-left: 4px solid #d97706; background: #fff7ed; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>How To Submit Solution 19</h1>
+  <p>This page gives manual steps for preparing the Solution 19 CSV files and
+  package from the shared repository checkout.</p>
+
+  <section>
+    <h2>1. Confirm Branch</h2>
+    <pre><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current</code></pre>
+    <p>The branch should be <code>dev/bati</code>.</p>
+  </section>
+
+  <section>
+    <h2>2. Regenerate Solution Outputs</h2>
+    <pre><code>python -B solutions/solution_19_valid_lattice_template/solution.py</code></pre>
+    <p>This rewrites the official-shaped CSVs and the extra audit files under
+    <code>solutions/solution_19_valid_lattice_template/outputs/</code>.</p>
+  </section>
+
+  <section>
+    <h2>3. Check The Required CSV Files</h2>
+    <p>The three files to submit for the Industrial AI CSV part are:</p>
+    <ul>
+      <li><code>solutions/solution_19_valid_lattice_template/outputs/official_submission/nextstep.csv</code></li>
+      <li><code>solutions/solution_19_valid_lattice_template/outputs/official_submission/completion.csv</code></li>
+      <li><code>solutions/solution_19_valid_lattice_template/outputs/official_submission/anomaly.csv</code></li>
+    </ul>
+    <p>They must keep exactly these headers:</p>
+    <ul>
+      <li><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5</code></li>
+      <li><code>EXAMPLE_ID,PREDICTED_SEQUENCE</code></li>
+      <li><code>EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>4. Regenerate Submission Package</h2>
+    <pre><code>python -B solutions/prepare_submission_packages.py</code></pre>
+    <p>This copies the official CSV files, metrics, report, training notes, and
+    demo notes into <code>solutions/solution_19_valid_lattice_template/submission_package/</code>.</p>
+  </section>
+
+  <section>
+    <h2>5. Inspect Extra Evidence</h2>
+    <p>These files are not official CSV submissions, but they are useful for the
+    report and demo:</p>
+    <ul>
+      <li><code>outputs/lattice_guard_audit.csv</code>: says whether each row used full-route memory, valid-lattice evidence, or template fallback.</li>
+      <li><code>outputs/lattice_training_manifest.csv</code>: counts training routes and lattice coverage.</li>
+      <li><code>outputs/metrics.md</code>: human-readable metric summary.</li>
+    </ul>
+  </section>
+
+  <section class="warning">
+    <h2>Submission Warning</h2>
+    <p>Only upload files requested by the organizers. The audit and manifest
+    files are supporting evidence, not replacements for the three required CSVs.</p>
+  </section>
+</main>
+</body>
+</html>

@@ -286,6 +286,20 @@ SOLUTION_META = {
         "honest_status": "Submit-ready OOD-oriented candidate. Current official rows still all use exact route matching; the new value is a stronger hidden-family fallback when exact strings are derivable from the visible family name.",
         "checkpoint": "No binary checkpoint is needed; exact-route memory, synthetic template routes, and retrieval indexes are regenerated deterministically from source.",
     },
+    "solution_19_valid_lattice_template": {
+        "title": "Solution 19: Valid-Lattice Template",
+        "role": "Exact route matcher with a valid-partial lattice and normalized family-template fallback.",
+        "command": "python -B solutions/solution_19_valid_lattice_template/solution.py",
+        "approach": [
+            "Uses exact validator-valid full-route matching for the current official Task 1/2 rows.",
+            "Before template fallback, searches the valid-input file for longer partials that extend a shorter partial from the same route.",
+            "Uses the longer partial to recover exact next-step strings and a known completion bridge.",
+            "Falls back to Solution 18's normalized `__FAMILY__ ...` template grammar when no longer partial is available.",
+            "Writes a lattice guard audit and lattice training manifest for demo/report evidence.",
+        ],
+        "honest_status": "Submit-ready OOD-oriented candidate. Current official rows still all use exact full-route matching; the new value is stronger fallback if final OOD inputs expose shorter/longer partials from the same hidden route.",
+        "checkpoint": "No binary checkpoint is needed; full-route memory, valid-partial lattice, synthetic template routes, and retrieval indexes are regenerated deterministically from source.",
+    },
 }
 
 
@@ -353,6 +367,8 @@ def copy_results(solution_dir: Path, package_dir: Path) -> Path:
         "calibration_report.csv",
         "template_guard_audit.csv",
         "template_training_manifest.csv",
+        "lattice_guard_audit.csv",
+        "lattice_training_manifest.csv",
     ):
         optional_source = outputs_dir / optional_file_name
         if optional_source.exists():

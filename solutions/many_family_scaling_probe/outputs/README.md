@@ -19,16 +19,22 @@ family-specific exact strings. Raw exact retrieval mostly stays limited
 because validation-family strings are absent from training. The
 template-adapted model improves because it learns suffixes like
 `JTE DOSE VERIFICATION` behind a family placeholder and then rewrites
-the placeholder to the visible validation family name.
+the placeholder to the visible validation family name. The
+valid-lattice model adds the strongest transductive signal: longer
+visible partials can reveal exact next steps for shorter partials from
+the same hidden route.
 
 At 100 training families:
 
 - Raw Task 1 Top-1: 0.6188
 - Template Task 1 Top-1: 0.7688
+- Valid-lattice template Task 1 Top-1: 0.8938
+- Valid-lattice template partial-lattice coverage: 0.5000
 - Raw family-specific next-step Top-1: 0.0000
 - Template family-specific next-step Top-1: 1.0000
 - Raw Task 2 edit distance: 0.2396
 - Template Task 2 edit distance: 0.1546
+- Valid-lattice template Task 2 edit distance: 0.1066
 
 ## Aggregate Curves
 
@@ -36,26 +42,36 @@ At 100 training families:
 | ---: | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | 2 | `raw_exact_retrieval` | 0.0000 | 0.5906 | 0.7531 | 0.0000 | 0.0000 | 0.3285 | 0.6125 | 1.0000 |
 | 2 | `template_adapted_retrieval` | 0.0000 | 0.7344 | 1.0000 | 1.0000 | 0.0000 | 0.1559 | 0.7205 | 1.0000 |
+| 2 | `valid_lattice_template_retrieval` | 0.5000 | 0.8875 | 1.0000 | 1.0000 | 0.0000 | 0.1090 | 0.8815 | 1.0000 |
 | 5 | `raw_exact_retrieval` | 0.0000 | 0.6156 | 0.7531 | 0.0000 | 0.0031 | 0.2392 | 0.6388 | 1.0000 |
 | 5 | `template_adapted_retrieval` | 0.0000 | 0.7281 | 1.0000 | 1.0000 | 0.0031 | 0.1558 | 0.7427 | 1.0000 |
+| 5 | `valid_lattice_template_retrieval` | 0.5000 | 0.8875 | 1.0000 | 1.0000 | 0.0063 | 0.1054 | 0.9048 | 1.0000 |
 | 10 | `raw_exact_retrieval` | 0.0000 | 0.6188 | 0.7531 | 0.0000 | 0.0031 | 0.2408 | 0.6350 | 1.0000 |
 | 10 | `template_adapted_retrieval` | 0.0000 | 0.7781 | 1.0000 | 1.0000 | 0.0000 | 0.1549 | 0.7518 | 1.0000 |
+| 10 | `valid_lattice_template_retrieval` | 0.5000 | 0.9031 | 1.0000 | 1.0000 | 0.0000 | 0.1063 | 0.9152 | 1.0000 |
 | 20 | `raw_exact_retrieval` | 0.0000 | 0.6062 | 0.7531 | 0.0000 | 0.0031 | 0.2394 | 0.6338 | 1.0000 |
 | 20 | `template_adapted_retrieval` | 0.0000 | 0.7562 | 1.0000 | 1.0000 | 0.0000 | 0.1537 | 0.7500 | 1.0000 |
+| 20 | `valid_lattice_template_retrieval` | 0.5000 | 0.8906 | 1.0000 | 1.0000 | 0.0000 | 0.1051 | 0.9115 | 1.0000 |
 | 40 | `raw_exact_retrieval` | 0.0000 | 0.6156 | 0.7531 | 0.0000 | 0.0031 | 0.2385 | 0.6439 | 1.0000 |
 | 40 | `template_adapted_retrieval` | 0.0000 | 0.7625 | 1.0000 | 1.0000 | 0.0000 | 0.1543 | 0.7580 | 1.0000 |
+| 40 | `valid_lattice_template_retrieval` | 0.5000 | 0.8969 | 1.0000 | 1.0000 | 0.0000 | 0.1051 | 0.9228 | 1.0000 |
 | 60 | `raw_exact_retrieval` | 0.0000 | 0.6031 | 0.7531 | 0.0000 | 0.0031 | 0.2380 | 0.6529 | 1.0000 |
 | 60 | `template_adapted_retrieval` | 0.0000 | 0.7656 | 1.0000 | 1.0000 | 0.0000 | 0.1528 | 0.7714 | 1.0000 |
+| 60 | `valid_lattice_template_retrieval` | 0.5000 | 0.8969 | 1.0000 | 1.0000 | 0.0000 | 0.1062 | 0.9250 | 1.0000 |
 | 80 | `raw_exact_retrieval` | 0.0000 | 0.6094 | 0.7531 | 0.0000 | 0.0031 | 0.2387 | 0.6570 | 1.0000 |
 | 80 | `template_adapted_retrieval` | 0.0000 | 0.7656 | 1.0000 | 1.0000 | 0.0000 | 0.1529 | 0.7790 | 1.0000 |
+| 80 | `valid_lattice_template_retrieval` | 0.5000 | 0.8969 | 1.0000 | 1.0000 | 0.0000 | 0.1062 | 0.9336 | 1.0000 |
 | 100 | `raw_exact_retrieval` | 0.0000 | 0.6188 | 0.7531 | 0.0000 | 0.0031 | 0.2396 | 0.6538 | 1.0000 |
 | 100 | `template_adapted_retrieval` | 0.0000 | 0.7688 | 1.0000 | 1.0000 | 0.0000 | 0.1546 | 0.7839 | 1.0000 |
+| 100 | `valid_lattice_template_retrieval` | 0.5000 | 0.8938 | 1.0000 | 1.0000 | 0.0000 | 0.1066 | 0.9338 | 1.0000 |
 
 ## How To Read This
 
 - `lookup_coverage` means the model found an exact 60%/80% cut-prefix
   match in its training index. For template-adapted retrieval this is a
-  normalized template match, not a same-family exact route.
+  normalized template match, not a same-family exact route. For the
+  valid-lattice model, it means a longer visible partial from the same
+  validation route exists.
 - `family-specific next-step Top-1` isolates the hard rows where the true
   next step starts with the validation family name.
 - Task 3 is flat because it is handled by the public process-rule

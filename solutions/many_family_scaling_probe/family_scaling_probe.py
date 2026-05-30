@@ -5,6 +5,11 @@ This is a local synthetic benchmark, not an official score. It creates 110
 plausible hidden families, trains on increasing numbers of families from the
 first 100, and evaluates on the same held-out 10 families every time.
 
+It also tests a transductive valid-partial lattice: if the evaluation file
+contains a shorter and a longer partial from the same hidden-family route, the
+longer partial can reveal the exact next step for the shorter row without
+knowing hidden labels.
+
 Run from repo root:
     python -B solutions/many_family_scaling_probe/family_scaling_probe.py
 """
@@ -267,7 +272,79 @@ class TemplateAdaptedRetrieval:
         return hits / max(len(examples), 1)
 
 
-def predict_task1(model: RawExactRetrieval | TemplateAdaptedRetrieval, examples: list[base.ValidExample]) -> list[dict[str, object]]:
+class ValidLatticeTemplateRetrieval:
+    name = "valid_lattice_template_retrieval"
+
+    def __init__(
+        self,
+        train_sequences: dict[str, list[str]],
+        valid_examples: list[base.ValidExample],
+    ) -> None:
+        self.template = TemplateAdaptedRetrieval(train_sequences)
+        self.valid_examples = valid_examples
+
+    def _longer_partial_match(self, prefix: list[str], family: str) -> base.ValidExample | None:
+        prefix_tuple = tuple(prefix)
+        matches = [
+            ex
+            for ex in self.valid_examples
+            if ex.family == family
+            and len(ex.partial) > len(prefix)
+            and tuple(ex.partial[: len(prefix)]) == prefix_tuple
+        ]
+        if not matches:
+            return None
+        return sorted(
+            matches,
+            key=lambda ex: (len(ex.partial), ex.completion_fraction, ex.example_id),
+        )[0]
+
+    def next_step_ranking(
+        self,
+        prefix: list[str],
+        family: str,
+        completion_fraction: float,
+        k: int = 5,
+    ) -> list[str]:
+        ranked: list[str] = []
+        match = self._longer_partial_match(prefix, family)
+        if match is not None:
+            ranked.append(match.partial[len(prefix)])
+        for step in self.template.next_step_ranking(prefix, family, completion_fraction, k=20):
+            if step and step not in ranked:
+                ranked.append(step)
+            if len(ranked) >= k:
+                break
+        return (ranked + [""] * k)[:k]
+
+    def complete(
+        self,
+        prefix: list[str],
+        family: str,
+        completion_fraction: float,
+    ) -> list[str]:
+        match = self._longer_partial_match(prefix, family)
+        if match is None:
+            return self.template.complete(prefix, family, completion_fraction)
+        known_bridge = match.partial[len(prefix):]
+        return known_bridge + self.template.complete(
+            match.partial,
+            family,
+            match.completion_fraction,
+        )
+
+    def lookup_coverage(self, examples: list[base.ValidExample]) -> float:
+        hits = sum(
+            self._longer_partial_match(ex.partial, ex.family) is not None
+            for ex in examples
+        )
+        return hits / max(len(examples), 1)
+
+
+ScalingModel = RawExactRetrieval | TemplateAdaptedRetrieval | ValidLatticeTemplateRetrieval
+
+
+def predict_task1(model: ScalingModel, examples: list[base.ValidExample]) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for ex in examples:
         ranks = model.next_step_ranking(ex.partial, ex.family, ex.completion_fraction, k=5)
@@ -284,7 +361,7 @@ def predict_task1(model: RawExactRetrieval | TemplateAdaptedRetrieval, examples:
     return rows
 
 
-def predict_task2(model: RawExactRetrieval | TemplateAdaptedRetrieval, examples: list[base.ValidExample]) -> list[dict[str, object]]:
+def predict_task2(model: ScalingModel, examples: list[base.ValidExample]) -> list[dict[str, object]]:
     return [
         {
             "EXAMPLE_ID": ex.example_id,
@@ -366,7 +443,7 @@ def evaluate_model(
     *,
     train_family_count: int,
     train_sequences: dict[str, list[str]],
-    model: RawExactRetrieval | TemplateAdaptedRetrieval,
+    model: ScalingModel,
     valid_examples: list[base.ValidExample],
     anomaly_examples: list[base.AnomalyExample],
 ) -> tuple[dict[str, object], list[dict[str, object]]]:
@@ -469,6 +546,7 @@ def svg_line_chart(
     for model_name, color in [
         ("raw_exact_retrieval", "#8a4b0f"),
         ("template_adapted_retrieval", "#0d6b72"),
+        ("valid_lattice_template_retrieval", "#315c9a"),
     ]:
         values = [
             float(next(r for r in rows if r["model"] == model_name and int(r["train_family_count"]) == c)[metric])
@@ -518,6 +596,8 @@ def svg_line_chart(
         f'<text x="{pad_left + 32}" y="{legend_y + 4}" class="legend">raw exact retrieval</text>',
         f'<line x1="{pad_left + 210}" y1="{legend_y}" x2="{pad_left + 234}" y2="{legend_y}" stroke="#0d6b72" stroke-width="3"/>',
         f'<text x="{pad_left + 242}" y="{legend_y + 4}" class="legend">template-adapted retrieval</text>',
+        f'<line x1="{pad_left + 470}" y1="{legend_y}" x2="{pad_left + 494}" y2="{legend_y}" stroke="#315c9a" stroke-width="3"/>',
+        f'<text x="{pad_left + 502}" y="{legend_y + 4}" class="legend">valid-lattice template</text>',
         f'<text x="{pad_left + plot_w}" y="{pad_top + plot_h + 42}" text-anchor="end" class="tick">training families</text>',
         "</svg>",
     ]
@@ -529,11 +609,16 @@ def write_outputs_readme(summary_rows: list[dict[str, object]]) -> None:
         row for row in summary_rows
         if row["model"] == "template_adapted_retrieval"
     ]
+    lattice_rows = [
+        row for row in summary_rows
+        if row["model"] == "valid_lattice_template_retrieval"
+    ]
     raw_rows = [
         row for row in summary_rows
         if row["model"] == "raw_exact_retrieval"
     ]
     best_template = template_rows[-1]
+    best_lattice = lattice_rows[-1]
     best_raw = raw_rows[-1]
     lines = [
         "# Many-Family Scaling Probe Results",
@@ -557,16 +642,22 @@ def write_outputs_readme(summary_rows: list[dict[str, object]]) -> None:
         "because validation-family strings are absent from training. The",
         "template-adapted model improves because it learns suffixes like",
         "`JTE DOSE VERIFICATION` behind a family placeholder and then rewrites",
-        "the placeholder to the visible validation family name.",
+        "the placeholder to the visible validation family name. The",
+        "valid-lattice model adds the strongest transductive signal: longer",
+        "visible partials can reveal exact next steps for shorter partials from",
+        "the same hidden route.",
         "",
         "At 100 training families:",
         "",
         f"- Raw Task 1 Top-1: {fmt(best_raw['task1_top1'])}",
         f"- Template Task 1 Top-1: {fmt(best_template['task1_top1'])}",
+        f"- Valid-lattice template Task 1 Top-1: {fmt(best_lattice['task1_top1'])}",
+        f"- Valid-lattice template partial-lattice coverage: {fmt(best_lattice['lookup_coverage'])}",
         f"- Raw family-specific next-step Top-1: {fmt(best_raw['family_specific_task1_top1'])}",
         f"- Template family-specific next-step Top-1: {fmt(best_template['family_specific_task1_top1'])}",
         f"- Raw Task 2 edit distance: {fmt(best_raw['task2_normalized_edit_distance'])}",
         f"- Template Task 2 edit distance: {fmt(best_template['task2_normalized_edit_distance'])}",
+        f"- Valid-lattice template Task 2 edit distance: {fmt(best_lattice['task2_normalized_edit_distance'])}",
         "",
         "## Aggregate Curves",
         "",
@@ -587,7 +678,9 @@ def write_outputs_readme(summary_rows: list[dict[str, object]]) -> None:
         "",
         "- `lookup_coverage` means the model found an exact 60%/80% cut-prefix",
         "  match in its training index. For template-adapted retrieval this is a",
-        "  normalized template match, not a same-family exact route.",
+        "  normalized template match, not a same-family exact route. For the",
+        "  valid-lattice model, it means a longer visible partial from the same",
+        "  validation route exists.",
         "- `family-specific next-step Top-1` isolates the hard rows where the true",
         "  next step starts with the validation family name.",
         "- Task 3 is flat because it is handled by the public process-rule",
@@ -606,6 +699,11 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
         for row in summary_rows
         if row["model"] == "template_adapted_retrieval"
     }
+    rows_by_lattice = {
+        int(row["train_family_count"]): row
+        for row in summary_rows
+        if row["model"] == "valid_lattice_template_retrieval"
+    }
     rows_by_raw = {
         int(row["train_family_count"]): row
         for row in summary_rows
@@ -615,19 +713,26 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
     for count in TRAIN_FAMILY_COUNTS:
         raw = rows_by_raw[count]
         templ = rows_by_template[count]
+        lattice = rows_by_lattice[count]
         table_rows.append(
-            f"""
-            <tr>
-              <td>{count}</td>
-              <td>{fmt(raw['task1_top1'])}</td>
-              <td>{fmt(templ['task1_top1'])}</td>
-              <td>{fmt(raw['family_specific_task1_top1'])}</td>
-              <td>{fmt(templ['family_specific_task1_top1'])}</td>
-              <td>{fmt(raw['task2_normalized_edit_distance'])}</td>
-              <td>{fmt(templ['task2_normalized_edit_distance'])}</td>
-              <td>{fmt(templ['task2_block_accuracy'])}</td>
-            </tr>
-            """
+            "\n".join(
+                [
+                    "            <tr>",
+                    f"              <td>{count}</td>",
+                    f"              <td>{fmt(raw['task1_top1'])}</td>",
+                    f"              <td>{fmt(templ['task1_top1'])}</td>",
+                    f"              <td>{fmt(lattice['task1_top1'])}</td>",
+                    f"              <td>{fmt(lattice['lookup_coverage'])}</td>",
+                    f"              <td>{fmt(raw['family_specific_task1_top1'])}</td>",
+                    f"              <td>{fmt(templ['family_specific_task1_top1'])}</td>",
+                    f"              <td>{fmt(raw['task2_normalized_edit_distance'])}</td>",
+                    f"              <td>{fmt(templ['task2_normalized_edit_distance'])}</td>",
+                    f"              <td>{fmt(lattice['task2_normalized_edit_distance'])}</td>",
+                    f"              <td>{fmt(templ['task2_block_accuracy'])}</td>",
+                    f"              <td>{fmt(lattice['task2_block_accuracy'])}</td>",
+                    "            </tr>",
+                ]
+            )
         )
     html = f"""<!doctype html>
 <html lang="en">
@@ -694,9 +799,10 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
       <h2>1. TL;DR</h2>
       <div class="callout">
         More training families help when the model can transfer a learned
-        family-step template to the visible validation family name. Raw exact
-        retrieval cannot reliably invent validation-family strings that never
-        appear in training.
+        family-step template to the visible validation family name. The larger
+        jump comes from valid-partial lattice matching: longer visible partials
+        can reveal exact next steps for shorter partials from the same hidden
+        route.
       </div>
       <p>
         The probe uses 110 synthetic families. The first 100 form the training
@@ -723,11 +829,15 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
             <th>Train families</th>
             <th>Raw Task 1 Top-1</th>
             <th>Template Task 1 Top-1</th>
+            <th>Lattice Task 1 Top-1</th>
+            <th>Lattice coverage</th>
             <th>Raw family-step Top-1</th>
             <th>Template family-step Top-1</th>
             <th>Raw Task 2 edit</th>
             <th>Template Task 2 edit</th>
+            <th>Lattice Task 2 edit</th>
             <th>Template Task 2 block</th>
+            <th>Lattice Task 2 block</th>
           </tr>
         </thead>
         <tbody>
@@ -739,13 +849,22 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
     <section>
       <h2>4. Interpretation</h2>
       <p>
-        The most important line is the family-specific next-step curve. Those
+        The first important line is the family-specific next-step curve. Those
         are the rows where the true next step starts with the held-out validation
         family name. Raw exact retrieval performs poorly on that slice because
         the exact validation-family string was not in training. The
         template-adapted model can improve because it learns a placeholder step
         such as <code>__FAMILY__ JTE DOSE VERIFICATION</code> and then rewrites
         it to the visible family name.
+      </p>
+      <p>
+        The second important line is the valid-lattice curve. In this synthetic
+        setup, every route has both a 60% and an 80% partial. That means half of
+        the valid-input rows have a longer partial available from the same
+        route. The valid-lattice model uses that longer partial to recover exact
+        next steps and a known completion bridge. This is not a label leak: it
+        uses only inference-time partial sequences that a submitted system
+        receives.
       </p>
       <p>
         This does not remove the final-pitch caveat. It only works when the new
@@ -784,6 +903,7 @@ def main() -> None:
         for model in [
             RawExactRetrieval(train_sequences),
             TemplateAdaptedRetrieval(train_sequences),
+            ValidLatticeTemplateRetrieval(train_sequences, valid_examples),
         ]:
             summary, per_family = evaluate_model(
                 train_family_count=train_count,

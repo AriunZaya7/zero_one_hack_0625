@@ -2,7 +2,7 @@
 
 This report evaluates the current solutions across seeds `0` through `9`.
 
-Important interpretation: these solutions do not train stochastic neural weights. For a fixed local split, each one is deterministic. Here, the seed changes the local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses deterministic public-generator augmentation inside each run; Solutions 9 and 10 use the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 use a cached deterministic Monte Carlo suffix library in this evaluator to avoid regenerating the same 30,000 suffix candidates for every split seed. Solutions 13, 14, 15, 16, and 17 are transductive upper-bound checks: the local anomaly input contains full valid routes from the same held-out sequences used to make the Task 1/2 partials. Metrics marked `constant_across_split_seeds` did not change at all across the 10 runs.
+Important interpretation: these solutions do not train stochastic neural weights. For a fixed local split, each one is deterministic. Here, the seed changes the local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses deterministic public-generator augmentation inside each run; Solutions 9 and 10 use the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 use a cached deterministic Monte Carlo suffix library in this evaluator to avoid regenerating the same 30,000 suffix candidates for every split seed. Solutions 13, 14, 15, 16, 17, 18, and 19 are transductive upper-bound checks: the local anomaly input contains full valid routes from the same held-out sequences used to make the Task 1/2 partials. Metrics marked `constant_across_split_seeds` did not change at all across the 10 runs.
 
 ## Main Judging Metrics
 
@@ -26,6 +26,8 @@ Important interpretation: these solutions do not train stochastic neural weights
 | `solution_15_route_memory_mbr` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
 | `solution_16_pseudolabel_metric_audit` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
 | `solution_17_conformal_route_guard` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
 
 ## Alias / Canonical Diagnostic
 
@@ -53,6 +55,8 @@ is much lower than process understanding.
 | `solution_15_route_memory_mbr` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
 | `solution_16_pseudolabel_metric_audit` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
 | `solution_17_conformal_route_guard` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
+| `solution_18_family_template_grammar` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
+| `solution_19_valid_lattice_template` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
 
 ## Full Summary Table
 
@@ -283,6 +287,56 @@ is much lower than process understanding.
 | `solution_17_conformal_route_guard` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_17_conformal_route_guard` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_17_conformal_route_guard` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `ood_avg_top1` | higher_is_better | 0.6787 | 0.0181 | 0.7183 | 0 | 0.6550 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `ood_ic_mrr` | higher_is_better | 0.8174 | 0.0130 | 0.8367 | 7 | 0.7929 | 5 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `ood_ic_top1` | higher_is_better | 0.6440 | 0.0266 | 0.6800 | 7 | 0.5950 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `ood_igbt_mrr` | higher_is_better | 0.8274 | 0.0148 | 0.8558 | 9 | 0.8092 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `ood_igbt_top1` | higher_is_better | 0.6880 | 0.0244 | 0.7300 | 9 | 0.6550 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `ood_mosfet_mrr` | higher_is_better | 0.8510 | 0.0189 | 0.8862 | 0 | 0.8196 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `ood_mosfet_top1` | higher_is_better | 0.7040 | 0.0374 | 0.7750 | 0 | 0.6450 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_18_family_template_grammar` | `public_lookup_coverage` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_18_family_template_grammar` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_18_family_template_grammar` | `task1_canonical_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_canonical_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_mrr` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_same_canonical_miss_rate` | higher_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_top3` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task2_block_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task2_exact_match` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task2_normalized_edit_distance` | lower_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task2_token_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_18_family_template_grammar` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `ood_avg_top1` | higher_is_better | 0.6787 | 0.0181 | 0.7183 | 0 | 0.6550 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `ood_ic_mrr` | higher_is_better | 0.8174 | 0.0130 | 0.8367 | 7 | 0.7929 | 5 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `ood_ic_top1` | higher_is_better | 0.6440 | 0.0266 | 0.6800 | 7 | 0.5950 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `ood_igbt_mrr` | higher_is_better | 0.8274 | 0.0148 | 0.8558 | 9 | 0.8092 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `ood_igbt_top1` | higher_is_better | 0.6880 | 0.0244 | 0.7300 | 9 | 0.6550 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `ood_mosfet_mrr` | higher_is_better | 0.8510 | 0.0189 | 0.8862 | 0 | 0.8196 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `ood_mosfet_top1` | higher_is_better | 0.7040 | 0.0374 | 0.7750 | 0 | 0.6450 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_19_valid_lattice_template` | `public_lookup_coverage` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_19_valid_lattice_template` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_19_valid_lattice_template` | `task1_canonical_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_canonical_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_mrr` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_same_canonical_miss_rate` | higher_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_top3` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task2_block_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task2_exact_match` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task2_normalized_edit_distance` | lower_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task2_token_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_19_valid_lattice_template` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_1_hybrid_retrieval` | `ood_avg_top1` | higher_is_better | 0.6627 | 0.0177 | 0.7067 | 0 | 0.6367 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `ood_ic_mrr` | higher_is_better | 0.7984 | 0.0147 | 0.8167 | 7 | 0.7758 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `ood_ic_top1` | higher_is_better | 0.6250 | 0.0263 | 0.6600 | 7 | 0.5750 | 4 | varies_by_local_split_seed_model_itself_deterministic |

@@ -45,6 +45,8 @@ from solutions.solution_14_synthetic_ml_generator_ensemble import solution as so
 from solutions.solution_15_route_memory_mbr import solution as sol15  # noqa: E402
 from solutions.solution_16_pseudolabel_metric_audit import solution as sol16  # noqa: E402
 from solutions.solution_17_conformal_route_guard import solution as sol17  # noqa: E402
+from solutions.solution_18_family_template_grammar import solution as sol18  # noqa: E402
+from solutions.solution_19_valid_lattice_template import solution as sol19  # noqa: E402
 from training_data.generate_sequences import generate_dataset  # noqa: E402
 
 
@@ -81,6 +83,8 @@ def set_solution_seed(seed: int) -> None:
     sol15.SEED = seed
     sol16.SEED = seed
     sol17.SEED = seed
+    sol18.SEED = seed
+    sol19.SEED = seed
 
 
 def add_top2(rows: list[dict[str, object]], examples: list[sol0.ValidExample]) -> float:
@@ -662,6 +666,54 @@ def evaluate_solution_17(seed: int) -> MetricDict:
     )
 
 
+def evaluate_solution_18(seed: int) -> MetricDict:
+    train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    valid_inputs = sol13.valid_inputs_from_local_examples(valid_examples)
+    anomaly_inputs = sol13.anomaly_inputs_from_local_examples(anomaly_examples)
+    # Keep the seed harness fast: the exact full-route gate covers every coupled
+    # row. The full solution script and scaling probe audit the template fallback.
+    template_training = sol18.build_template_training_bundle(train, {})
+    model = sol18.FamilyTemplateGrammarModel(anomaly_inputs, template_training)
+    task1_rows = sol18.predict_task1(model, valid_inputs)
+    task2_rows = sol18.predict_task2(model, valid_inputs)
+    task3_rows = sol18.predict_task3(anomaly_inputs)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_18_family_template_grammar",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol2.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
+def evaluate_solution_19(seed: int) -> MetricDict:
+    train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    valid_inputs = sol13.valid_inputs_from_local_examples(valid_examples)
+    anomaly_inputs = sol13.anomaly_inputs_from_local_examples(anomaly_examples)
+    # Keep the seed harness fast: the exact full-route gate covers every coupled
+    # row. The full solution script and scaling probe audit the lattice fallback.
+    template_training = sol18.build_template_training_bundle(train, {})
+    model = sol19.ValidLatticeTemplateModel(valid_inputs, anomaly_inputs, template_training)
+    task1_rows = sol19.predict_task1(model, valid_inputs)
+    task2_rows = sol19.predict_task2(model, valid_inputs)
+    task3_rows = sol19.predict_task3(anomaly_inputs)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_19_valid_lattice_template",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol2.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -681,6 +733,8 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_15_route_memory_mbr", evaluate_solution_15),
     ("solution_16_pseudolabel_metric_audit", evaluate_solution_16),
     ("solution_17_conformal_route_guard", evaluate_solution_17),
+    ("solution_18_family_template_grammar", evaluate_solution_18),
+    ("solution_19_valid_lattice_template", evaluate_solution_19),
 )
 
 
@@ -841,7 +895,7 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 "
         "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
         "regenerating the same 30,000 suffix candidates for every split seed. Solutions 13, "
-        "14, 15, 16, and 17 are transductive upper-bound checks: the local anomaly input contains full "
+        "14, 15, 16, 17, 18, and 19 are transductive upper-bound checks: the local anomaly input contains full "
         "valid routes from the same held-out sequences used to make the Task 1/2 partials. "
         "Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",
