@@ -271,6 +271,10 @@ def main():
             artifact = wandb.Artifact(run_name, type="model-metadata")
             artifact.add_file(os.path.join(args.out, "training_meta.json"))
             artifact.add_file(log_path)
+            for filename in ("xgboost_model.json", "class_map.json", "boosting_metadata.json"):
+                artifact_path = os.path.join(args.out, filename)
+                if os.path.isfile(artifact_path):
+                    artifact.add_file(artifact_path)
             wb.log_artifact(artifact)
         except Exception:
             pass

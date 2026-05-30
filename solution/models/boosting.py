@@ -9,10 +9,11 @@ solution models: top_k_next(), complete_sequence(), and sequence_log_prob().
 from __future__ import annotations
 
 import math
+import json
 import os
 import pickle
 import random
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, fields
 from typing import Iterable
 
 import numpy as np
@@ -631,6 +632,9 @@ class BoostingStepModel:
 
 class XGBoostStepModel(BoostingStepModel):
     model_type = "xgboost"
+    NATIVE_MODEL_FILENAME = "xgboost_model.json"
+    METADATA_FILENAME = "boosting_metadata.json"
+    CLASS_MAP_FILENAME = "class_map.json"
 
     def _fit_estimator(self, x_train, y_train, x_val, y_val, iterations, device, verbose, **params):
         try:
@@ -662,6 +666,93 @@ class XGBoostStepModel(BoostingStepModel):
         if x_val is not None and y_val is not None and len(y_val):
             fit_kwargs["eval_set"] = [(x_val, y_val)]
         self.estimator.fit(x_train, y_train, **fit_kwargs)
+
+    def _class_map(self) -> dict:
+        classes = []
+        for estimator_class_id, label_id in enumerate(self.model_label_ids):
+            classes.append(
+                {
+                    "estimator_class_id": estimator_class_id,
+                    "label_id": label_id,
+                    "step": self.label_steps[label_id],
+                }
+            )
+        return {
+            "format_version": 1,
+            "classes": classes,
+            "label_steps": self.label_steps,
+            "step_to_label": self.step_to_label,
+        }
+
+    def _native_metadata(self) -> dict:
+        if self.vocab is None:
+            raise RuntimeError("model vocabulary is not initialized")
+        return {
+            "format_version": 1,
+            "model_type": self.model_type,
+            "config": asdict(self.config),
+            "vocab_itos": self.vocab.itos,
+            "family_to_id": self.family_to_id,
+            "bigram_to_id": [[*key, value] for key, value in self.bigram_to_id.items()],
+            "trigram_to_id": [[*key, value] for key, value in self.trigram_to_id.items()],
+            "label_steps": self.label_steps,
+            "model_label_ids": self.model_label_ids,
+            "class_priors": [[key, value] for key, value in self.class_priors.items()],
+            "feature_names": self.feature_names,
+        }
+
+    def save_native(self, path: str):
+        if self.estimator is None:
+            raise RuntimeError("model is not fitted")
+        os.makedirs(path, exist_ok=True)
+        self.estimator.save_model(os.path.join(path, self.NATIVE_MODEL_FILENAME))
+        with open(os.path.join(path, self.CLASS_MAP_FILENAME), "w", encoding="utf-8") as f:
+            json.dump(self._class_map(), f, indent=2)
+        with open(os.path.join(path, self.METADATA_FILENAME), "w", encoding="utf-8") as f:
+            json.dump(self._native_metadata(), f, indent=2)
+
+    def save(self, path: str):
+        super().save(path)
+        self.save_native(path)
+
+    @classmethod
+    def _load_native(cls, path: str):
+        try:
+            from xgboost import XGBClassifier
+        except ImportError as exc:
+            raise ImportError("Install xgboost>=2.0.0 to load XGBoostStepModel") from exc
+
+        with open(os.path.join(path, cls.METADATA_FILENAME), encoding="utf-8") as f:
+            metadata = json.load(f)
+        config_keys = {field.name for field in fields(BoostingConfig)}
+        config = BoostingConfig(**{key: value for key, value in metadata["config"].items() if key in config_keys})
+        model = cls(config)
+        model.vocab = Vocab(steps=[])
+        model.vocab.itos = metadata["vocab_itos"]
+        model.vocab.stoi = {step: idx for idx, step in enumerate(model.vocab.itos)}
+        model.family_to_id = {key: int(value) for key, value in metadata["family_to_id"].items()}
+        model.bigram_to_id = {tuple(row[:-1]): int(row[-1]) for row in metadata["bigram_to_id"]}
+        model.trigram_to_id = {tuple(row[:-1]): int(row[-1]) for row in metadata["trigram_to_id"]}
+        model.label_steps = metadata["label_steps"]
+        model.step_to_label = {step: idx for idx, step in enumerate(model.label_steps)}
+        model.model_label_ids = [int(value) for value in metadata["model_label_ids"]]
+        model.class_priors = {int(key): float(value) for key, value in metadata.get("class_priors", [])}
+        model.estimator = XGBClassifier()
+        model.estimator.load_model(os.path.join(path, cls.NATIVE_MODEL_FILENAME))
+        model._align_feature_version_to_estimator()
+        model._predict_cache = {}
+        return model
+
+    @classmethod
+    def load(cls, path: str):
+        pickle_path = os.path.join(path, "model.pkl")
+        native_path = os.path.join(path, cls.NATIVE_MODEL_FILENAME)
+        metadata_path = os.path.join(path, cls.METADATA_FILENAME)
+        if os.path.isfile(pickle_path):
+            return super().load(path)
+        if os.path.isfile(native_path) and os.path.isfile(metadata_path):
+            return cls._load_native(path)
+        raise FileNotFoundError(f"No XGBoost checkpoint found under {path}")
 
 
 class CatBoostStepModel(BoostingStepModel):
@@ -824,14 +915,7 @@ class BoostingEnsembleModel(BoostingStepModel):
 
     @classmethod
     def load_many(cls, paths: list[str], weights: list[float] | None = None):
-        models = []
-        for path in paths:
-            with open(os.path.join(path, "model.pkl"), "rb") as f:
-                model = pickle.load(f)
-            if hasattr(model, "_align_feature_version_to_estimator"):
-                model._align_feature_version_to_estimator()
-            model._predict_cache = {}
-            models.append(model)
+        models = [XGBoostStepModel.load(path) for path in paths]
         return cls(models, weights=weights)
 
 
@@ -862,12 +946,7 @@ class BoostingTaskHybridModel:
 
     @staticmethod
     def _load_single(path: str):
-        with open(os.path.join(path, "model.pkl"), "rb") as f:
-            model = pickle.load(f)
-        if hasattr(model, "_align_feature_version_to_estimator"):
-            model._align_feature_version_to_estimator()
-        model._predict_cache = {}
-        return model
+        return XGBoostStepModel.load(path)
 
     @classmethod
     def load(
