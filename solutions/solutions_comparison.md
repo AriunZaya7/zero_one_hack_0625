@@ -62,6 +62,7 @@ submission surface:
 | [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | `python -B solutions/solution_6_alias_calibrated_retrieval/solution.py` | Complete: alias-calibration docs, outputs, metrics, and submit guide. | Complete package generated. | Helps diagnose alias choice; does not solve exact Top-1. |
 | [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | `python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py` | Complete: Monte Carlo suffix-library docs, outputs, metrics, and submit guide. | Complete package generated. | Strong deterministic Task 2 completion; still not neural or learned anomaly detection. |
 | [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | `python -B solutions/solution_8_semantic_conformance_ensemble/solution.py` | Complete: semantic conformance docs, outputs, metrics, and submit guide. | Complete package generated. | Better anomaly explanation path, but still symbolic rather than neural. |
+| [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | `python -B solutions/solution_9_judge_aware_portfolio/solution.py` | Complete: judge-aware portfolio docs, outputs, metrics, and submit guide. | Complete package generated. | Best visible-task bundle, but weaker hidden-family LOFO than the Solution 2/8 family. |
 
 To refresh all package folders after rerunning solution scripts:
 
@@ -181,6 +182,11 @@ Solution-specific LOFO details:
 - [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html): uses the same
   Task 1 specialist as Solution 7 for LOFO. Its change is Task 3 semantic
   conformance checking, not Task 1 ranking.
+- [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html): uses Solution 3's
+  synthetic-augmented retrieval specialist for Task 1 LOFO, Solution 7's
+  suffix specialist for Task 2, and Solution 8's semantic conformance checker
+  for Task 3. Its LOFO Task 1 numbers therefore match the Solution 3-style
+  hidden-family tradeoff, not the more conservative Solution 2-style tradeoff.
 
 What LOFO does **not** mean:
 
@@ -210,6 +216,7 @@ engineering, but it is **not** a fair validation score.
 | [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8644`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0000`, normalized edit distance `0.2405`, token accuracy `0.4496`, block accuracy `0.7189`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The alias calibrator is trained only on the two non-held-out families. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: deterministic alias counts and retrieval tables; no external dependencies. | Good: explicitly shows that alias calibration helps Task 2 slightly but does not solve exact Top-1. | Novel diagnostic: separates process-operation prediction from exact-label alias realization. | Partial: open and reproducible, but no neural training infrastructure. | Good: standalone docs and package generated. | Preserves Task 1 coverage and slightly improves completion, but does not beat Solution 3 overall. |
 | [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0067`, normalized edit distance `0.2333`, token accuracy `0.4737`, block accuracy `0.7367`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Task 1 LOFO uses the Solution 2 specialist; the Monte Carlo suffix library is used for Task 2. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic generation seeds, no external model download, generated suffix library rebuilt in memory. | Good: explicitly explains why a bigger generated library helps completion but is not used for exact next-step Top-1. | Strong completion baseline: task-specialized ensemble plus 10,000 generated valid suffix candidates per family. | Better open-stack fit: uses the public process generator as reproducible data scaling. | Good: standalone docs and package generated. | Best deterministic Task 2 edit-distance attempt so far, but still not a learned transformer or learned anomaly detector. |
 | [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0067`, normalized edit distance `0.2333`, token accuracy `0.4737`, block accuracy `0.7367`. | Local self-eval: accuracy/rule attribution both `1.0000`; unlike earlier solutions, Task 3 prediction does not call `validate_sequence()` directly. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Task 1 LOFO uses the Solution 2 specialist. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic generation seeds and explicit conformance rules; no external model download. | Good: honestly states that the anomaly layer is symbolic, not a learned detector. | Stronger anomaly story: transparent semantic rule attribution without direct validator inference. | Better open-stack fit: combines generator-based completion with explainable conformance logic. | Good: standalone docs and package generated. | Better Task 3 explanation path, but still not a neural rule-learning proof. |
+| [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7350`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8661`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0067`, normalized edit distance `0.2333`, token accuracy `0.4737`, block accuracy `0.7367`. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7450`, IGBT `0.7050`, IC `0.5700`. Task 1 LOFO uses the Solution 3 specialist, which is weaker on IC than Solution 2/8. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic task-level selector over completed specialists; no third-party dependencies. | Good: explicitly states the visible-task strength and hidden-family tradeoff. | Strongest visible-task portfolio: the best current Task 1, Task 2, and Task 3 specialists are selected per CSV. | Better open-stack fit: transparent model selection over reproducible public-generator and conformance methods. | Good: standalone docs, research note, 10-seed report, and package generated. | It is a portfolio rather than a unified learned model; hidden-family Task 1 risk is higher than Solution 8. |
 
 ## Local LOFO Task 1 Proxy Results
 
@@ -228,6 +235,7 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 | [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Train eval-aware retrieval and alias counts only on the two non-held-out families. |
 | [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use Solution 2's eval-aware retrieval specialist for Task 1 LOFO; the 10,000-per-family Monte Carlo suffix library is a Task 2 specialist. |
 | [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use Solution 2's eval-aware retrieval specialist for Task 1 LOFO; the semantic conformance layer changes Task 3 only. |
+| [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | `0.7450` / `0.8717` | `0.7050` / `0.8325` | `0.5700` / `0.7675` | Use Solution 3's synthetic-augmented retrieval specialist for Task 1 LOFO; Task 2 and Task 3 specialists do not affect this Task 1 proxy. |
 
 ## 10-Seed Stability Summary
 
@@ -240,9 +248,10 @@ seed changes the local train/held-out split, anomaly shuffle, and OOD sampling.
 Metrics marked as constant did not change across those split seeds.
 
 The saved report now covers all implemented solution folders from Solution 0
-through Solution 8. Solutions 7 and 8 reuse the same cached Monte Carlo suffix
-library during the 10-seed run so the reported metrics still match their
-committed method while avoiding redundant generation work.
+through Solution 9. Solution 9 uses Solution 3-style deterministic generator
+augmentation for Task 1. Solutions 7, 8, and 9 reuse the same cached Monte
+Carlo suffix library during the 10-seed run so the reported metrics still match
+their committed method while avoiding redundant generation work.
 
 | Solution | Seed behavior | Task 1 Top-1 mean | best | worst | Task 1 MRR mean | Task 2 block mean | Task 2 edit mean | Task 3 accuracy mean | OOD avg Top-1 mean |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -255,6 +264,7 @@ committed method while avoiding redundant generation work.
 | [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8455` | `0.7159` | `0.2383` | `1.0000` constant | `0.6787` |
 | [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | Split-seed variation only; Monte Carlo suffix library is deterministic and reused in the report run. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7347` | `0.2334` | `1.0000` constant | `0.6787` |
 | [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | Split-seed variation only; semantic conformance rules are deterministic for a fixed split. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7347` | `0.2334` | `1.0000` constant | `0.6787` |
+| [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | Split-seed variation only; portfolio rule and component methods are deterministic for a fixed split. | `0.6970` | `0.7150` (seed `4`) | `0.6767` (seed `0`) | `0.8462` | `0.7347` | `0.2334` | `1.0000` constant | `0.6622` |
 
 Alias-normalized canonical process-step diagnostic across the same 10 seeds:
 
@@ -269,6 +279,7 @@ Alias-normalized canonical process-step diagnostic across the same 10 seeds:
 | [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9990` | `0.9110` |
 | [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
 | [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
+| [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | `0.9747` | `0.9817` (seed `0`) | `0.9683` (seed `1`) | `0.9993` | `0.9160` |
 
 ## Criteria Notes
 

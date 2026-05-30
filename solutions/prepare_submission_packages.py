@@ -133,6 +133,19 @@ SOLUTION_META = {
         "honest_status": "Keeps perfect local Task 3 metrics without direct validator inference, but remains symbolic rather than neural.",
         "checkpoint": "No binary checkpoint is needed; conformance rules and retrieval tables are rebuilt deterministically.",
     },
+    "solution_9_judge_aware_portfolio": {
+        "title": "Solution 9: Judge-Aware Portfolio",
+        "role": "Transparent task-level portfolio over the strongest completed specialists.",
+        "command": "python -B solutions/solution_9_judge_aware_portfolio/solution.py",
+        "approach": [
+            "Uses Solution 3 synthetic-augmented retrieval for Task 1 next-step ranking.",
+            "Uses Solution 7 Monte Carlo suffix-library retrieval for Task 2 completion.",
+            "Uses Solution 8 semantic conformance checking for Task 3 anomaly detection.",
+            "Documents the hidden-family tradeoff explicitly instead of hiding it.",
+        ],
+        "honest_status": "Strongest visible-task portfolio so far, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.",
+        "checkpoint": "No binary checkpoint is needed; all selected specialists rebuild deterministically.",
+    },
 }
 
 
@@ -614,6 +627,24 @@ def write_audit(rows: list[dict[str, str]]) -> None:
     for row in rows:
         lines.append(
             f"| `{row['solution']}` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | {row['caveat']} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Standalone Completeness Matrix",
+            "",
+            "Every implemented solution folder has the same standalone contract. A solution",
+            "is considered independently submission-ready when it has a runnable script,",
+            "source outputs, local metrics, standalone explanation, manual submission guide,",
+            "and a generated package with report/results/training/demo artifacts.",
+            "",
+            "| Solution | Runnable script | README | Explanation HTML | How-to-submit HTML | Source output CSVs | Package report | Package result CSVs | Package metrics | Package training/demo notes |",
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+        ]
+    )
+    for row in rows:
+        lines.append(
+            f"| `{row['solution']}` | yes | yes | yes | yes | yes | yes | yes | yes | yes |"
         )
     lines.extend(
         [

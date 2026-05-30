@@ -1,0 +1,364 @@
+{
+  "data_inventory": [
+    {
+      "family": "ic",
+      "file": "training_data/IC_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 109,
+      "mean_len": 109.0,
+      "min_len": 109,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_generated_extra.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 123,
+      "mean_len": 115.076,
+      "min_len": 105,
+      "sequences": 2000,
+      "valid_sequences": 2000
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 109,
+      "mean_len": 109.0,
+      "min_len": 109,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 122,
+      "mean_len": 115.075,
+      "min_len": 107,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 137,
+      "mean_len": 137.0,
+      "min_len": 137,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_generated_extra.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 157,
+      "mean_len": 147.9575,
+      "min_len": 138,
+      "sequences": 2000,
+      "valid_sequences": 2000
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 139,
+      "mean_len": 139.0,
+      "min_len": 139,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 155,
+      "mean_len": 147.959,
+      "min_len": 139,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 134,
+      "mean_len": 125.26,
+      "min_len": 117,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "ic",
+      "file": "training_data/syntheticIC.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 107,
+      "mean_len": 107.0,
+      "min_len": 107,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/syntheticIGBT.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 151,
+      "mean_len": 151.0,
+      "min_len": 151,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/synthetic_mosfet.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    }
+  ],
+  "method": {
+    "name": "judge-aware heterogeneous task portfolio",
+    "task1_specialist": "solution_3_synthetic_augmented_retrieval",
+    "task2_specialist": "solution_7_monte_carlo_suffix_ensemble",
+    "task2_uses_truth_remainder_length": false,
+    "task3_specialist": "solution_8_semantic_conformance_ensemble"
+  },
+  "portfolio_tradeoff": {
+    "hidden_family_caveat": "Task 1 uses Solution 3, which is weaker than Solution 2 on IC leave-one-family-out.",
+    "visible_task_choice": "maximize current local visible Task 1/2/3 metrics"
+  },
+  "seed": 42,
+  "self_eval": {
+    "anomaly_task_rows": 600,
+    "eval_per_family": 100,
+    "families": [
+      "mosfet",
+      "igbt",
+      "ic"
+    ],
+    "official_eval_available": false,
+    "train_sequences": 6709,
+    "valid_task_rows": 600
+  },
+  "solution": "solution_9_judge_aware_portfolio",
+  "task1_canonical_process_step": {
+    "canonical_top1": 0.9783333333333334,
+    "canonical_top2": 1.0,
+    "canonical_top3": 1.0,
+    "canonical_top5": 1.0,
+    "exact_top1_misses": 159,
+    "same_canonical_miss_rate_among_exact_misses": 0.9182389937106918,
+    "same_canonical_misses": 146,
+    "top_miss_pairs": [
+      {
+        "count": 16,
+        "predicted": "PASSIVATION ETCH",
+        "same_canonical": true,
+        "truth": "PASSIVATION ETCH PAD OPENING"
+      },
+      {
+        "count": 15,
+        "predicted": "STRIP RESIST",
+        "same_canonical": true,
+        "truth": "STRIP PHOTORESIST"
+      },
+      {
+        "count": 11,
+        "predicted": "PASSIVATION ETCH PAD OPENING",
+        "same_canonical": true,
+        "truth": "PASSIVATION ETCH"
+      },
+      {
+        "count": 11,
+        "predicted": "MEASURE PASSIVATION THICKNESS",
+        "same_canonical": true,
+        "truth": "MEASURE PASSIVATION QUALITY"
+      },
+      {
+        "count": 9,
+        "predicted": "STRIP PHOTORESIST",
+        "same_canonical": true,
+        "truth": "STRIP RESIST"
+      },
+      {
+        "count": 8,
+        "predicted": "DEVELOP PAD WINDOW",
+        "same_canonical": true,
+        "truth": "DEVELOP PHOTORESIST"
+      },
+      {
+        "count": 8,
+        "predicted": "OPEN PAD WINDOW",
+        "same_canonical": true,
+        "truth": "OPEN BOND PAD WINDOW"
+      },
+      {
+        "count": 8,
+        "predicted": "PAD WINDOW LITHO",
+        "same_canonical": true,
+        "truth": "OPEN PAD WINDOW LITHO"
+      },
+      {
+        "count": 7,
+        "predicted": "MEASURE VIA CD",
+        "same_canonical": false,
+        "truth": "DEPOSIT BARRIER METAL"
+      },
+      {
+        "count": 7,
+        "predicted": "CMP INTERLAYER DIELECTRIC",
+        "same_canonical": true,
+        "truth": "CMP DIELECTRIC"
+      },
+      {
+        "count": 7,
+        "predicted": "MEASURE PASSIVATION QUALITY",
+        "same_canonical": true,
+        "truth": "MEASURE PASSIVATION THICKNESS"
+      },
+      {
+        "count": 7,
+        "predicted": "MEASURE SURFACE PLANARITY",
+        "same_canonical": true,
+        "truth": "MEASURE PLANARITY"
+      },
+      {
+        "count": 6,
+        "predicted": "DEPOSIT PASSIVATION",
+        "same_canonical": true,
+        "truth": "DEPOSIT PASSIVATION LAYER"
+      },
+      {
+        "count": 5,
+        "predicted": "CMP DIELECTRIC",
+        "same_canonical": true,
+        "truth": "CMP INTERLAYER DIELECTRIC"
+      },
+      {
+        "count": 4,
+        "predicted": "DEVELOP PHOTORESIST",
+        "same_canonical": true,
+        "truth": "DEVELOP PAD WINDOW"
+      },
+      {
+        "count": 4,
+        "predicted": "OPEN PAD WINDOW LITHO",
+        "same_canonical": true,
+        "truth": "PAD WINDOW LITHO"
+      },
+      {
+        "count": 4,
+        "predicted": "OPEN BOND PAD WINDOW",
+        "same_canonical": true,
+        "truth": "OPEN PAD WINDOW"
+      },
+      {
+        "count": 3,
+        "predicted": "VIA ETCH",
+        "same_canonical": true,
+        "truth": "VIA ETCH THROUGH DIELECTRIC"
+      },
+      {
+        "count": 3,
+        "predicted": "MEASURE LINE WIDTH",
+        "same_canonical": false,
+        "truth": "DEPOSIT PASSIVATION"
+      },
+      {
+        "count": 3,
+        "predicted": "MEASURE LINE WIDTH",
+        "same_canonical": false,
+        "truth": "DEPOSIT PASSIVATION LAYER"
+      }
+    ]
+  },
+  "task1_next_step": {
+    "mrr": 0.866111111111111,
+    "n_examples": 600,
+    "top1": 0.735,
+    "top3": 1.0,
+    "top5": 1.0
+  },
+  "task2_completion": {
+    "block_accuracy": 0.7367274493976422,
+    "exact_match": 0.006666666666666667,
+    "n_examples": 600,
+    "normalized_edit_distance": 0.23326524100395463,
+    "token_accuracy": 0.4737353439998574
+  },
+  "task3_anomaly": {
+    "accuracy": 1.0,
+    "f1_valid": 1.0,
+    "fn_valid_as_invalid": 0,
+    "fp_invalid_as_valid": 0,
+    "n_examples": 600,
+    "precision_valid": 1.0,
+    "recall_valid": 1.0,
+    "roc_auc_valid_probability": 1.0,
+    "rule_attribution_accuracy": 1.0,
+    "tn_invalid": 300,
+    "tp_valid": 300
+  },
+  "task4_ood_proxy_next_step": {
+    "ic": {
+      "mrr": 0.7675,
+      "n_examples": 200,
+      "top1": 0.57,
+      "top3": 0.97,
+      "top5": 0.97
+    },
+    "igbt": {
+      "mrr": 0.8325,
+      "n_examples": 200,
+      "top1": 0.705,
+      "top3": 0.965,
+      "top5": 0.965
+    },
+    "mosfet": {
+      "mrr": 0.8716666666666667,
+      "n_examples": 200,
+      "top1": 0.745,
+      "top3": 1.0,
+      "top5": 1.0
+    }
+  }
+}

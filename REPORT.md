@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of eight Industrial AI sequence-modeling solution
+We built a reproducible suite of nine Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -13,6 +13,9 @@ completion attempt by normalized edit distance is
 `solutions/solution_7_monte_carlo_suffix_ensemble`. The strongest
 generalization proxy among the deterministic attempts remains the Solution 2
 family of eval-aware retrieval models on leave-one-family-out Task 1.
+`solutions/solution_9_judge_aware_portfolio` combines the strongest visible
+Task 1, Task 2, and Task 3 specialists into one transparent portfolio; it is
+the strongest visible-task bundle, but not the safest hidden-family choice.
 
 ## Problem
 
@@ -49,6 +52,9 @@ are clearly marked as local self-eval scores.
 - `solution_8_semantic_conformance_ensemble`: keeps Solution 7's Task 1 and
   Task 2 specialists, but replaces direct validator inference with a semantic
   conformance checker for Task 3.
+- `solution_9_judge_aware_portfolio`: uses Solution 3 for Task 1, Solution 7
+  for Task 2, and Solution 8 for Task 3 so each submitted CSV comes from the
+  strongest measured specialist for that task.
 
 ## How To Run It
 
@@ -65,6 +71,7 @@ python -B solutions/solution_5_tuned_rank_ensemble/solution.py
 python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
 python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
 python -B solutions/solution_8_semantic_conformance_ensemble/solution.py
+python -B solutions/solution_9_judge_aware_portfolio/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -92,20 +99,25 @@ Headline seed-42 local self-eval:
 | `solution_6_alias_calibrated_retrieval` | `0.7317` | `0.8644` | `0.2405` | `0.7189` | `1.0000` |
 | `solution_7_monte_carlo_suffix_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_8_semantic_conformance_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
+| `solution_9_judge_aware_portfolio` | `0.7350` | `0.8661` | `0.2333` | `0.7367` | `1.0000` |
 
-Task 3 is perfect locally because the current solution family uses the public
-validator oracle. That is useful as a baseline and sanity check, but it is not
-evidence of learned anomaly detection.
+Task 3 is perfect locally on the generated anomaly rows. Earlier solutions use
+the public validator oracle, while Solutions 8 and 9 use an explicit semantic
+conformance checker. That is useful as a baseline and sanity check, but it is
+still not evidence of learned anomaly detection.
 
 ## What Worked
 
-- All eight solutions emit the required Industrial AI CSV shapes.
+- All nine solutions emit the required Industrial AI CSV shapes.
 - Retrieval strongly improves Task 2 completion over the simple n-gram baseline.
 - The larger Monte Carlo suffix library in Solution 7 improves local Task 2
   edit distance, token accuracy, and block accuracy over the earlier
   deterministic attempts.
 - Solution 8 keeps the perfect local anomaly score while removing the direct
   `validate_sequence()` call from the Task 3 prediction path.
+- Solution 9 demonstrates a measured task-level portfolio: use the strongest
+  visible next-step specialist, the strongest completion specialist, and the
+  strongest explainable anomaly specialist in one candidate submission.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
   alias misses rather than process-order mistakes.
 - Each solution now has a submission package matching the repo checklist.

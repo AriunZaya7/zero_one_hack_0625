@@ -358,6 +358,26 @@ def evaluate_solution_8(seed: int) -> MetricDict:
     )
 
 
+def evaluate_solution_9(seed: int) -> MetricDict:
+    train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    augmented_train = sol3.augment_with_generated_sequences(train)
+    task1_model = sol1.HybridRetrievalModel(augmented_train)
+    task1_rows = sol1.predict_task1(task1_model, valid_examples)
+    cached_completion = evaluate_solution_7_like(seed)
+    task3_rows = sol8.predict_task3_semantic(anomaly_examples)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_9_judge_aware_portfolio",
+        task1=task1,
+        task2=cached_completion["task2"],
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol3.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -368,6 +388,7 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_6_alias_calibrated_retrieval", evaluate_solution_6),
     ("solution_7_monte_carlo_suffix_ensemble", evaluate_solution_7),
     ("solution_8_semantic_conformance_ensemble", evaluate_solution_8),
+    ("solution_9_judge_aware_portfolio", evaluate_solution_9),
 )
 
 
@@ -524,7 +545,8 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "Important interpretation: these solutions do not train stochastic neural weights. "
         "For a fixed local split, each one is deterministic. Here, the seed changes the "
         "local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses "
-        "deterministic public-generator augmentation inside each run; Solutions 7 and 8 "
+        "deterministic public-generator augmentation inside each run; Solution 9 uses "
+        "the same augmentation for Task 1. Solutions 7, 8, and 9 "
         "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
         "regenerating the same 30,000 suffix candidates for every split seed. Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",
