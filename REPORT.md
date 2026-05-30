@@ -106,6 +106,14 @@ OOD learned-bridge diagnostic on the 110-family synthetic probe:
 | Raw XGBoost exact labels | `0.5806` | `0.8116` | `0.7048` | `0.0000` |
 | Template-normalized XGBoost labels | `0.7531` | `1.0000` | `0.8732` | `1.0000` |
 
+Explainability artifacts are included for the XGBoost bridge. XGBoost Tree SHAP
+shows the template model is driven mostly by recent visible steps, route
+position, and recent process blocks; the top features are `lag_step_1`,
+`prefix_len`, `lag_step_4`, `lag_step_2`, and `lag_block_3`. Seed-0 raw and
+template XGBoost model JSON checkpoints plus training logloss CSVs are included
+under `solutions/solution_21_template_boosted_bridge/outputs/` and copied into
+the final submission attachments.
+
 ## What Worked
 
 - The final CSVs match the exact official headers and expected row counts.

@@ -113,7 +113,59 @@
       margin: 16px 0;
       border-radius: 0 8px 8px 0;
     }
+    .shap-bars {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+      margin: 14px 0 18px;
+    }
+    .shap-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 2fr) 78px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .shap-label strong {
+      display: block;
+      font-size: 14px;
+    }
+    .shap-label span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .shap-track {
+      height: 13px;
+      background: #e9eef2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .shap-fill {
+      width: var(--bar-width);
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+      border-radius: 999px;
+      transform-origin: left center;
+      animation: shapGrow 850ms ease-out both;
+    }
+    .shap-value {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 13px;
+    }
+    @keyframes shapGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
     ul { margin-top: 8px; }
+    @media (max-width: 760px) {
+      .shap-row { grid-template-columns: 1fr; }
+      .shap-value { text-align: left; }
+    }
   </style>
 </head>
 <body>
@@ -248,6 +300,40 @@
 <tr><td>lag_step_3</td><td>0.036761</td></tr>
 <tr><td>position_norm_200</td><td>0.030058</td></tr>
 <tr><td>lag_step_7</td><td>0.028374</td></tr></tbody>
+    </table>
+
+    <h3>Tree SHAP explainability</h3>
+    <p>
+      Feature importance tells us which split features the trees used often.
+      Tree SHAP answers a more local question: on the held-out validation rows,
+      which features changed the model's score the most? XGBoost computes these
+      Tree SHAP values directly for its tree ensemble, so this is a real
+      Shapley-style explanation without adding another dependency.
+    </p>
+    <div class="shap-bars" aria-label="Template XGBoost Tree SHAP bar chart">
+      <div class="shap-row"><div class="shap-label"><strong>lag_step_1</strong><span>Recent exact/template step token in the visible prefix.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 100.0%"></div></div><div class="shap-value">0.34838</div></div>
+<div class="shap-row"><div class="shap-label"><strong>prefix_len</strong><span>How many steps are already visible in the partial route.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 64.7%"></div></div><div class="shap-value">0.22532</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_step_4</strong><span>Recent exact/template step token in the visible prefix.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 37.2%"></div></div><div class="shap-value">0.12946</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_step_2</strong><span>Recent exact/template step token in the visible prefix.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 36.1%"></div></div><div class="shap-value">0.12581</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_3</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 35.2%"></div></div><div class="shap-value">0.12269</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_4</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 30.3%"></div></div><div class="shap-value">0.10544</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_1</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 30.1%"></div></div><div class="shap-value">0.10479</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_5</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 22.8%"></div></div><div class="shap-value">0.07954</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_6</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 22.1%"></div></div><div class="shap-value">0.07707</div></div>
+<div class="shap-row"><div class="shap-label"><strong>unique_step_frac</strong><span>How diverse the visible prefix is relative to its length.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 20.7%"></div></div><div class="shap-value">0.07212</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Rank</th><th>Feature</th><th>Mean abs Tree SHAP</th><th>Share</th><th>Plain-English meaning</th></tr></thead>
+      <tbody><tr><td>1</td><td>lag_step_1</td><td>0.348382</td><td>0.1815</td><td>Recent exact/template step token in the visible prefix.</td></tr>
+<tr><td>2</td><td>prefix_len</td><td>0.225322</td><td>0.1174</td><td>How many steps are already visible in the partial route.</td></tr>
+<tr><td>3</td><td>lag_step_4</td><td>0.129463</td><td>0.0675</td><td>Recent exact/template step token in the visible prefix.</td></tr>
+<tr><td>4</td><td>lag_step_2</td><td>0.125806</td><td>0.0656</td><td>Recent exact/template step token in the visible prefix.</td></tr>
+<tr><td>5</td><td>lag_block_3</td><td>0.122686</td><td>0.0639</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>6</td><td>lag_block_4</td><td>0.105443</td><td>0.0549</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>7</td><td>lag_block_1</td><td>0.104788</td><td>0.0546</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>8</td><td>lag_block_5</td><td>0.079544</td><td>0.0414</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>9</td><td>lag_block_6</td><td>0.077068</td><td>0.0402</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>10</td><td>unique_step_frac</td><td>0.072122</td><td>0.0376</td><td>How diverse the visible prefix is relative to its length.</td></tr></tbody>
     </table>
 
     <h3>Concrete examples</h3>

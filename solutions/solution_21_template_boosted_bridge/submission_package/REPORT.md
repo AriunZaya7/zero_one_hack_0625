@@ -22,7 +22,7 @@ submission CSVs.
 - Trains a raw XGBoost next-step model on exact step-string labels for the 110-family OOD probe.
 - Trains the same XGBoost setup after normalizing family-specific labels to `__FAMILY__ ...` templates.
 - Evaluates the trained bridge across ten XGBoost seeds at the 100-training-family setting.
-- Writes template-boosting metrics, examples, feature importances, and explanation material.
+- Writes template-boosting metrics, examples, feature importances, Tree SHAP explainability, and explanation material.
 
 ## How To Run It
 

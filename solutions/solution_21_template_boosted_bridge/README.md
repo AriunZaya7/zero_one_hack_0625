@@ -35,7 +35,12 @@ Important outputs:
 - `outputs/template_boosting_curve.csv`
 - `outputs/template_boosting_10_seed.csv`
 - `outputs/template_boosting_examples.csv`
+- `outputs/template_boosting_tree_shap.csv`
+- `outputs/template_boosting_xgb_training_logloss.csv`
 - `outputs/template_boosting_bridge.json`
+- `outputs/raw_xgb_exact_seed0_xgboost_model.json`
+- `outputs/template_xgb_bridge_seed0_xgboost_model.json`
+- `outputs/template_xgb_feature_names.json`
 - `outputs/metrics.json`
 - `outputs/metrics.md`
 - `explanation.html`

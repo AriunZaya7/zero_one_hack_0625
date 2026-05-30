@@ -266,7 +266,27 @@
       border-top: 4px solid var(--accent);
       border-radius: 6px;
       background: #fff;
+      position: relative;
+      overflow: hidden;
     }
+
+    .flow-node::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(13, 107, 114, 0.55), transparent);
+      transform: translateX(-100%);
+      animation: flowPulse 3.6s ease-in-out infinite;
+    }
+
+    .flow-node:nth-child(2)::after { animation-delay: 0.25s; }
+    .flow-node:nth-child(3)::after { animation-delay: 0.5s; }
+    .flow-node:nth-child(4)::after { animation-delay: 0.75s; }
+    .flow-node:nth-child(5)::after { animation-delay: 1s; }
+    .flow-node:nth-child(6)::after { animation-delay: 1.25s; }
 
     .flow-node strong {
       display: block;
@@ -332,6 +352,89 @@
       margin-top: 4px;
     }
 
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 1040px;
+      margin: 16px 0 24px;
+    }
+
+    .check-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .check-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--good);
+    }
+
+    .shap-panel {
+      max-width: 1040px;
+      margin: 16px 0 24px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .shap-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.35fr) minmax(180px, 2fr) 88px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .shap-label strong {
+      display: block;
+      font-size: 0.94rem;
+    }
+
+    .shap-label span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .shap-track {
+      height: 14px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e9eef3;
+    }
+
+    .shap-fill {
+      width: var(--bar-width);
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #0b5d85);
+      transform-origin: left center;
+      animation: shapGrow 900ms ease-out both;
+    }
+
+    .shap-value {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+
+    @keyframes flowPulse {
+      0% { transform: translateX(-100%); }
+      45%, 100% { transform: translateX(100%); }
+    }
+
+    @keyframes shapGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
     .small {
       color: var(--muted);
       font-size: 0.9rem;
@@ -351,6 +454,9 @@
       .flow-row { grid-template-columns: 1fr; }
       .method-synthesis { grid-template-columns: 1fr; }
       .metric-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .check-grid { grid-template-columns: 1fr; }
+      .shap-row { grid-template-columns: 1fr; }
+      .shap-value { text-align: left; }
       table { font-size: 0.86rem; }
       th, td { padding: 8px; }
     }
@@ -370,6 +476,7 @@
         <span class="pill">Track: Industrial AI process sequencing</span>
         <span class="pill">Final strategy: evidence-first OOD cascade</span>
         <span class="pill">Stress test: two hidden families</span>
+        <span class="pill">Package: scored CSVs plus explainability artifacts</span>
       </div>
     </div>
   </header>
@@ -418,10 +525,13 @@
         We tested 21 solution attempts across rule-based baselines, statistical
         sequence models, retrieval, generated-data augmentation, consensus
         ranking, OOD guards, route memory, risk-aware completion, family-template
-        transfer, and a trained XGBoost bridge. The best final system is
-        Solution 21: Solution 20's evidence-first cascade plus a trained
-        raw-vs-template diagnostic that proves how a learned model should handle
-        new family strings.
+        transfer, and a trained XGBoost bridge. The final candidate combines the
+        strongest evidence-first route cascade with a trained raw-vs-template
+        XGBoost diagnostic that proves how a learned model should handle new
+        family strings. The internal folder name is
+        <code>solution_21_template_boosted_bridge</code>, but the reader does
+        not need to know the earlier internal solution numbers to understand the
+        final method.
       </p>
       <ul>
         <li><strong>Exact route mode:</strong> if a validator-valid full route in the input files starts with the partial route, copy the exact next step and suffix from that route.</li>
@@ -433,7 +543,7 @@
         <li><strong>Risk reporting:</strong> report whether each prediction came from exact route evidence or from fallback logic.</li>
       </ul>
 
-      <div class="flow-diagram" aria-label="Solution 21 inference cascade diagram">
+      <div class="flow-diagram" aria-label="Final inference cascade diagram">
         <div class="flow-row">
           <div class="flow-node good">
             <strong>1. Visible files</strong>
@@ -462,6 +572,22 @@
         </div>
       </div>
 
+      <h3>Submission legality and scorer safety</h3>
+      <p>
+        A winning system still loses if the package is not reviewable or the
+        scorer files have the wrong shape. The final bundle is designed around
+        the official submission contract rather than around our internal
+        experiments.
+      </p>
+      <div class="check-grid">
+        <div class="check-item"><strong>Scored files are isolated</strong><span>Only <code>scored_csvs/nextstep.csv</code>, <code>completion.csv</code>, and <code>anomaly.csv</code> are intended for the scorer.</span></div>
+        <div class="check-item"><strong>Headers and rows match</strong><span>The verifier checks exact Section 5 headers plus 600, 600, and 987 rows.</span></div>
+        <div class="check-item"><strong>No hidden labels claimed</strong><span>All reported hidden-score language is framed as local stress testing, not official ground truth.</span></div>
+        <div class="check-item"><strong>MIT and reproducible repo</strong><span>The repo has a root license, README, REPORT, requirements, and runnable commands.</span></div>
+        <div class="check-item"><strong>Training artifacts included</strong><span>XGBoost checkpoints, training logloss, Tree SHAP, metrics, and package reports are included as evidence.</span></div>
+        <div class="check-item"><strong>Manual external items remain</strong><span>The team still must make the repo public and upload the PDF slides plus under-2-minute demo video in the Tally form.</span></div>
+      </div>
+
       <h3>Why the learned bridge matters</h3>
       <div class="method-synthesis">
         <div class="method-card learned">
@@ -483,10 +609,48 @@
       </div>
       <div class="callout">
         <strong>Final implementation decision:</strong>
-        Solution 21 keeps the strongest direct-evidence cascade for the official
-        submission CSVs and adds a trained raw-vs-template XGBoost diagnostic.
-        The diagnostic proves the hybrid story: a learned model is useful, but
+        the final implementation keeps the strongest direct-evidence cascade for
+        the official submission CSVs and adds a trained raw-vs-template XGBoost
+        diagnostic. The diagnostic proves the hybrid story: a learned model is useful, but
         it must use the same template-normalized label space as the OOD cascade.
+      </div>
+
+      <h3>Explainability for the XGBoost bridge</h3>
+      <p>
+        We did not stop at "XGBoost improved the metric." We used XGBoost's
+        built-in Tree SHAP contribution calculation to inspect the template
+        model. Tree SHAP is a Shapley-value method for tree ensembles: it
+        estimates how much each feature moved the model score, averaged here
+        over held-out validation rows and classes. The main finding is healthy:
+        the model relies on recent process steps, route progress, and recent
+        process blocks, not on memorizing a hidden family ID.
+      </p>
+      <div class="shap-panel" aria-label="Template XGBoost Tree SHAP feature contribution chart">
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_step_1</strong><span>Most recent visible process step.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 100%"></div></div>
+          <div class="shap-value">0.34838</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>prefix_len</strong><span>How far into the process route the partial sequence already is.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 64.7%"></div></div>
+          <div class="shap-value">0.22532</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_step_4</strong><span>Fourth most recent visible step, useful for local process context.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 37.2%"></div></div>
+          <div class="shap-value">0.12946</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_step_2</strong><span>Second most recent visible process step.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 36.1%"></div></div>
+          <div class="shap-value">0.12581</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_block_3</strong><span>Recent high-level block, such as clean, lithography, etch, implant, metal, or test.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 35.2%"></div></div>
+          <div class="shap-value">0.12269</div>
+        </div>
       </div>
 
       <h3>Why we tested two hidden families</h3>
@@ -696,22 +860,22 @@
           <tr>
             <td>Family-template grammar fallback</td>
             <td>Can the winning route-memory system still emit exact hidden-family strings when no exact route match is available, but the string is derivable from the visible family name?</td>
-            <td>Yes for derivable family-prefixed strings: Solution 18 learns <code>__FAMILY__ ...</code> templates and rewrites them to the current eval family.</td>
+            <td>Yes for derivable family-prefixed strings: the template fallback learns <code>__FAMILY__ ...</code> patterns and rewrites them to the current eval family.</td>
           </tr>
           <tr>
             <td>Valid-partial lattice fallback</td>
             <td>Can longer partials inside the same eval input reveal exact hidden-family strings for shorter partials?</td>
-            <td>Yes: Solution 19 raises the 100-family OOD probe from template-only Top-1 <code>0.7688</code> to lattice-template Top-1 <code>0.8938</code>.</td>
+            <td>Yes: valid-partial lattice matching raises the 100-family OOD probe from template-only Top-1 <code>0.7688</code> to lattice-template Top-1 <code>0.8938</code>.</td>
           </tr>
           <tr>
             <td>Paired-length completion guard</td>
             <td>Can paired 60%/80% prefixes improve fallback completions without risking exact next-step ranking?</td>
-            <td>Yes: Solution 20 preserves the Solution 19 Task 1 Top-1 <code>0.8938</code> and improves 100-family Task 2 block accuracy from <code>0.9338</code> to <code>0.9533</code>.</td>
+            <td>Yes: the paired-length guard preserves Task 1 Top-1 <code>0.8938</code> and improves 100-family Task 2 block accuracy from <code>0.9338</code> to <code>0.9533</code>.</td>
           </tr>
           <tr>
             <td>Template-boosted learned bridge</td>
             <td>Does exact-string XGBoost become OOD-useful if the labels are normalized through <code>__FAMILY__</code>?</td>
-            <td>Yes: Solution 21 shows raw XGBoost 10-seed Top-1 <code>0.5806</code> with <code>0.0000</code> family-specific label coverage, while template XGBoost reaches Top-1 <code>0.7531</code>, Top-3 <code>1.0000</code>, and <code>1.0000</code> family-specific label coverage.</td>
+            <td>Yes: the trained bridge shows raw XGBoost 10-seed Top-1 <code>0.5806</code> with <code>0.0000</code> family-specific label coverage, while template XGBoost reaches Top-1 <code>0.7531</code>, Top-3 <code>1.0000</code>, and <code>1.0000</code> family-specific label coverage.</td>
           </tr>
         </tbody>
       </table>
@@ -745,7 +909,7 @@
           If no full route exists, compare all visible valid-input partials.
           When a shorter partial is an exact prefix of a longer partial from the
           same hidden route, the longer partial reveals the exact next step and
-          a known bridge for completion. This is the main Solution 19 addition.
+          a known bridge for completion.
         </p>
       </div>
 
@@ -753,7 +917,7 @@
         <h4>Layer 4: Paired-length completion guard</h4>
         <p>
           If no full route exists, paired 60% and 80% prefixes from the same route
-          constrain the route's total length. Solution 20 uses that only for
+          constrain the route's total length. The final system uses that only for
           Task 2 completion fallback. We tested using it for Task 1 reranking,
           but the 110-family probe showed that optional-step exact strings became
           less reliable, so the final strategy keeps Task 1 unchanged.
@@ -806,7 +970,7 @@
       <p>
         We evaluated four scenarios across seeds <code>0</code> through <code>9</code> for both families.
         That means the aggregate row below is based on 20 family-seed evaluations.
-        The detailed output is in <a href="solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
+        The detailed output is in <a href="../../../solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
       </p>
 
       <table>
@@ -961,7 +1125,7 @@
         <code>0.0000</code> and template-adapted Top-1 is <code>1.0000</code>.
       </p>
       <p>
-        We then added the Solution 19 valid-partial lattice to the same curve.
+        We then added valid-partial lattice matching to the same curve.
         At 100 training families it reaches Task 1 Top-1 <code>0.8938</code>,
         Task 1 Top-3 <code>1.0000</code>, Task 2 edit distance <code>0.1066</code>,
         and Task 2 block accuracy <code>0.9338</code>. The lattice coverage is
@@ -970,8 +1134,8 @@
       </p>
 
       <p>
-        Solution 20 adds the paired-length completion guard to the same curve.
-        It deliberately keeps Solution 19's Task 1 ranking, so the 100-family
+        The paired-length completion guard adds one more completion-only check.
+        It deliberately keeps the lattice model's Task 1 ranking, so the 100-family
         Task 1 Top-1 remains <code>0.8938</code> and Top-3 remains <code>1.0000</code>.
         The gain is in completion: Task 2 edit distance improves slightly to
         <code>0.1065</code>, and Task 2 block accuracy improves to
@@ -980,8 +1144,8 @@
       </p>
 
       <p>
-        Solution 21 adds the learned-model bridge needed for the final hybrid
-        strategy. On the same held-out 10-family setup,
+        The final trained-model bridge adds the learned-model evidence needed
+        for the final hybrid strategy. On the same held-out 10-family setup,
         raw XGBoost gets 10-seed Top-1 <code>0.5806</code> and has
         <code>0.0000</code> family-specific label coverage. The template-normalized
         XGBoost bridge gets Top-1 <code>0.7531</code>, Top-3 <code>1.0000</code>,
@@ -996,7 +1160,7 @@
         help if there is a derivation rule for exact strings. More families do
         not help raw memorization invent a validation-family exact string that
         never appeared in training. The full curve page is
-        <a href="solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
+        <a href="../../../solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
       </p>
 
       <h3>H. Final judge-facing claim</h3>
@@ -1009,29 +1173,23 @@
       <h3>I. Reproducibility</h3>
       <p>
         The reader does not need these paths to understand the pitch, but they
-        make the claims reproducible. The final OOD-facing wrapper is in
-        <a href="solutions/solution_20_paired_length_lattice/explanation.html">solution_20_paired_length_lattice</a>,
-        the valid-lattice predecessor is in
-        <a href="solutions/solution_19_valid_lattice_template/explanation.html">solution_19_valid_lattice_template</a>,
-        the family-template fallback is in
-        <a href="solutions/solution_18_family_template_grammar/explanation.html">solution_18_family_template_grammar</a>,
-        the route-evidence guard is in
-        <a href="solutions/solution_17_conformal_route_guard/explanation.html">solution_17_conformal_route_guard</a>,
-        the generated-data fallback story is in
-        <a href="solutions/solution_14_synthetic_ml_generator_ensemble/explanation.html">solution_14_synthetic_ml_generator_ensemble</a>,
-        and the two-family OOD probe results are in
-        <a href="solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
+        make the claims reproducible. The final implementation and its standalone
+        explanation are in
+        <a href="../../../solutions/solution_21_template_boosted_bridge/explanation.html">solution_21_template_boosted_bridge</a>.
+        The final scorer bundle is in
+        <a href="../README.md">final_submission/industrial_ai_infineon_solution_21</a>.
+        The two-family OOD probe results are in
+        <a href="../../../solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
         The 110-family scaling probe is in
-        <a href="solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
+        <a href="../../../solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
       </p>
-      <pre><code>python -B solutions/solution_20_paired_length_lattice/solution.py
-python -B solutions/solution_19_valid_lattice_template/solution.py
-python -B solutions/solution_18_family_template_grammar/solution.py
-python -B solutions/solution_17_conformal_route_guard/solution.py
+      <pre><code>python -B solutions/solution_21_template_boosted_bridge/solution.py
+python -B solutions/prepare_submission_packages.py
+python -B final_submission/industrial_ai_infineon_solution_21/VERIFY_FINAL_SUBMISSION.py
 python -B solutions/ood_fourth_family_probe/fourth_family_probe.py
 python -B solutions/many_family_scaling_probe/family_scaling_probe.py
 open FINAL_PITCH_OOD_STRATEGY.html
-open solutions/ood_fourth_family_probe/outputs/README.md
+open final_submission/industrial_ai_infineon_solution_21/README.md
 open solutions/many_family_scaling_probe/analysis.html</code></pre>
     </section>
   </main>

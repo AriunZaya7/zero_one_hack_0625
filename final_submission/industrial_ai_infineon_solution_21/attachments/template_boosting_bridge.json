@@ -633,6 +633,10 @@
       "importance": 0.028373796492815018
     }
   ],
+  "model_checkpoints": [
+    "solutions/solution_21_template_boosted_bridge/outputs/raw_xgb_exact_seed0_xgboost_model.json",
+    "solutions/solution_21_template_boosted_bridge/outputs/template_xgb_bridge_seed0_xgboost_model.json"
+  ],
   "seed_rows": [
     {
       "family_specific_task1_mrr": 0.0,
@@ -1184,5 +1188,647 @@
         "worst_seed": 0
       }
     }
-  }
+  },
+  "tree_shap": [
+    {
+      "feature": "lag_step_1",
+      "mean_abs_shap": 0.3483816981315613,
+      "plain_english": "Recent exact/template step token in the visible prefix.",
+      "rank": 1,
+      "share": 0.181529786243096
+    },
+    {
+      "feature": "prefix_len",
+      "mean_abs_shap": 0.2253219336271286,
+      "plain_english": "How many steps are already visible in the partial route.",
+      "rank": 2,
+      "share": 0.11740755230995925
+    },
+    {
+      "feature": "lag_step_4",
+      "mean_abs_shap": 0.12946254014968872,
+      "plain_english": "Recent exact/template step token in the visible prefix.",
+      "rank": 3,
+      "share": 0.06745850131021032
+    },
+    {
+      "feature": "lag_step_2",
+      "mean_abs_shap": 0.12580637633800507,
+      "plain_english": "Recent exact/template step token in the visible prefix.",
+      "rank": 4,
+      "share": 0.06555339940972518
+    },
+    {
+      "feature": "lag_block_3",
+      "mean_abs_shap": 0.12268563359975815,
+      "plain_english": "Recent high-level process block, such as lithography, etch, clean, or test.",
+      "rank": 5,
+      "share": 0.06392728711613471
+    },
+    {
+      "feature": "lag_block_4",
+      "mean_abs_shap": 0.10544273257255554,
+      "plain_english": "Recent high-level process block, such as lithography, etch, clean, or test.",
+      "rank": 6,
+      "share": 0.05494260119702276
+    },
+    {
+      "feature": "lag_block_1",
+      "mean_abs_shap": 0.10478826612234116,
+      "plain_english": "Recent high-level process block, such as lithography, etch, clean, or test.",
+      "rank": 7,
+      "share": 0.05460158111632429
+    },
+    {
+      "feature": "lag_block_5",
+      "mean_abs_shap": 0.07954360544681549,
+      "plain_english": "Recent high-level process block, such as lithography, etch, clean, or test.",
+      "rank": 8,
+      "share": 0.041447451950569175
+    },
+    {
+      "feature": "lag_block_6",
+      "mean_abs_shap": 0.0770675465464592,
+      "plain_english": "Recent high-level process block, such as lithography, etch, clean, or test.",
+      "rank": 9,
+      "share": 0.04015726235301674
+    },
+    {
+      "feature": "unique_step_frac",
+      "mean_abs_shap": 0.072121761739254,
+      "plain_english": "How diverse the visible prefix is relative to its length.",
+      "rank": 10,
+      "share": 0.03758018306420385
+    },
+    {
+      "feature": "lag_step_8",
+      "mean_abs_shap": 0.07027806341648102,
+      "plain_english": "Recent exact/template step token in the visible prefix.",
+      "rank": 11,
+      "share": 0.03661949493326953
+    },
+    {
+      "feature": "lag_block_2",
+      "mean_abs_shap": 0.06950614601373672,
+      "plain_english": "Recent high-level process block, such as lithography, etch, clean, or test.",
+      "rank": 12,
+      "share": 0.03621727517870429
+    },
+    {
+      "feature": "lag_step_3",
+      "mean_abs_shap": 0.0590905025601387,
+      "plain_english": "Recent exact/template step token in the visible prefix.",
+      "rank": 13,
+      "share": 0.030790039649810527
+    },
+    {
+      "feature": "lag_step_5",
+      "mean_abs_shap": 0.05163664370775223,
+      "plain_english": "Recent exact/template step token in the visible prefix.",
+      "rank": 14,
+      "share": 0.026906088766578573
+    }
+  ],
+  "xgb_training_logloss_rows": [
+    {
+      "iteration": 0,
+      "mlogloss": 2.8149557413756847,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 1,
+      "mlogloss": 2.5255034572780133,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 2,
+      "mlogloss": 2.3130409616827965,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 3,
+      "mlogloss": 2.1453285268545152,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 4,
+      "mlogloss": 2.0069194949269296,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 5,
+      "mlogloss": 1.88735064047575,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 6,
+      "mlogloss": 1.783631932735443,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 7,
+      "mlogloss": 1.6927957262843847,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 8,
+      "mlogloss": 1.612400114417076,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 9,
+      "mlogloss": 1.5408250975608826,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 10,
+      "mlogloss": 1.4755070927590133,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 11,
+      "mlogloss": 1.4163229819983243,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 12,
+      "mlogloss": 1.362481922224164,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 13,
+      "mlogloss": 1.3128411264717579,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 14,
+      "mlogloss": 1.266802178055048,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 15,
+      "mlogloss": 1.2245642866268753,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 16,
+      "mlogloss": 1.1852943783923984,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 17,
+      "mlogloss": 1.1491183127462863,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 18,
+      "mlogloss": 1.1149039242118597,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 19,
+      "mlogloss": 1.0832304951176048,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 20,
+      "mlogloss": 1.0531862027719616,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 21,
+      "mlogloss": 1.025033310815692,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 22,
+      "mlogloss": 0.9985360091365874,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 23,
+      "mlogloss": 0.9734666484333575,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 24,
+      "mlogloss": 0.9501321289874614,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 25,
+      "mlogloss": 0.927368938293308,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 26,
+      "mlogloss": 0.9062623261101543,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 27,
+      "mlogloss": 0.88635187118873,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 28,
+      "mlogloss": 0.8670965741053224,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 29,
+      "mlogloss": 0.849007704295218,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 30,
+      "mlogloss": 0.8321042637862265,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 31,
+      "mlogloss": 0.816004125341773,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 32,
+      "mlogloss": 0.8006077701468021,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 33,
+      "mlogloss": 0.7857922975681723,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 34,
+      "mlogloss": 0.7714819040652364,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 35,
+      "mlogloss": 0.7577086214199662,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 36,
+      "mlogloss": 0.7446315386034549,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 37,
+      "mlogloss": 0.732309247514233,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 38,
+      "mlogloss": 0.7202416018713266,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 39,
+      "mlogloss": 0.708811674952507,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 40,
+      "mlogloss": 0.6977582130413502,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 41,
+      "mlogloss": 0.6871502830311657,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 42,
+      "mlogloss": 0.6767562381541357,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 43,
+      "mlogloss": 0.6670944902217015,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 44,
+      "mlogloss": 0.6575756084434689,
+      "model": "raw_xgb_exact",
+      "seed": 0
+    },
+    {
+      "iteration": 0,
+      "mlogloss": 2.500235270500183,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 1,
+      "mlogloss": 2.1905027833878994,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 2,
+      "mlogloss": 1.9636455362439156,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 3,
+      "mlogloss": 1.7858500363528729,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 4,
+      "mlogloss": 1.6404492641687394,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 5,
+      "mlogloss": 1.51759445117414,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 6,
+      "mlogloss": 1.412406779408455,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 7,
+      "mlogloss": 1.320131338045001,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 8,
+      "mlogloss": 1.238722579061985,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 9,
+      "mlogloss": 1.1660517453551293,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 10,
+      "mlogloss": 1.1010224843919276,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 11,
+      "mlogloss": 1.0421418203562498,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 12,
+      "mlogloss": 0.9891166124939919,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 13,
+      "mlogloss": 0.9405708361044526,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 14,
+      "mlogloss": 0.8964864504784346,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 15,
+      "mlogloss": 0.8559443546161055,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 16,
+      "mlogloss": 0.8192739168033004,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 17,
+      "mlogloss": 0.7853739529252052,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 18,
+      "mlogloss": 0.7539469774216413,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 19,
+      "mlogloss": 0.7248282307609916,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 20,
+      "mlogloss": 0.6980496765896678,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 21,
+      "mlogloss": 0.6732625708170236,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 22,
+      "mlogloss": 0.6502749132812023,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 23,
+      "mlogloss": 0.6287861132659018,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 24,
+      "mlogloss": 0.6089318901151418,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 25,
+      "mlogloss": 0.5902736975364387,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 26,
+      "mlogloss": 0.5729864137805998,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 27,
+      "mlogloss": 0.5567693007104099,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 28,
+      "mlogloss": 0.5416649980135262,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 29,
+      "mlogloss": 0.527539028570056,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 30,
+      "mlogloss": 0.514468059906736,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 31,
+      "mlogloss": 0.5023278136644512,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 32,
+      "mlogloss": 0.4910198373775929,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 33,
+      "mlogloss": 0.480360057707876,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 34,
+      "mlogloss": 0.47020163214765487,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 35,
+      "mlogloss": 0.46062754875048995,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 36,
+      "mlogloss": 0.45177043859101834,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 37,
+      "mlogloss": 0.44348467589728535,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 38,
+      "mlogloss": 0.43555842559598384,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 39,
+      "mlogloss": 0.4279873205954209,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 40,
+      "mlogloss": 0.42094894157350066,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 41,
+      "mlogloss": 0.4143601051950827,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 42,
+      "mlogloss": 0.4082050821045414,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 43,
+      "mlogloss": 0.4021425770241767,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    },
+    {
+      "iteration": 44,
+      "mlogloss": 0.39659019073750823,
+      "model": "template_xgb_bridge",
+      "seed": 0
+    }
+  ]
 }

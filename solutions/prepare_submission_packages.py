@@ -323,10 +323,10 @@ SOLUTION_META = {
             "Trains a raw XGBoost next-step model on exact step-string labels for the 110-family OOD probe.",
             "Trains the same XGBoost setup after normalizing family-specific labels to `__FAMILY__ ...` templates.",
             "Evaluates the trained bridge across ten XGBoost seeds at the 100-training-family setting.",
-            "Writes template-boosting metrics, examples, feature importances, and explanation material.",
+            "Writes template-boosting metrics, examples, feature importances, Tree SHAP explainability, and explanation material.",
         ],
         "honest_status": "Submit-ready final hybrid candidate. Official predictions still use the stronger direct-evidence cascade; the trained XGBoost bridge is evidence that learned models need template-normalized labels to generalize exact strings to unseen families.",
-        "checkpoint": "The XGBoost bridge is retrained deterministically from source for each diagnostic run; no binary checkpoint is committed because the model is small and rebuildable.",
+        "checkpoint": "The official CSV path is deterministic and rebuildable. For the trained bridge diagnostic, seed-0 raw and template XGBoost model JSON checkpoints are committed under `outputs/` and copied into the submission package.",
     },
 }
 
@@ -402,7 +402,12 @@ def copy_results(solution_dir: Path, package_dir: Path) -> Path:
         "template_boosting_curve.csv",
         "template_boosting_10_seed.csv",
         "template_boosting_examples.csv",
+        "template_boosting_tree_shap.csv",
+        "template_boosting_xgb_training_logloss.csv",
         "template_boosting_bridge.json",
+        "raw_xgb_exact_seed0_xgboost_model.json",
+        "template_xgb_bridge_seed0_xgboost_model.json",
+        "template_xgb_feature_names.json",
     ):
         optional_source = outputs_dir / optional_file_name
         if optional_source.exists():
@@ -727,94 +732,147 @@ def write_training_artifacts(package_dir: Path, meta: dict, metrics: dict) -> No
     bridge_snapshot = ""
     if bridge:
         summary = bridge["seed_summary"]
-        bridge_snapshot = dedent(
-            f"""\
-
-            ## XGBoost Bridge Snapshot
-
-            - Raw XGBoost 10-seed Top-1: `{fmt(summary["raw_xgb_exact"]["task1_top1"]["mean"])}`
-            - Template XGBoost 10-seed Top-1: `{fmt(summary["template_xgb_bridge"]["task1_top1"]["mean"])}`
-            - Raw family-specific label coverage: `{fmt(summary["raw_xgb_exact"]["family_specific_truth_label_coverage"]["mean"])}`
-            - Template family-specific label coverage: `{fmt(summary["template_xgb_bridge"]["family_specific_truth_label_coverage"]["mean"])}`
-            """
+        checkpoint_list = "\n".join(
+            f"- `{path}`"
+            for path in bridge.get("model_checkpoints", [])
         )
-    artifact_dir.joinpath("training_log.md").write_text(
-        dedent(
-            f"""\
-            # Training / Fitting Log
+        shap_intro = ""
+        if bridge.get("tree_shap"):
+            top_shap = bridge["tree_shap"][0]
+            shap_intro = (
+                f"- Top Tree SHAP feature: `{top_shap['feature']}` "
+                f"with mean absolute contribution `{float(top_shap['mean_abs_shap']):.6f}`."
+            )
+        bridge_lines = [
+            "",
+            "## XGBoost Bridge Snapshot",
+            "",
+            f"- Raw XGBoost 10-seed Top-1: `{fmt(summary['raw_xgb_exact']['task1_top1']['mean'])}`",
+            f"- Template XGBoost 10-seed Top-1: `{fmt(summary['template_xgb_bridge']['task1_top1']['mean'])}`",
+            f"- Raw family-specific label coverage: `{fmt(summary['raw_xgb_exact']['family_specific_truth_label_coverage']['mean'])}`",
+            f"- Template family-specific label coverage: `{fmt(summary['template_xgb_bridge']['family_specific_truth_label_coverage']['mean'])}`",
+        ]
+        if shap_intro:
+            bridge_lines.append(shap_intro)
+        bridge_lines.append("- Seed-0 model checkpoints:")
+        bridge_lines.extend(checkpoint_list.splitlines() or ["- `not available`"])
+        bridge_lines.append("")
+        bridge_snapshot = "\n".join(bridge_lines)
+    if bridge and bridge.get("model_checkpoints"):
+        checkpoint_manifest_status = (
+            "# Checkpoint Manifest\n"
+            "\n"
+            "Binary/checkpoint artifacts: **included for the trained XGBoost diagnostic**.\n"
+            "\n"
+            "The official prediction cascade is deterministic and does not need a\n"
+            "neural checkpoint. The trained raw-vs-template XGBoost bridge does\n"
+            "produce model artifacts, and the seed-0 checkpoints are included:\n"
+            "\n"
+            f"{checkpoint_list}\n"
+            "\n"
+            "Rebuild command:\n"
+            "\n"
+            "```bash\n"
+            f"{meta['command']}\n"
+            "```\n"
+            "\n"
+            "Source-controlled state needed to rebuild:\n"
+            "\n"
+            "- `training_data/`\n"
+            "- solution source file\n"
+            "- shared helper solutions imported by this solution\n"
+            "- `training_data/generate_sequences.py` for validator/generator behavior\n"
+        )
+    else:
+        checkpoint_manifest_status = (
+            "# Checkpoint Manifest\n"
+            "\n"
+            "Binary checkpoint: **not produced**.\n"
+            "\n"
+            f"Reason: {meta['checkpoint']}\n"
+            "\n"
+            "Rebuild command:\n"
+            "\n"
+            "```bash\n"
+            f"{meta['command']}\n"
+            "```\n"
+            "\n"
+            "Source-controlled state needed to rebuild:\n"
+            "\n"
+            "- `training_data/`\n"
+            "- solution source file\n"
+            "- shared helper solutions imported by this solution\n"
+            "- `training_data/generate_sequences.py` for validator/generator behavior\n"
+        )
 
-            {training_intro}
+    training_log = dedent(
+        f"""\
+        # Training / Fitting Log
 
-            ## Command
+        {training_intro}
 
-            ```bash
-            {meta["command"]}
-            ```
+        ## Command
 
-            ## Data Summary
+        ```bash
+        {meta["command"]}
+        ```
 
-            - Families: `{", ".join(self_eval.get("families", []))}`
-            - Valid self-eval rows: `{self_eval.get("valid_task_rows", "unknown")}`
-            - Anomaly self-eval rows: `{self_eval.get("anomaly_task_rows", "unknown")}`
-            - Training sequences: `{self_eval.get("train_sequences", self_eval.get("train_sequences_after_augmentation", "unknown"))}`
-            - Local split seed: `{metrics.get("seed", "unknown")}`
+        ## Data Summary
 
-            ## Result Snapshot
+        - Families: `{", ".join(self_eval.get("families", []))}`
+        - Valid self-eval rows: `{self_eval.get("valid_task_rows", "unknown")}`
+        - Anomaly self-eval rows: `{self_eval.get("anomaly_task_rows", "unknown")}`
+        - Training sequences: `{self_eval.get("train_sequences", self_eval.get("train_sequences_after_augmentation", "unknown"))}`
+        - Local split seed: `{metrics.get("seed", "unknown")}`
 
-            - Task 1 Top-1: `{fmt(t1["top1"])}`
-            - Task 1 MRR: `{fmt(t1["mrr"])}`
-            - Task 2 normalized edit distance: `{fmt(t2["normalized_edit_distance"])}`
-            - Task 2 block accuracy: `{fmt(t2["block_accuracy"])}`
-            - Task 3 accuracy: `{fmt(t3["accuracy"])}`
-            {bridge_snapshot}
+        ## Result Snapshot
 
-            ## Checkpoint Status
-
-            {meta["checkpoint"]} For a real neural submission, this folder should be
-            extended with `.pt`/`.safetensors` checkpoints and cluster logs.
-            """
-        ),
-        encoding="utf-8",
+        - Task 1 Top-1: `{fmt(t1["top1"])}`
+        - Task 1 MRR: `{fmt(t1["mrr"])}`
+        - Task 2 normalized edit distance: `{fmt(t2["normalized_edit_distance"])}`
+        - Task 2 block accuracy: `{fmt(t2["block_accuracy"])}`
+        - Task 3 accuracy: `{fmt(t3["accuracy"])}`
+        """
     )
-    artifact_dir.joinpath("checkpoint_manifest.md").write_text(
-        dedent(
-            f"""\
-            # Checkpoint Manifest
+    if bridge_snapshot:
+        training_log += bridge_snapshot
+    else:
+        training_log += "\n"
+    training_log += dedent(
+        f"""\
 
-            Binary checkpoint: **not produced**.
+        ## Checkpoint Status
 
-            Reason: {meta["checkpoint"]}
-
-            Rebuild command:
-
-            ```bash
-            {meta["command"]}
-            ```
-
-            Source-controlled state needed to rebuild:
-
-            - `training_data/`
-            - solution source file
-            - shared helper solutions imported by this solution
-            - `training_data/generate_sequences.py` for validator/generator behavior
-            """
-        ),
-        encoding="utf-8",
+        {meta["checkpoint"]} For a real neural submission, this folder should be
+        extended with `.pt`/`.safetensors` checkpoints and cluster logs.
+        """
     )
+    artifact_dir.joinpath("training_log.md").write_text(training_log, encoding="utf-8")
+    artifact_dir.joinpath("checkpoint_manifest.md").write_text(checkpoint_manifest_status, encoding="utf-8")
+    base_loss_note = (
+        "Evidence-cascade fit plus trained XGBoost diagnostic; row records final local metrics."
+        if bridge
+        else "No gradient training loss; row records final local metrics."
+    )
+    loss_lines = [
+        "step,phase,loss,task1_top1,task1_mrr,task2_normalized_edit_distance,task2_block_accuracy,task3_accuracy,notes",
+        (
+            "0,deterministic_fit,not_applicable,"
+            f"{fmt(t1['top1'])},{fmt(t1['mrr'])},"
+            f"{fmt(t2['normalized_edit_distance'])},{fmt(t2['block_accuracy'])},"
+            f"{fmt(t3['accuracy'])},"
+            f'"{base_loss_note}"'
+        ),
+    ]
+    if bridge and bridge.get("xgb_training_logloss_rows"):
+        for row in bridge["xgb_training_logloss_rows"]:
+            loss_lines.append(
+                f"{int(row['iteration'])},xgb_{row['model']}_seed{row['seed']},"
+                f"{float(row['mlogloss']):.8f},,,,,,"
+                '"Seed-0 XGBoost training mlogloss for the diagnostic bridge."'
+            )
     artifact_dir.joinpath("loss_curve.csv").write_text(
-        "\n".join(
-            [
-                "step,phase,loss,task1_top1,task1_mrr,task2_normalized_edit_distance,task2_block_accuracy,task3_accuracy,notes",
-                (
-                    "0,deterministic_fit,not_applicable,"
-                    f"{fmt(t1['top1'])},{fmt(t1['mrr'])},"
-                    f"{fmt(t2['normalized_edit_distance'])},{fmt(t2['block_accuracy'])},"
-                    f"{fmt(t3['accuracy'])},"
-                    '"No gradient training loss; row records final local metrics."'
-                ),
-            ]
-        )
-        + "\n",
+        "\n".join(loss_lines) + "\n",
         encoding="utf-8",
     )
 
@@ -941,8 +999,13 @@ def write_audit(rows: list[dict[str, str]]) -> None:
         "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in rows:
+        training_label = (
+            "XGBoost checkpoints/logloss/Tree SHAP + manifest"
+            if row["solution"] == "solution_21_template_boosted_bridge"
+            else "deterministic manifest/log/loss-curve note"
+        )
         lines.append(
-            f"| `{row['solution']}` | yes | {row['csv_contract']} | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | {row['caveat']} |"
+            f"| `{row['solution']}` | yes | {row['csv_contract']} | local metrics + LOFO family proxy | {training_label} | video script + examples | {row['caveat']} |"
         )
     lines.extend(
         [
@@ -981,10 +1044,11 @@ def write_audit(rows: list[dict[str, str]]) -> None:
             "10. `submission_package/extras/demo/video_script.md`",
             "11. `submission_package/REPORT.md`",
             "",
-            "The checkpoint and loss files are explicit honesty artifacts for deterministic",
-            "solutions. They do not pretend that neural training occurred. A future final",
-            "trained solution should replace them with real cluster logs, checkpoints, and",
-            "training curves.",
+            "The checkpoint and loss files are explicit honesty artifacts. Most solutions",
+            "are deterministic and therefore do not pretend that neural training occurred.",
+            "`solution_21_template_boosted_bridge` additionally includes seed-0 XGBoost",
+            "model checkpoints, Tree SHAP explainability, and a training logloss curve for",
+            "its trained raw-vs-template diagnostic bridge.",
             "",
         ]
     )

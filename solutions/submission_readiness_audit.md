@@ -44,7 +44,7 @@ artifacts are local self-eval outputs unless explicitly noted otherwise.
 | `solution_18_family_template_grammar` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. Current official rows still all use exact route matching; the new value is a stronger hidden-family fallback when exact strings are derivable from the visible family name. |
 | `solution_19_valid_lattice_template` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. Current official rows still all use exact full-route matching; the new value is stronger fallback if final OOD inputs expose shorter/longer partials from the same hidden route. |
 | `solution_20_paired_length_lattice` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. It keeps Solution 19's exact/lattice path and adds a conservative completion-only length guard; the 110-family probe shows equal Task 1 Top-1 and slightly better Task 2 edit/block metrics than Solution 19. |
-| `solution_21_template_boosted_bridge` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready final hybrid candidate. Official predictions still use the stronger direct-evidence cascade; the trained XGBoost bridge is evidence that learned models need template-normalized labels to generalize exact strings to unseen families. |
+| `solution_21_template_boosted_bridge` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | XGBoost checkpoints/logloss/Tree SHAP + manifest | video script + examples | Submit-ready final hybrid candidate. Official predictions still use the stronger direct-evidence cascade; the trained XGBoost bridge is evidence that learned models need template-normalized labels to generalize exact strings to unseen families. |
 
 ## Standalone Completeness Matrix
 
@@ -94,7 +94,8 @@ For the current deterministic solutions, a package is complete when it has:
 10. `submission_package/extras/demo/video_script.md`
 11. `submission_package/REPORT.md`
 
-The checkpoint and loss files are explicit honesty artifacts for deterministic
-solutions. They do not pretend that neural training occurred. A future final
-trained solution should replace them with real cluster logs, checkpoints, and
-training curves.
+The checkpoint and loss files are explicit honesty artifacts. Most solutions
+are deterministic and therefore do not pretend that neural training occurred.
+`solution_21_template_boosted_bridge` additionally includes seed-0 XGBoost
+model checkpoints, Tree SHAP explainability, and a training logloss curve for
+its trained raw-vs-template diagnostic bridge.

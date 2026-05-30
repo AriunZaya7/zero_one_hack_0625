@@ -30,7 +30,7 @@ from statistics import mean, pstdev
 from typing import Iterable
 
 import numpy as np
-from xgboost import XGBClassifier
+from xgboost import DMatrix, XGBClassifier
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -90,6 +90,19 @@ EXAMPLE_FIELDS = [
     "RAW_TRUTH_LABEL_AVAILABLE",
     "TEMPLATE_TRUTH_LABEL_AVAILABLE",
 ]
+TREE_SHAP_FIELDS = [
+    "rank",
+    "feature",
+    "mean_abs_shap",
+    "share",
+    "plain_english",
+]
+XGB_LOSS_FIELDS = [
+    "model",
+    "seed",
+    "iteration",
+    "mlogloss",
+]
 
 
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object]]) -> None:
@@ -135,6 +148,36 @@ def dedupe_keep_order(items: Iterable[str], k: int) -> list[str]:
     return (out + [""] * k)[:k]
 
 
+def feature_plain_english(feature: str) -> str:
+    if feature.startswith("lag_step_"):
+        return "Recent exact/template step token in the visible prefix."
+    if feature.startswith("lag_block_"):
+        return "Recent high-level process block, such as lithography, etch, clean, or test."
+    if feature == "family_id":
+        return "Raw family identity. Template mode intentionally makes this mostly unneeded."
+    if feature == "prefix_len":
+        return "How many steps are already visible in the partial route."
+    if feature == "completion_fraction_pct":
+        return "Whether the partial was cut around 60% or 80% through the route."
+    if feature == "position_norm_200":
+        return "Route progress normalized to a roughly 200-step route length."
+    if feature == "unique_step_count":
+        return "How many distinct steps appeared in the visible prefix."
+    if feature == "unique_step_frac":
+        return "How diverse the visible prefix is relative to its length."
+    if feature == "repeat_step_frac":
+        return "How much the visible prefix repeats earlier steps."
+    if feature == "family_specific_prefix_steps":
+        return "How many visible prefix steps already contain the current family name."
+    if feature == "template_prefix_steps":
+        return "How many visible prefix steps became __FAMILY__ template steps."
+    if feature == "max_mask_level_seen":
+        return "Highest lithography mask level observed so far."
+    if feature == "last_mask_level_seen":
+        return "Most recent lithography mask level observed so far."
+    return "Engineered context feature used by the XGBoost bridge."
+
+
 class XGBNextStepBridge:
     """Small XGBoost next-step model for raw-vs-template OOD testing."""
 
@@ -150,6 +193,7 @@ class XGBNextStepBridge:
         self.feature_names: list[str] = []
         self.estimator: XGBClassifier | None = None
         self.train_examples = 0
+        self.training_logloss: list[float] = []
 
     def transform_step(self, step: str, family: str) -> str:
         if self.template_mode:
@@ -275,7 +319,12 @@ class XGBNextStepBridge:
             n_jobs=4,
             verbosity=0,
         )
-        self.estimator.fit(x_train, y_train)
+        self.estimator.fit(x_train, y_train, eval_set=[(x_train, y_train)], verbose=False)
+        results = self.estimator.evals_result()
+        self.training_logloss = [
+            float(value)
+            for value in results.get("validation_0", {}).get("mlogloss", [])
+        ]
         return self
 
     def next_step_ranking(
@@ -310,6 +359,67 @@ class XGBNextStepBridge:
                 {
                     "feature": self.feature_names[int(idx)],
                     "importance": float(importances[int(idx)]),
+                }
+            )
+        return rows
+
+    def tree_shap_rows(
+        self,
+        valid_examples: list[base.ValidExample],
+        limit: int = 14,
+    ) -> list[dict[str, object]]:
+        """Return exact Tree SHAP contribution magnitudes for this XGBoost model.
+
+        XGBoost's ``pred_contribs=True`` computes Tree SHAP values for tree
+        ensembles. For the multiclass next-step model we average absolute
+        contributions over examples and classes, then show the largest features.
+        """
+        if self.estimator is None or not valid_examples:
+            return []
+
+        x_rows = np.asarray(
+            [
+                self.features(ex.partial, ex.family, ex.completion_fraction)
+                for ex in valid_examples
+            ],
+            dtype=np.float32,
+        )
+        matrix = DMatrix(x_rows, feature_names=self.feature_names)
+        booster = self.estimator.get_booster()
+        try:
+            contribs = booster.predict(matrix, pred_contribs=True, strict_shape=True)
+        except TypeError:
+            contribs = booster.predict(matrix, pred_contribs=True)
+        contribs_arr = np.asarray(contribs)
+        feature_count = len(self.feature_names)
+
+        if contribs_arr.ndim == 3:
+            # Expected strict multiclass shape: examples x classes x features+1.
+            feature_contribs = contribs_arr[:, :, :feature_count]
+            mean_abs = np.abs(feature_contribs).mean(axis=(0, 1))
+        elif contribs_arr.ndim == 2 and contribs_arr.shape[1] == feature_count + 1:
+            # Binary/single-output shape: examples x features+1.
+            mean_abs = np.abs(contribs_arr[:, :feature_count]).mean(axis=0)
+        elif contribs_arr.ndim == 2 and contribs_arr.shape[1] % (feature_count + 1) == 0:
+            # Some XGBoost versions flatten multiclass as examples x classes*(features+1).
+            class_count = contribs_arr.shape[1] // (feature_count + 1)
+            reshaped = contribs_arr.reshape(contribs_arr.shape[0], class_count, feature_count + 1)
+            mean_abs = np.abs(reshaped[:, :, :feature_count]).mean(axis=(0, 1))
+        else:
+            raise RuntimeError(f"Unexpected Tree SHAP contribution shape: {contribs_arr.shape}")
+
+        total = float(mean_abs.sum()) or 1.0
+        rows: list[dict[str, object]] = []
+        for rank, idx in enumerate(np.argsort(-mean_abs)[:limit], start=1):
+            feature = self.feature_names[int(idx)]
+            value = float(mean_abs[int(idx)])
+            rows.append(
+                {
+                    "rank": rank,
+                    "feature": feature,
+                    "mean_abs_shap": value,
+                    "share": value / total,
+                    "plain_english": feature_plain_english(feature),
                 }
             )
         return rows
@@ -474,12 +584,16 @@ def bridge_examples(
 
 
 def run_boosting_bridge_probe() -> dict[str, object]:
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
     all_train, validation = scaling.generate_family_sequences()
     valid_examples = scaling.build_valid_examples(validation)
     curve_rows: list[dict[str, object]] = []
     seed_rows: list[dict[str, object]] = []
     example_rows: list[dict[str, object]] = []
     feature_importance: list[dict[str, object]] = []
+    tree_shap: list[dict[str, object]] = []
+    model_checkpoints: list[str] = []
+    xgb_loss_rows: list[dict[str, object]] = []
 
     for train_count in BRIDGE_TRAIN_COUNTS:
         train_sequences = train_sequences_for_count(all_train, train_count)
@@ -512,10 +626,28 @@ def run_boosting_bridge_probe() -> dict[str, object]:
                 valid_examples=valid_examples,
             )
             seed_rows.append(metric_row)
+            if seed == 0 and model.estimator is not None:
+                checkpoint_path = OUT_DIR / f"{model.model_name}_seed0_xgboost_model.json"
+                model.estimator.save_model(checkpoint_path)
+                model_checkpoints.append(str(checkpoint_path.relative_to(ROOT)))
+                for iteration, loss in enumerate(model.training_logloss):
+                    xgb_loss_rows.append(
+                        {
+                            "model": model.model_name,
+                            "seed": seed,
+                            "iteration": iteration,
+                            "mlogloss": loss,
+                        }
+                    )
             if seed == 0 and template_mode:
                 template_seed0_rows = task1_rows
                 template_seed0_model = model
                 feature_importance = model.feature_importance_rows()
+                tree_shap = model.tree_shap_rows(valid_examples)
+                (OUT_DIR / "template_xgb_feature_names.json").write_text(
+                    json.dumps(model.feature_names, indent=2) + "\n",
+                    encoding="utf-8",
+                )
             if seed == 0 and not template_mode:
                 raw_seed0_rows = task1_rows
                 raw_seed0_model = model
@@ -533,6 +665,8 @@ def run_boosting_bridge_probe() -> dict[str, object]:
     write_csv(OUT_DIR / "template_boosting_curve.csv", BRIDGE_METRIC_FIELDS, curve_rows)
     write_csv(OUT_DIR / "template_boosting_10_seed.csv", BRIDGE_METRIC_FIELDS, seed_rows)
     write_csv(OUT_DIR / "template_boosting_examples.csv", EXAMPLE_FIELDS, example_rows)
+    write_csv(OUT_DIR / "template_boosting_tree_shap.csv", TREE_SHAP_FIELDS, tree_shap)
+    write_csv(OUT_DIR / "template_boosting_xgb_training_logloss.csv", XGB_LOSS_FIELDS, xgb_loss_rows)
     (OUT_DIR / "template_boosting_bridge.json").write_text(
         json.dumps(
             {
@@ -540,7 +674,10 @@ def run_boosting_bridge_probe() -> dict[str, object]:
                 "seed_rows": seed_rows,
                 "seed_summary": summary,
                 "feature_importance": feature_importance,
+                "tree_shap": tree_shap,
                 "examples": example_rows,
+                "model_checkpoints": model_checkpoints,
+                "xgb_training_logloss_rows": xgb_loss_rows,
             },
             indent=2,
             sort_keys=True,
@@ -558,11 +695,19 @@ def run_boosting_bridge_probe() -> dict[str, object]:
         "seed_rows": seed_rows,
         "seed_summary": summary,
         "feature_importance": feature_importance,
+        "tree_shap": tree_shap,
         "examples": example_rows,
+        "model_checkpoints": model_checkpoints,
+        "xgb_training_logloss_rows": xgb_loss_rows,
         "outputs": {
             "curve_csv": str((OUT_DIR / "template_boosting_curve.csv").relative_to(ROOT)),
             "ten_seed_csv": str((OUT_DIR / "template_boosting_10_seed.csv").relative_to(ROOT)),
             "examples_csv": str((OUT_DIR / "template_boosting_examples.csv").relative_to(ROOT)),
+            "tree_shap_csv": str((OUT_DIR / "template_boosting_tree_shap.csv").relative_to(ROOT)),
+            "xgb_training_logloss_csv": str((OUT_DIR / "template_boosting_xgb_training_logloss.csv").relative_to(ROOT)),
+            "raw_seed0_checkpoint": str((OUT_DIR / "raw_xgb_exact_seed0_xgboost_model.json").relative_to(ROOT)),
+            "template_seed0_checkpoint": str((OUT_DIR / "template_xgb_bridge_seed0_xgboost_model.json").relative_to(ROOT)),
+            "template_feature_names": str((OUT_DIR / "template_xgb_feature_names.json").relative_to(ROOT)),
             "bridge_json": str((OUT_DIR / "template_boosting_bridge.json").relative_to(ROOT)),
         },
     }
@@ -709,10 +854,27 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- Raw XGBoost family-specific label coverage: {summary_metric(bridge, 'raw_xgb_exact', 'family_specific_truth_label_coverage'):.4f}.",
         f"- Template XGBoost family-specific label coverage: {summary_metric(bridge, 'template_xgb_bridge', 'family_specific_truth_label_coverage'):.4f}.",
         f"- Template XGBoost family-specific Top-1 mean: {summary_metric(bridge, 'template_xgb_bridge', 'family_specific_task1_top1'):.4f}.",
+        f"- Seed-0 XGBoost checkpoint files: {', '.join(bridge.get('model_checkpoints', []))}.",
         "",
         "Interpretation: the learned model is only OOD-useful after template normalization. Raw XGBoost cannot emit exact family-specific strings it never saw as labels; template XGBoost learns the reusable suffix and then rewrites `__FAMILY__` to the visible eval family.",
         "",
     ]
+    tree_shap_rows = bridge.get("tree_shap", [])
+    if tree_shap_rows:
+        lines.extend(
+            [
+                "## Template XGBoost Tree SHAP Explainability",
+                "",
+                "Tree SHAP is XGBoost's exact Shapley-value contribution method for tree ensembles. The rows below average absolute contribution size over the held-out validation examples and model classes.",
+                "",
+            ]
+        )
+        for row in tree_shap_rows[:8]:
+            lines.append(
+                f"- {row['feature']}: mean abs Tree SHAP {float(row['mean_abs_shap']):.6f} "
+                f"({float(row['share']):.4f} share) - {row['plain_english']}"
+            )
+        lines.append("")
     (OUT_DIR / "metrics.md").write_text("\n".join(lines), encoding="utf-8")
 
 
@@ -746,6 +908,31 @@ def write_explanation_html(metrics: dict[str, object]) -> None:
     feature_rows = "\n".join(
         f"<tr><td>{html.escape(str(row['feature']))}</td><td>{fmt(float(row['importance']), 6)}</td></tr>"
         for row in bridge["feature_importance"]
+    )
+    tree_shap_rows = list(bridge.get("tree_shap", []))
+    max_tree_shap = max((float(row["mean_abs_shap"]) for row in tree_shap_rows), default=1.0)
+    tree_shap_bars = "\n".join(
+        "<div class=\"shap-row\">"
+        "<div class=\"shap-label\">"
+        f"<strong>{html.escape(str(row['feature']))}</strong>"
+        f"<span>{html.escape(str(row['plain_english']))}</span>"
+        "</div>"
+        "<div class=\"shap-track\">"
+        f"<div class=\"shap-fill\" style=\"--bar-width: {max(3.0, float(row['mean_abs_shap']) / max_tree_shap * 100):.1f}%\"></div>"
+        "</div>"
+        f"<div class=\"shap-value\">{fmt(float(row['mean_abs_shap']), 5)}</div>"
+        "</div>"
+        for row in tree_shap_rows[:10]
+    )
+    tree_shap_table_rows = "\n".join(
+        "<tr>"
+        f"<td>{int(row['rank'])}</td>"
+        f"<td>{html.escape(str(row['feature']))}</td>"
+        f"<td>{fmt(float(row['mean_abs_shap']), 6)}</td>"
+        f"<td>{fmt(float(row['share']))}</td>"
+        f"<td>{html.escape(str(row['plain_english']))}</td>"
+        "</tr>"
+        for row in tree_shap_rows[:10]
     )
     example_rows = "\n".join(
         "<tr>"
@@ -883,7 +1070,59 @@ def write_explanation_html(metrics: dict[str, object]) -> None:
       margin: 16px 0;
       border-radius: 0 8px 8px 0;
     }}
+    .shap-bars {{
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+      margin: 14px 0 18px;
+    }}
+    .shap-row {{
+      display: grid;
+      grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 2fr) 78px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }}
+    .shap-label strong {{
+      display: block;
+      font-size: 14px;
+    }}
+    .shap-label span {{
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }}
+    .shap-track {{
+      height: 13px;
+      background: #e9eef2;
+      border-radius: 999px;
+      overflow: hidden;
+    }}
+    .shap-fill {{
+      width: var(--bar-width);
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+      border-radius: 999px;
+      transform-origin: left center;
+      animation: shapGrow 850ms ease-out both;
+    }}
+    .shap-value {{
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 13px;
+    }}
+    @keyframes shapGrow {{
+      from {{ transform: scaleX(0); }}
+      to {{ transform: scaleX(1); }}
+    }}
     ul {{ margin-top: 8px; }}
+    @media (max-width: 760px) {{
+      .shap-row {{ grid-template-columns: 1fr; }}
+      .shap-value {{ text-align: left; }}
+    }}
   </style>
 </head>
 <body>
@@ -995,6 +1234,22 @@ def write_explanation_html(metrics: dict[str, object]) -> None:
     <table>
       <thead><tr><th>Feature</th><th>Importance</th></tr></thead>
       <tbody>{feature_rows}</tbody>
+    </table>
+
+    <h3>Tree SHAP explainability</h3>
+    <p>
+      Feature importance tells us which split features the trees used often.
+      Tree SHAP answers a more local question: on the held-out validation rows,
+      which features changed the model's score the most? XGBoost computes these
+      Tree SHAP values directly for its tree ensemble, so this is a real
+      Shapley-style explanation without adding another dependency.
+    </p>
+    <div class="shap-bars" aria-label="Template XGBoost Tree SHAP bar chart">
+      {tree_shap_bars}
+    </div>
+    <table>
+      <thead><tr><th>Rank</th><th>Feature</th><th>Mean abs Tree SHAP</th><th>Share</th><th>Plain-English meaning</th></tr></thead>
+      <tbody>{tree_shap_table_rows}</tbody>
     </table>
 
     <h3>Concrete examples</h3>

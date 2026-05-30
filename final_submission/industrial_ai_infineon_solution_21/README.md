@@ -1,4 +1,4 @@
-# Final Industrial AI Submission: Solution 21
+# Final Industrial AI Submission
 
 This folder is the final hackathon submission bundle for the Industrial AI
 track.
@@ -36,9 +36,32 @@ Important attachments:
 - `template_boosting_10_seed.csv`
 - `template_boosting_curve.csv`
 - `template_boosting_examples.csv`
+- `template_boosting_tree_shap.csv`
+- `template_boosting_xgb_training_logloss.csv`
 - `template_boosting_bridge.json`
+- `raw_xgb_exact_seed0_xgboost_model.json`
+- `template_xgb_bridge_seed0_xgboost_model.json`
+- `template_xgb_feature_names.json`
+- `solution_21_training_log.md`
+- `solution_21_checkpoint_manifest.md`
+- `solution_21_loss_curve.csv`
+- `baseline_vs_model_examples.md`
+- `pitch_slides_outline.md`
+- `video_script.md`
 - `paired_length_guard_audit.csv`
 - `submission_readiness_audit.md`
+
+## Manual Legal Checklist
+
+Before the Tally submission, the team must still confirm the external items
+that cannot be changed from this folder:
+
+- Repository is public.
+- Repository root has the MIT `LICENSE`, `README.md`, `REPORT.md`, and
+  `requirements.txt`.
+- Slides are exported as PDF.
+- Demo video is under two minutes.
+- No file from `attachments/` is uploaded as one of the three scorer CSVs.
 
 ## Verify Before Submit
 
