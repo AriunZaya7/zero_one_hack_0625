@@ -246,6 +246,19 @@ SOLUTION_META = {
         "honest_status": "Submit-ready guarded upper-bound variant. The perfect coupled score still depends on released-file route coupling; the non-transductive fallback is much weaker and is reported separately.",
         "checkpoint": "No binary checkpoint is needed; route memory and generated candidates are rebuilt deterministically from source.",
     },
+    "solution_16_pseudolabel_metric_audit": {
+        "title": "Solution 16: Pseudo-Label Metric Audit",
+        "role": "Transductive route matcher plus official metric-script pseudo-label audit.",
+        "command": "python -B solutions/solution_16_pseudolabel_metric_audit/solution.py",
+        "approach": [
+            "Uses validator-valid Task 3 full routes as pseudo labels for Task 1/2 exact-prefix matches.",
+            "Writes pseudo ground-truth files for next-step, completion, and anomaly development audits.",
+            "Runs the official zero-dependency eval_metrics.py script and saves the raw scorer logs.",
+            "Keeps the distinction between pseudo-label audit scores and hidden official scores explicit.",
+        ],
+        "honest_status": "Submit-ready audit candidate. It proves current predictions score perfectly under eval_metrics.py against pseudo labels inferred from released inputs, but those pseudo labels are not hidden official labels.",
+        "checkpoint": "No binary checkpoint is needed; pseudo labels and metric logs are regenerated deterministically from the released participant files and validator.",
+    },
 }
 
 
@@ -301,6 +314,13 @@ def copy_results(solution_dir: Path, package_dir: Path) -> Path:
     manifest = csv_source_dir / "official_run_manifest.json"
     if manifest.exists():
         shutil.copy2(manifest, results_dir / "official_run_manifest.json")
+    for optional_dir_name in ("pseudo_ground_truth", "official_metric_logs"):
+        optional_source = outputs_dir / optional_dir_name
+        if optional_source.exists():
+            optional_destination = results_dir / optional_dir_name
+            if optional_destination.exists():
+                shutil.rmtree(optional_destination)
+            shutil.copytree(optional_source, optional_destination)
     return csv_source_dir
 
 

@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of sixteen Industrial AI sequence-modeling solution
+We built a reproducible suite of seventeen Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -28,14 +28,16 @@ and replaces Task 2 with a Minimum Bayes Risk suffix selector that improves
 seed-42 edit distance, token accuracy, block accuracy, and exact match versus
 Solution 11.
 
-After upstream released the participant input files, we added three official-input
+After upstream released the participant input files, we added four official-input
 candidates. `solutions/solution_13_transductive_generator_validator` measures an
 upper-bound path: validator-valid Task 3 full routes exactly complete every
 released Task 1/2 partial row. `solutions/solution_14_synthetic_ml_generator_ensemble`
 keeps that exact gate and adds a generated-data statistical fallback.
 `solutions/solution_15_route_memory_mbr` is the most guarded version: it uses a
 valid-route memory plus an MBR suffix fallback and reports a separate
-non-transductive stress probe.
+non-transductive stress probe. `solutions/solution_16_pseudolabel_metric_audit`
+adds pseudo-label ground-truth files and runs the official `eval_metrics.py`
+script as a stricter development audit.
 
 ## Problem
 
@@ -94,6 +96,9 @@ official-input diagnostics.
 - `solution_15_route_memory_mbr`: builds a memory of official valid routes,
   public routes, and generated valid routes, then uses exact prefix matching or
   MBR suffix selection over retrieved valid-route candidates.
+- `solution_16_pseudolabel_metric_audit`: infers development-only pseudo labels
+  from exact released-input route coupling and saves official `eval_metrics.py`
+  scorer logs against those pseudo labels.
 
 ## How To Run It
 
@@ -117,6 +122,7 @@ python -B solutions/solution_12_mbr_completion/solution.py
 python -B solutions/solution_13_transductive_generator_validator/solution.py
 python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
 python -B solutions/solution_15_route_memory_mbr/solution.py
+python -B solutions/solution_16_pseudolabel_metric_audit/solution.py
 python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```
@@ -152,16 +158,17 @@ Headline seed-42 local self-eval:
 | `solution_13_transductive_generator_validator` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
 | `solution_14_synthetic_ml_generator_ensemble` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
 | `solution_15_route_memory_mbr` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
+| `solution_16_pseudolabel_metric_audit` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
 
 Task 3 is perfect locally on the generated anomaly rows. Earlier solutions use
 the public validator oracle, Solutions 8 through 12 use an explicit semantic
-conformance checker, and Solutions 13 through 15 use the released participant-input
+conformance checker, and Solutions 13 through 16 use the released participant-input
 structure. Those are useful baselines and sanity checks, but they are not
 evidence of learned anomaly detection.
 
 ## What Worked
 
-- All sixteen solutions emit the required Industrial AI CSV shapes.
+- All seventeen solutions emit the required Industrial AI CSV shapes.
 - Official participant-input CSVs now exist for every solution package with
   600 next-step rows, 600 completion rows, and 987 anomaly rows.
 - The released official inputs have a strong transductive structure: every

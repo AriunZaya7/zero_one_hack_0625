@@ -1,0 +1,173 @@
+{
+  "fair_self_eval": {
+    "coverage": {
+      "ambiguous_rows_with_different_suffixes": 0,
+      "by_fraction": {
+        "0.6": 300,
+        "0.8": 300
+      },
+      "exact_prefix_coverage": 1.0,
+      "exact_prefix_rows": 600,
+      "unique_valid_full_sequences": 300,
+      "valid_full_sequence_duplicate_rows": 0,
+      "valid_rows": 600
+    },
+    "task1_canonical_process_step": {
+      "canonical_top1": 1.0,
+      "canonical_top2": 1.0,
+      "canonical_top3": 1.0,
+      "canonical_top5": 1.0,
+      "exact_top1_misses": 0,
+      "same_canonical_miss_rate_among_exact_misses": 0.0,
+      "same_canonical_misses": 0,
+      "top_miss_pairs": []
+    },
+    "task1_next_step": {
+      "mrr": 1.0,
+      "n_examples": 600,
+      "top1": 1.0,
+      "top2": 1.0,
+      "top3": 1.0,
+      "top5": 1.0
+    },
+    "task2_completion": {
+      "block_accuracy": 1.0,
+      "exact_match": 1.0,
+      "n_examples": 600,
+      "normalized_edit_distance": 0.0,
+      "token_accuracy": 1.0
+    },
+    "task3_anomaly": {
+      "accuracy": 1.0,
+      "f1_valid": 1.0,
+      "fn_valid_as_invalid": 0,
+      "fp_invalid_as_valid": 0,
+      "n_examples": 600,
+      "precision_valid": 1.0,
+      "recall_valid": 1.0,
+      "roc_auc_valid_probability": 1.0,
+      "rule_attribution_accuracy": 1.0,
+      "tn_invalid": 300,
+      "tp_valid": 300
+    },
+    "task4_ood_proxy_next_step": {
+      "ic": {
+        "mrr": 0.81375,
+        "n_examples": 200,
+        "top1": 0.64,
+        "top3": 0.99,
+        "top5": 0.995
+      },
+      "igbt": {
+        "mrr": 0.8391666666666667,
+        "n_examples": 200,
+        "top1": 0.72,
+        "top3": 0.965,
+        "top5": 0.965
+      },
+      "mosfet": {
+        "mrr": 0.89,
+        "n_examples": 200,
+        "top1": 0.78,
+        "top3": 1.0,
+        "top5": 1.0
+      }
+    }
+  },
+  "method": {
+    "audit_model": "official eval_metrics.py over pseudo labels",
+    "name": "transductive pseudo-label metric audit",
+    "official_hidden_ground_truth_used": false,
+    "prediction_model": "validator-valid full-route exact prefix matching",
+    "task2_uses_truth_remainder_length": false
+  },
+  "official_input_prediction": {
+    "anomaly_rows": 987,
+    "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+    "eval_metrics": "tracks/industrial-infineon/participant_files/eval_metrics.py",
+    "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+    "mode": "official_participant_input_prediction_with_pseudo_label_metric_audit",
+    "outputs": {
+      "anomaly": "solutions/solution_16_pseudolabel_metric_audit/outputs/anomaly.csv",
+      "completion": "solutions/solution_16_pseudolabel_metric_audit/outputs/completion.csv",
+      "nextstep": "solutions/solution_16_pseudolabel_metric_audit/outputs/nextstep.csv",
+      "official_metric_log_dir": "solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs",
+      "pseudo_ground_truth_dir": "solutions/solution_16_pseudolabel_metric_audit/outputs/pseudo_ground_truth"
+    },
+    "pseudo_forbidden_label_rows": 387,
+    "pseudo_metric_results": {
+      "logs": {
+        "anomaly": "solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs/anomaly_pseudo_eval.txt",
+        "completion": "solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs/completion_pseudo_eval.txt",
+        "next_step": "solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs/next_step_pseudo_eval.txt"
+      },
+      "parsed": {
+        "anomaly": {
+          "accuracy": 1.0,
+          "f1_invalid": 1.0,
+          "precision_invalid": 1.0,
+          "recall_invalid": 1.0,
+          "roc_auc": 1.0,
+          "rule_attribution_accuracy": 1.0
+        },
+        "completion": {
+          "block_accuracy": 1.0,
+          "exact_match": 1.0,
+          "normalized_edit_distance": 0.0,
+          "token_accuracy": 1.0
+        },
+        "next_step": {
+          "mrr": 1.0,
+          "top1": 1.0,
+          "top3": 1.0,
+          "top5": 1.0
+        }
+      }
+    },
+    "pseudo_valid_label_rows": 600,
+    "pseudo_valid_supplement_rows": 600,
+    "route_coverage": {
+      "ambiguous_rows_with_different_suffixes": 0,
+      "by_fraction": {
+        "0.6": 300,
+        "0.8": 300
+      },
+      "exact_prefix_coverage": 1.0,
+      "exact_prefix_rows": 600,
+      "unique_valid_full_sequences": 300,
+      "valid_full_sequence_duplicate_rows": 300,
+      "valid_rows": 600
+    },
+    "rule_counts": {
+      "RULE_BACKSIDE_BEFORE_PASSIVATION": 30,
+      "RULE_CMP_NO_DEP": 45,
+      "RULE_DEP_NO_CLEAN": 45,
+      "RULE_ETCH_NO_MASK": 26,
+      "RULE_IMPLANT_NO_MASK": 16,
+      "RULE_LITHO_LEVEL_SKIP": 45,
+      "RULE_METAL_ETCH_NO_LITHO": 45,
+      "RULE_PAD_OPEN_BEFORE_DEP": 45,
+      "RULE_SHIP_BEFORE_TEST": 45,
+      "RULE_TEST_BEFORE_PASSIVATION": 45
+    },
+    "solution": "solution_16_pseudolabel_metric_audit",
+    "unmatched_valid_rows": [],
+    "valid_route_duplicate_rows": 300,
+    "valid_rows": 600
+  },
+  "seed": 42,
+  "self_eval": {
+    "anomaly_task_rows": 600,
+    "eval_per_family": 100,
+    "families": [
+      "mosfet",
+      "igbt",
+      "ic"
+    ],
+    "official_eval_available": true,
+    "official_hidden_ground_truth_available": false,
+    "train_sequences": 6709,
+    "valid_task_rows": 600
+  },
+  "solution": "solution_16_pseudolabel_metric_audit"
+}

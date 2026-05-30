@@ -43,6 +43,7 @@ from solutions.solution_12_mbr_completion import solution as sol12  # noqa: E402
 from solutions.solution_13_transductive_generator_validator import solution as sol13  # noqa: E402
 from solutions.solution_14_synthetic_ml_generator_ensemble import solution as sol14  # noqa: E402
 from solutions.solution_15_route_memory_mbr import solution as sol15  # noqa: E402
+from solutions.solution_16_pseudolabel_metric_audit import solution as sol16  # noqa: E402
 from training_data.generate_sequences import generate_dataset  # noqa: E402
 
 
@@ -77,6 +78,7 @@ def set_solution_seed(seed: int) -> None:
     sol13.SEED = seed
     sol14.SEED = seed
     sol15.SEED = seed
+    sol16.SEED = seed
 
 
 def add_top2(rows: list[dict[str, object]], examples: list[sol0.ValidExample]) -> float:
@@ -616,6 +618,27 @@ def evaluate_solution_15(seed: int) -> MetricDict:
     )
 
 
+def evaluate_solution_16(seed: int) -> MetricDict:
+    _train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    valid_inputs = sol13.valid_inputs_from_local_examples(valid_examples)
+    anomaly_inputs = sol13.anomaly_inputs_from_local_examples(anomaly_examples)
+    model = sol13.TransductiveGeneratorValidatorModel(anomaly_inputs)
+    task1_rows = sol16.predict_task1(model, valid_inputs)
+    task2_rows = sol16.predict_task2(model, valid_inputs)
+    task3_rows = sol16.predict_task3(anomaly_inputs)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_16_pseudolabel_metric_audit",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol2.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -633,6 +656,7 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_13_transductive_generator_validator", evaluate_solution_13),
     ("solution_14_synthetic_ml_generator_ensemble", evaluate_solution_14),
     ("solution_15_route_memory_mbr", evaluate_solution_15),
+    ("solution_16_pseudolabel_metric_audit", evaluate_solution_16),
 )
 
 
@@ -793,7 +817,7 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 "
         "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
         "regenerating the same 30,000 suffix candidates for every split seed. Solutions 13, "
-        "14, and 15 are transductive upper-bound checks: the local anomaly input contains full "
+        "14, 15, and 16 are transductive upper-bound checks: the local anomaly input contains full "
         "valid routes from the same held-out sequences used to make the Task 1/2 partials. "
         "Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",

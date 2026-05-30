@@ -79,6 +79,7 @@ submission surface:
 | [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | `python -B solutions/solution_13_transductive_generator_validator/solution.py` | Complete: upper-bound transductive docs, official-input outputs, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts. | Depends on released Task 3 full valid routes matching every Task 1/2 partial; not a normal generalization claim. |
 | [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | `python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py` | Complete: generated-data fallback docs, official-input outputs, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts. | Best current submission candidate if input coupling is preserved; fallback is included for robustness if exact matches disappear. |
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | `python -B solutions/solution_15_route_memory_mbr/solution.py` | Complete: route-memory MBR docs, official-input outputs, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts. | Guarded upper-bound variant; perfect result still depends on input coupling, and fallback stress probe is much weaker. |
+| [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | `python -B solutions/solution_16_pseudolabel_metric_audit/solution.py` | Complete: pseudo-label audit docs, official-input outputs, metric logs, and submit guide. | Complete package generated with official 600/600/987 row counts plus pseudo-label audit logs. | Pseudo-label scores are not hidden official scores; they are a strict development audit of the released input bundle. |
 
 To refresh all package folders after rerunning solution scripts:
 
@@ -140,7 +141,8 @@ Measured transductive structure in the released files:
 
 This is why [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html)
 [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html),
-and [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html)
+[`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html),
+and [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html)
 show perfect local coupled self-eval. They are measuring a real property of the
 released participant inputs. If the organizers decouple the Task 3 full valid
 routes from the Task 1/2 partial routes in final scoring, those upper-bound
@@ -263,6 +265,11 @@ Solution-specific LOFO details:
   official full valid routes are present. For the separate LOFO proxy, the exact
   transductive gate is not credited, so the reported Task 1 fallback matches the
   conservative Solution 2 family.
+- [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html): uses the same exact
+  transductive route match for prediction, then adds an official metric-script
+  pseudo-label audit. For LOFO, the exact released-file route coupling is not
+  credited, so the reported Task 1 fallback matches the conservative Solution 2
+  family.
 
 What LOFO does **not** mean:
 
@@ -299,6 +306,7 @@ engineering, but it is **not** a fair validation score.
 | [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact prefix coverage `600/600`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The transductive exact gate is not credited as hidden-family generalization. | Yes: emits official-input CSVs plus metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact prefix matching plus validator; no third-party dependencies. | Strong: explicitly labels the result as a transductive upper-bound and not a normal generalization score. | Major new finding: Task 3 full valid routes exactly complete every Task 1/2 partial in the released participant files. | Strong open-stack fit: uses only released CSVs and provided validator/generator interfaces. | Strong: standalone docs explain the input coupling and submission steps. | High risk if final scoring decouples Task 3 full valid routes from Task 1/2 partial routes. |
 | [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact prefix coverage `600/600`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The generated fallback is present but not needed on released official rows. | Yes: emits official-input CSVs plus metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact gate plus 75,000 generated fallback routes and count-based prefix/context tables. | Strong: separates released-file upper-bound evidence from fallback generalization evidence. | Best current submission candidate: exact transductive path for current files, generated-data statistical fallback if exact matches disappear. | Strong open-stack fit: generated data, transparent count tables, no external model downloads. | Strong: standalone docs explain both the upper-bound path and fallback model. | Still relies on input coupling for perfect numbers; fallback performance would be lower if exact matches disappear. |
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact prefix coverage `600/600`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`; fallback stress probe edit distance `0.1946` on 90 rows without transductive memory. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The route-memory exact gate is not credited as hidden-family generalization. | Yes: emits official-input CSVs plus metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic route memory with 22,309 official/public/generated routes; no third-party dependencies. | Strongest caveat handling: reports a no-transductive-memory fallback stress probe, where Task 1 Top-1 drops to `0.1111`. | Guarded route-memory variant: exact path for current files, MBR suffix fallback over retrieved valid routes if exact matches disappear. | Strong open-stack fit: route memory, generated data, transparent retrieval/MBR, no external model downloads. | Strong: standalone docs explain MBR, fallback stress, input coupling, and manual submission. | Still relies on input coupling for perfect numbers; fallback stress shows next-step quality is weak without exact full-route memory. |
+| [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | Implemented and run | Local coupled self-eval and official pseudo-label audit: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; pseudo-label coverage `600/600`. | Local coupled self-eval and official pseudo-label audit: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`. | Local coupled self-eval and official pseudo-label audit: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` pseudo-valid and `387` pseudo-forbidden rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The pseudo-label audit is not credited as hidden-family generalization. | Yes: emits official-input CSVs, pseudo-label ground truth, raw `eval_metrics.py` logs, metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact route matching plus official metric script; no third-party dependencies. | Strong: explicitly separates pseudo-label audit scores from hidden official scores. | Strong submission-safety choice: proves the current predictions pass the official parser/scorer against labels implied by released input coupling. | Strong open-stack fit: uses released CSVs, public validator, and official scoring script only. | Strong: standalone docs explain pseudo labels, metric logs, and manual submission. | It is an audit harness, not new learned generalization; if exact released-file coupling disappears, pseudo-label coverage falls. |
 
 ## Local LOFO Task 1 Proxy Results
 
@@ -324,6 +332,7 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 | [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The exact transductive gate is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
 | [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The exact transductive gate is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The exact route-memory gate is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
+| [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The pseudo-label audit is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
 
 ## 10-Seed Stability Summary
 
@@ -336,11 +345,11 @@ seed changes the local train/held-out split, anomaly shuffle, and OOD sampling.
 Metrics marked as constant did not change across those split seeds.
 
 The saved report now covers all implemented solution folders from Solution 0
-through Solution 15. Solutions 9 and 10 use Solution 3-style deterministic
+through Solution 16. Solutions 9 and 10 use Solution 3-style deterministic
 generator augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 reuse the same
 cached Monte Carlo suffix library during the 10-seed run so the reported
 metrics still match their committed method while avoiding redundant generation
-work. Solutions 13, 14, and 15 are transductive upper-bound checks; their perfect
+work. Solutions 13, 14, 15, and 16 are transductive upper-bound checks; their perfect
 local coupled self-eval depends on the local anomaly input containing the full
 valid routes used to create the Task 1/2 partials.
 
@@ -362,6 +371,7 @@ valid routes used to create the Task 1/2 partials.
 | [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to its full valid route. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 | [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because the exact gate covers every row; generated fallback is deterministic. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to a full valid route; MBR fallback is deterministic. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
+| [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to a full valid route; pseudo-label metric audit is deterministic. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 
 Diagnostic-only alias-normalized canonical process-step report across the same
 10 seeds. This table explains exact-string misses; it is not an official
@@ -385,6 +395,7 @@ leaderboard table.
 | [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 | [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
+| [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 
 ## Criteria Notes
 
