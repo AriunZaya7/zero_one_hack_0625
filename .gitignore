@@ -1,0 +1,26 @@
+# generated artifacts (regenerate on each machine)
+outputs/
+plots/
+results/
+self_eval/
+submissions/*.tmp
+
+# python / env
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# editor / os
+.DS_Store
+.ipynb_checkpoints/
+
+# weights / large data caches (never commit)
+*.bin
+*.safetensors
+hf_cache/
+wandb/
+
+# stale single-file results (we use results/ per-run JSON now)
+results.csv
