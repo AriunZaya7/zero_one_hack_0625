@@ -14,6 +14,56 @@ Welcome to the central repository for Zero One Hack_01, hosted by [Lumos Consult
 
 ---
 
+## Industrial AI Work In This Branch
+
+This branch contains our Industrial AI (Infineon) solution attempts under
+[`solutions/`](./solutions/). The current suite is documented in:
+
+- [`REPORT.md`](./REPORT.md) - root submission report
+- [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
+  metrics and solution comparison
+- [`solutions/submission_readiness_audit.md`](./solutions/submission_readiness_audit.md) -
+  checklist against the official submission requirements
+
+Each solution has:
+
+- a runnable `solution.py`
+- `outputs/nextstep.csv`, `outputs/completion.csv`, `outputs/anomaly.csv`
+- local metrics in `outputs/metrics.md` and `outputs/metrics.json`
+- a standalone `explanation.html`
+- a manual `how_to_submit_this_solution.html`
+- a complete `submission_package/` with `extras/results/`,
+  `extras/training_artifacts/`, demo material, and a solution-level `REPORT.md`
+
+### Setup
+
+Use Python 3.10 or newer. The current deterministic solution scripts use only
+the Python standard library.
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+### Run All Current Solution Attempts
+
+From the repository root:
+
+```bash
+python -B solutions/solution_0_rule_mock/solution.py
+python -B solutions/solution_1_hybrid_retrieval/solution.py
+python -B solutions/solution_2_eval_aware_retrieval/solution.py
+python -B solutions/solution_3_synthetic_augmented_retrieval/solution.py
+python -B solutions/solution_4_length_aware_completion/solution.py
+python -B solutions/solution_5_tuned_rank_ensemble/solution.py
+python -B solutions/prepare_submission_packages.py
+```
+
+The official hidden eval files and `eval_metrics.py` are not present in this
+checkout, so committed scores are local self-eval scores unless explicitly
+stated otherwise.
+
+---
+
 ## The three tracks
 
 | Track                | Partner  | What you'll build                                                                                                               |

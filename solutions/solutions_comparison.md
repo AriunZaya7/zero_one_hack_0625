@@ -12,6 +12,22 @@ Sources copied into the comparison system:
 - Shared judging expectations from `README.md` and `submission/SUBMISSION.md`
 - Industrial-specific criteria from `industrial-infineon/Track_industrial_en.md`
 
+## Submission Package Convention
+
+Each `solutions/solution_*` folder now contains a `submission_package/` folder
+that mirrors the official submission checklist as closely as possible from this
+checkout. The package contains `extras/results/nextstep.csv`,
+`completion.csv`, `anomaly.csv`, local metrics, a local per-family proxy
+breakdown, deterministic training-artifact notes, demo material, and a
+solution-level `REPORT.md`.
+
+Two official items are still external or unavailable:
+
+- Slides PDF and demo video are Tally uploads, so the repo includes outlines and
+  scripts rather than the final uploaded media.
+- Official `eval_metrics.py` scores are blocked until organizers provide the
+  official eval script and hidden ground truth.
+
 ## Exact Meaning Of The Local Evaluations
 
 ### Local self-eval
