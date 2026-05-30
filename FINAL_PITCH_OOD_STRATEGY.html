@@ -409,6 +409,9 @@
         we can claim 100% on the released coupled structure and on our coupled hidden-family probe.
         We should not claim guaranteed 100% on hidden decoupled families.
         The new two-family probe shows that no-coupling fallback is much lower, while visible related hidden-family routes recover a strong score.
+        A separate 110-family scaling probe shows the same pattern: raw exact
+        retrieval cannot invent unseen family-specific strings, while a
+        template-adapted fallback improves quickly and then mostly plateaus.
       </div>
 
       <h3>What to say to judges</h3>
@@ -527,6 +530,11 @@
             <td>Two-family OOD stress test</td>
             <td>What happens if there are new hidden family names and new exact strings?</td>
             <td>Exact route mode stays perfect if the matching full routes are visible; fallback is strong only when related hidden-family evidence is visible.</td>
+          </tr>
+          <tr>
+            <td>110-family scaling curve</td>
+            <td>What happens if the same 10 validation families are held out while training grows from 2 to 100 related families?</td>
+            <td>Raw exact retrieval hits a hard exact-string limit; template adaptation learns transferable suffixes early, then block-level completion improves more gradually.</td>
           </tr>
         </tbody>
       </table>
@@ -725,14 +733,42 @@
         Across both hidden families, oracle-generator Top-1 is <code>0.7738</code> with Task 2 edit distance <code>0.1537</code>.
       </p>
 
-      <h3>G. Final judge-facing claim</h3>
+      <h3>G. The 110-family scaling curve</h3>
+      <p>
+        We also built a larger synthetic scaling probe with 110 total families.
+        The first 100 families are the training pool. The same last 10 families
+        are always held out for validation. We then train on 2, 5, 10, 20, 40,
+        60, 80, and 100 families and evaluate on the average of those same 10
+        validation families each time.
+      </p>
+
+      <p>
+        This probe compares two fallback variants. Raw exact retrieval uses only
+        exact strings seen in training. Template-adapted retrieval learns a
+        placeholder such as <code>__FAMILY__ JTE DOSE VERIFICATION</code> and
+        rewrites it to the visible validation family name. At 100 training
+        families, raw Task 1 Top-1 is <code>0.6188</code>, while template-adapted
+        Task 1 Top-1 is <code>0.7688</code>. On the hard slice where the true
+        next step starts with the held-out validation family name, raw Top-1 is
+        <code>0.0000</code> and template-adapted Top-1 is <code>1.0000</code>.
+      </p>
+
+      <p>
+        The curve is useful because it shows the limit clearly. More families
+        help if there is a derivation rule for exact strings. More families do
+        not help raw memorization invent a validation-family exact string that
+        never appeared in training. The full curve page is
+        <a href="solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
+      </p>
+
+      <h3>H. Final judge-facing claim</h3>
       <div class="callout good">
         Our system is strongest because it separates three cases clearly:
         exact route evidence available, related OOD family evidence available, and no OOD family evidence available.
         It is perfect in the first case, strong in the second case, and honest about the information limit in the third case.
       </div>
 
-      <h3>H. Reproducibility</h3>
+      <h3>I. Reproducibility</h3>
       <p>
         The reader does not need these paths to understand the pitch, but they
         make the claims reproducible. The final route-evidence wrapper is in
@@ -741,11 +777,15 @@
         <a href="solutions/solution_14_synthetic_ml_generator_ensemble/explanation.html">solution_14_synthetic_ml_generator_ensemble</a>,
         and the two-family OOD probe results are in
         <a href="solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
+        The 110-family scaling probe is in
+        <a href="solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
       </p>
       <pre><code>python -B solutions/solution_17_conformal_route_guard/solution.py
 python -B solutions/ood_fourth_family_probe/fourth_family_probe.py
+python -B solutions/many_family_scaling_probe/family_scaling_probe.py
 open FINAL_PITCH_OOD_STRATEGY.html
-open solutions/ood_fourth_family_probe/outputs/README.md</code></pre>
+open solutions/ood_fourth_family_probe/outputs/README.md
+open solutions/many_family_scaling_probe/analysis.html</code></pre>
     </section>
   </main>
 

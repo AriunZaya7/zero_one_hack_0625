@@ -28,6 +28,8 @@ This branch contains our Industrial AI (Infineon) solution attempts under
 - [`solutions/ood_fourth_family_probe/`](./solutions/ood_fourth_family_probe/) -
   hypothetical fourth/fifth hidden-family OOD stress test used by the final
   pitch
+- [`solutions/many_family_scaling_probe/analysis.html`](./solutions/many_family_scaling_probe/analysis.html) -
+  110-family scaling probe with fixed 10-family validation curves
 - [`REPORT.md`](./REPORT.md) - root submission report
 - [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
   metrics and solution comparison
