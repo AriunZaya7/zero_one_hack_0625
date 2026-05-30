@@ -204,7 +204,10 @@
         <div class="eyebrow">Industrial AI / Solution 1 / research-informed hybrid</div>
         <h1>Solution 1 improves the baseline by retrieving similar historical continuations.</h1>
         <p class="lede">
-          Solution 0 proved the pipeline. Solution 1 attacks the biggest weakness: long sequence completion. It combines context retrieval, trigram next-step statistics, and the public rule validator.
+          This report is standalone. You do not need to read any earlier solution first. It explains the industrial track tasks, the local evaluation setup, the retrieval model, the output files, and the exact limitations of this attempt.
+        </p>
+        <p class="lede">
+          The main idea is simple: when we receive a partial semiconductor process route, we search public training routes for a similar recent context and reuse what historically happened next. The model combines context retrieval, trigram next-step statistics, and the public rule validator.
         </p>
       </div>
       <div class="panel pad">
@@ -224,7 +227,7 @@
     <div class="page-section" id="what">
       <div class="section-head">
         <h2>What Solution 1 Is</h2>
-        <p>It is a hybrid baseline, not yet the final transformer model. It makes one targeted improvement: instead of generating a long suffix one step at a time, it retrieves a plausible suffix from a similar training route.</p>
+        <p>It is a complete hybrid baseline for the industrial semiconductor-process track. The track asks us to predict the next process step, complete the rest of a partially observed route, and classify full routes as valid or rule-violating. Solution 1 makes one targeted modeling choice: instead of generating a long suffix one step at a time, it retrieves a plausible suffix from a similar training route.</p>
       </div>
       <div class="grid three">
         <div class="panel pad">
@@ -338,7 +341,7 @@
     <div class="page-section" id="results">
       <div class="section-head">
         <h2>Judging-Style Results</h2>
-        <p>These are deterministic local self-eval scores, not official hidden eval scores.</p>
+        <p>These are deterministic local self-eval scores, not official hidden eval scores. The Solution 0 column is included only as a reference point: it is the simpler baseline that predicts from short recent step patterns, while Solution 1 adds retrieval from similar historical routes.</p>
       </div>
       <div class="table-wrap">
         <table>
@@ -371,7 +374,7 @@
     <div class="page-section" id="limits">
       <div class="section-head">
         <h2>Limitations</h2>
-        <p>This is stronger than Solution 0, but still not the final winning model.</p>
+        <p>This is stronger than the simpler short-pattern baseline, but still not the final winning model.</p>
       </div>
       <div class="grid two">
         <div class="panel pad">
@@ -387,12 +390,12 @@
         <div class="panel pad">
           <span class="tag amber">OOD mixed</span>
           <h3>Hidden-family strategy still matters</h3>
-          <p>Leave-one-family-out scores improve for MOSFET and IGBT, but IC is slightly lower than Solution 0. A transformer should optimize this more systematically.</p>
+          <p>Leave-one-family-out means we train without one known product family and test on that held-out family. Scores improve for MOSFET and IGBT versus the simpler short-pattern baseline, but IC is slightly lower. A transformer or another model with better representation learning should optimize this more systematically.</p>
         </div>
         <div class="panel pad">
           <span class="tag green">Good baseline</span>
-          <h3>Raises the bar for Solution 2</h3>
-          <p>A future trained transformer must beat this retrieval hybrid on completion and OOD, not just beat the simpler n-gram baseline.</p>
+          <h3>Sets a stronger comparison point</h3>
+          <p>A future trained transformer must beat this retrieval hybrid on completion and out-of-distribution generalization, not just beat the simpler n-gram baseline. An n-gram baseline is a model that counts short step patterns and predicts what usually follows them.</p>
         </div>
       </div>
     </div>

@@ -2,42 +2,165 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>Solution 3 Explanation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 3 Explanation - Synthetic-Augmented Retrieval</title>
   <style>
-    body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; color: #172033; background: #f5f7fb; }
-    main, header { max-width: 980px; margin: 0 auto; padding: 28px 24px; }
-    header { background: #fff; border-bottom: 1px solid #d8dee8; max-width: none; }
-    header > div { max-width: 980px; margin: 0 auto; }
-    section { background: #fff; border: 1px solid #d8dee8; border-radius: 8px; padding: 18px; margin: 18px 0; }
-    h1, h2 { line-height: 1.2; }
-    code { background: #edf2f7; padding: 2px 5px; border-radius: 5px; }
-    pre { background: #111827; color: #eef2ff; padding: 14px; border-radius: 8px; overflow: auto; }
-    table { width: 100%; border-collapse: collapse; }
-    th, td { border-bottom: 1px solid #d8dee8; padding: 9px; text-align: left; }
+    :root {
+      --ink: #172033;
+      --muted: #5c6878;
+      --line: #d8dee8;
+      --paper: #ffffff;
+      --soft: #f5f7fb;
+      --accent: #0b6b6f;
+      --accent-soft: #dff4f2;
+      --warn-soft: #fff2d8;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+    }
+    header {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      padding: 32px max(24px, calc((100vw - 1050px) / 2));
+    }
+    main { max-width: 1050px; margin: 0 auto; padding: 28px 24px 64px; }
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+    h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
+    h1 { font-size: 34px; }
+    h2 { font-size: 24px; margin-top: 4px; }
+    h3 { font-size: 18px; margin-top: 22px; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #edf2f7;
+      padding: 2px 5px;
+      border-radius: 5px;
+      font-size: 0.92em;
+    }
+    pre {
+      margin: 14px 0;
+      overflow: auto;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--code);
+      color: #eef2ff;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
     th { background: #edf3f8; }
+    .callout { background: var(--accent-soft); border-color: #a8d7d4; }
+    .warn { background: var(--warn-soft); border-color: #f0d197; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fbfcfe; }
+    .metric strong { display: block; font-size: 24px; }
   </style>
 </head>
 <body>
-  <header><div><h1>Solution 3: Synthetic-Augmented Retrieval</h1></div></header>
+  <header>
+    <h1>Solution 3: Synthetic-Augmented Retrieval</h1>
+    <p class="muted">A standalone explanation of the generator-augmented retrieval attempt.</p>
+  </header>
+
   <main>
-    <section>
-      <h2>What This Solution Tries</h2>
+    <section class="callout">
+      <h2>Read This First</h2>
       <p>
-        Solution 3 uses the public generator in <code>training_data/generate_sequences.py</code>
-        to create more valid MOSFET, IGBT, and IC sequences. It then trains the
-        same hybrid retrieval model from Solution 1 on public data plus these
-        generated examples.
+        This page does not assume that you have read any previous solution. The
+        industrial track gives us ordered semiconductor manufacturing process
+        sequences. A sequence is a list of step names such as
+        <code>RECEIVE WAFER LOT</code>, <code>SPIN COAT PHOTORESIST</code>,
+        <code>VIA ETCH</code>, and <code>SHIP LOT</code>.
       </p>
       <p>
-        The intuition is junior-friendly: if we only have a few examples of a
-        route, retrieval may choose a nearby but imperfect continuation. If we
-        generate many more valid routes from the official grammar, the retriever
-        has more chances to find a close continuation.
+        The judged work has three submitted tasks: predict the next step from a
+        partial route, complete the rest of the route from the partial route,
+        and detect whether a full route violates process rules. The organizers
+        also run a hidden generalization check on an undisclosed family after
+        submission.
       </p>
     </section>
 
     <section>
-      <h2>Key Code Idea</h2>
+      <h2>What This Solution Tries</h2>
+      <p>
+        Solution 3 uses the public generator in
+        <code>training_data/generate_sequences.py</code> to create additional
+        valid training sequences. It then trains a hybrid retrieval model on the
+        original public sequences plus the generated sequences.
+      </p>
+      <p>
+        The main intuition is practical: retrieval gets better when it has more
+        examples to retrieve from. If the hidden evaluation follows the same
+        grammar as the public generator, then synthetic sequences can fill gaps
+        around rare combinations of optional steps and aliases.
+      </p>
+      <p>
+        The generated sequences are not saved as new CSV files. They are created
+        in memory when the script runs. That keeps the repo smaller and makes
+        the exact data generation reproducible from the code and seed.
+      </p>
+    </section>
+
+    <section>
+      <h2>The Track Tasks In Plain English</h2>
+      <table>
+        <thead>
+          <tr><th>Task</th><th>Input</th><th>What this solution outputs</th><th>Main local metrics</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Task 1: next-step prediction</td>
+            <td>A sequence prefix cut at 60% or 80% completion.</td>
+            <td>Five ranked guesses: <code>RANK_1</code> through <code>RANK_5</code>.</td>
+            <td>Top-1, Top-3, Top-5, MRR.</td>
+          </tr>
+          <tr>
+            <td>Task 2: completion</td>
+            <td>The same sequence prefix.</td>
+            <td>A pipe-separated suffix containing only the steps after the cut point.</td>
+            <td>Exact match, normalized edit distance, token accuracy, block accuracy.</td>
+          </tr>
+          <tr>
+            <td>Task 3: anomaly detection</td>
+            <td>A full sequence that may be valid or invalid.</td>
+            <td><code>IS_VALID</code>, a validity score, and a predicted rule ID if invalid.</td>
+            <td>Accuracy, F1, ROC-AUC, rule attribution accuracy.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>How The Model Works</h2>
+      <h3>Step 1: Load the public data</h3>
+      <p>
+        The script starts with the same public sequence files used by the other
+        local solutions. The local split holds out 100 public long-format
+        sequences per known family for self-evaluation, then trains on the rest.
+      </p>
+
+      <h3>Step 2: Generate more valid process routes</h3>
+      <p>
+        For each known family, Solution 3 generates 2,000 extra valid sequences.
+        The generator is not a machine-learning model. It is a public grammar
+        encoded in Python. It randomly chooses optional steps and alternate
+        labels while obeying the known process rules.
+      </p>
       <pre><code>generated = generate_dataset(
     family,
     count=count_per_family,
@@ -45,32 +168,114 @@
     validate=True,
 )</code></pre>
       <p>
-        The generated sequences are kept in memory and are not written as new
-        training CSV files. This avoids cluttering the repo with large generated
-        artifacts.
+        The <code>validate=True</code> setting means each generated route is
+        checked by the public validator before being used.
+      </p>
+
+      <h3>Step 3: Build a retrieval index</h3>
+      <p>
+        The model indexes short windows of steps near the official 60% and 80%
+        cut points. When we receive a new partial route, it compares the end of
+        that route to indexed windows from training sequences. Similar windows
+        vote for the next step and provide candidate suffixes.
+      </p>
+
+      <h3>Step 4: Use a trigram fallback</h3>
+      <p>
+        A trigram is a simple count model that asks: "given the previous two
+        steps, what step most often came next?" It helps when retrieval has
+        weak or sparse matches.
+      </p>
+
+      <h3>Step 5: Use the public validator for anomaly detection</h3>
+      <p>
+        Task 3 is handled by the public rule validator. This is a useful oracle
+        baseline and creates perfect local anomaly scores, but it is not a
+        learned anomaly detector.
       </p>
     </section>
 
     <section>
-      <h2>Current Metrics</h2>
+      <h2>Important Code Paths</h2>
+      <p>
+        The augmentation logic is in
+        <code>augment_with_generated_sequences()</code>. It copies the public
+        training dictionary, adds generated routes with synthetic keys, and
+        returns the expanded dictionary.
+      </p>
+      <pre><code>augmented = dict(train)
+for family_index, family in enumerate(families):
+    generated = generate_dataset(...)
+    for i, sequence in enumerate(generated):
+        augmented[f"{family}:solution3_generated:{i:05d}"] = sequence</code></pre>
+      <p>
+        After that, the script uses the hybrid retrieval model:
+      </p>
+      <pre><code>augmented_train = augment_with_generated_sequences(train)
+model = sol1.HybridRetrievalModel(augmented_train)</code></pre>
+    </section>
+
+    <section>
+      <h2>Current Local Results</h2>
+      <div class="grid">
+        <div class="metric"><span>Task 1 Top-1</span><strong>0.7350</strong></div>
+        <div class="metric"><span>Task 1 MRR</span><strong>0.8661</strong></div>
+        <div class="metric"><span>Canonical Top-1</span><strong>0.9783</strong></div>
+        <div class="metric"><span>Task 2 block accuracy</span><strong>0.7252</strong></div>
+      </div>
       <table>
-        <tr><th>Metric</th><th>Value</th></tr>
-        <tr><td>Task 1 Top-1</td><td>0.7350</td></tr>
-        <tr><td>Task 1 MRR</td><td>0.8661</td></tr>
-        <tr><td>Canonical Top-1</td><td>0.9783</td></tr>
-        <tr><td>Task 2 token accuracy</td><td>0.4580</td></tr>
-        <tr><td>Task 2 block accuracy</td><td>0.7252</td></tr>
-        <tr><td>Task 3 accuracy</td><td>1.0000</td></tr>
+        <thead><tr><th>Metric</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Task 1 Top-3</td><td>1.0000</td><td>The true next step is always in the top three guesses on local self-eval.</td></tr>
+          <tr><td>Task 2 normalized edit distance</td><td>0.2395</td><td>Lower is better; this measures suffix edit difference normalized by length.</td></tr>
+          <tr><td>Task 2 token accuracy</td><td>0.4580</td><td>How often predicted suffix positions exactly match the true suffix positions.</td></tr>
+          <tr><td>Task 3 accuracy</td><td>1.0000</td><td>Perfect because the solution directly calls the public validator.</td></tr>
+        </tbody>
       </table>
     </section>
 
     <section>
-      <h2>Interpretation</h2>
+      <h2>Generalization Proxy: Leave One Family Out</h2>
       <p>
-        This is currently the best seed-42 attempt among Solutions 0-5 on
-        exact Top-1, MRR, token accuracy, and block accuracy. It still cannot
-        fully solve randomized alias choices, but it improves grammar coverage.
+        In the local LOFO proxy, one known family is removed from training and
+        used as test data. For Solution 3, synthetic augmentation is restricted
+        to the two families that remain in training. It does not generate data
+        from the held-out family during that proxy run.
       </p>
+      <table>
+        <thead><tr><th>Held-out family</th><th>Top-1</th><th>MRR</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr><td>MOSFET</td><td>0.7450</td><td>0.8717</td><td>Reasonable transfer from IGBT and IC.</td></tr>
+          <tr><td>IGBT</td><td>0.7050</td><td>0.8325</td><td>Moderate transfer from MOSFET and IC.</td></tr>
+          <tr><td>IC</td><td>0.5700</td><td>0.7675</td><td>Weaker transfer; augmentation does not automatically solve OOD.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="warn">
+      <h2>Limitations</h2>
+      <p>
+        The biggest limitation is exact-label ambiguity. The generator often
+        chooses between labels that mean nearly the same operation, such as
+        <code>STRIP RESIST</code> and <code>STRIP PHOTORESIST</code>. More
+        generated data cannot fully predict a random alias choice.
+      </p>
+      <p>
+        This solution is also not a learned transformer and does not use
+        Leonardo training infrastructure. Its strength is reproducible grammar
+        coverage, not neural representation learning.
+      </p>
+    </section>
+
+    <section>
+      <h2>Files Produced</h2>
+      <ul>
+        <li><code>solution.py</code>: runnable implementation.</li>
+        <li><code>outputs/nextstep.csv</code>: Task 1 submission-shaped output.</li>
+        <li><code>outputs/completion.csv</code>: Task 2 submission-shaped output.</li>
+        <li><code>outputs/anomaly.csv</code>: Task 3 submission-shaped output.</li>
+        <li><code>outputs/metrics.json</code> and <code>outputs/metrics.md</code>: local metrics.</li>
+      </ul>
     </section>
   </main>
 </body>

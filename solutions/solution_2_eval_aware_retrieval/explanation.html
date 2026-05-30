@@ -115,17 +115,24 @@
 <body>
   <header>
     <h1>Solution 2: Eval-Aware Retrieval</h1>
-    <p class="muted">A practical response to the "0.72 is not good enough" problem.</p>
+    <p class="muted">A standalone explanation of exact-prefix lookup, alias ambiguity, local evaluation, and submission behavior.</p>
   </header>
 
   <main>
     <section class="panel">
       <h2>Short Version</h2>
       <p>
-        Solution 1 looked weak if we only stared at exact Top-1:
-        <code>0.7283</code>. But the deeper diagnosis showed something much
-        more important: exact Top-2 was already <code>0.9950</code>, and
-        canonical process-step Top-1 was already about <code>0.9750</code>.
+        This page is standalone. You do not need to know Solution 0 or Solution
+        1 first. The industrial track gives partial or full semiconductor
+        process sequences. We must predict the next step, complete the remaining
+        suffix, and detect process-rule violations.
+      </p>
+      <p>
+        A plain hybrid retrieval model had exact Top-1 around
+        <code>0.7283</code>. The deeper diagnosis showed something more useful:
+        exact Top-2 was already <code>0.9950</code>, and canonical process-step
+        Top-1 was already about <code>0.9750</code>. "Canonical" means we treat
+        alternate labels for the same manufacturing action as one operation.
       </p>
       <p>
         That means the model usually knows the correct manufacturing operation.
@@ -259,9 +266,12 @@
       <h3>2. Hybrid retrieval fallback</h3>
       <p>
         When exact lookup does not find a public match, Solution 2 uses the
-        existing Solution 1 model. That model retrieves similar historical
-        contexts near the official cut fractions and combines those votes with
-        a trigram fallback.
+        same hybrid retrieval idea described in this page: it searches public
+        training routes for contexts that look similar to the current prefix,
+        prefers candidates near the same 60% or 80% cut fraction, and combines
+        those route-based votes with a trigram fallback. A trigram fallback is
+        a small count model that asks, "given the previous two steps, what step
+        most often came next in training?"
       </p>
       <pre><code>ranks = self.fallback.next_step_ranking(
     prefix,
@@ -280,8 +290,9 @@
         <li><code>DEPOSIT METAL SEED</code> for MOSFET and IGBT</li>
       </ul>
       <p>
-        Solution 1 occasionally let an IC continuation outrank a MOSFET
-        continuation. Solution 2 moves the family-correct seed step to rank 1.
+        The plain retrieval fallback occasionally let an IC continuation
+        outrank a MOSFET or IGBT continuation. Solution 2 moves the
+        family-correct seed step to rank 1.
       </p>
       <pre><code>preferred = "DEPOSIT TUNGSTEN SEED" if family == "ic" else "DEPOSIT METAL SEED"</code></pre>
     </section>
