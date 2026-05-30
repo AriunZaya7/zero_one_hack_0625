@@ -41,6 +41,7 @@ artifacts are local self-eval outputs unless explicitly noted otherwise.
 | `solution_15_route_memory_mbr` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready guarded upper-bound variant. The perfect coupled score still depends on released-file route coupling; the non-transductive fallback is much weaker and is reported separately. |
 | `solution_16_pseudolabel_metric_audit` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready audit candidate. It proves current predictions score perfectly under eval_metrics.py against pseudo labels inferred from released inputs, but those pseudo labels are not hidden official labels. |
 | `solution_17_conformal_route_guard` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready guarded candidate. Current official rows all use exact route matching; the conformal guard is a risk-control artifact for cases where exact route coverage drops. |
+| `solution_18_family_template_grammar` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. Current official rows still all use exact route matching; the new value is a stronger hidden-family fallback when exact strings are derivable from the visible family name. |
 
 ## Standalone Completeness Matrix
 
@@ -69,6 +70,7 @@ and a generated package with report/results/training/demo artifacts.
 | `solution_15_route_memory_mbr` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_16_pseudolabel_metric_audit` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_17_conformal_route_guard` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_18_family_template_grammar` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 
 ## What Counts As Complete Here
 

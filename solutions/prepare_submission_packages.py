@@ -272,6 +272,20 @@ SOLUTION_META = {
         "honest_status": "Submit-ready guarded candidate. Current official rows all use exact route matching; the conformal guard is a risk-control artifact for cases where exact route coverage drops.",
         "checkpoint": "No binary checkpoint is needed; calibration tables and guard audit files are regenerated deterministically from public data and released participant files.",
     },
+    "solution_18_family_template_grammar": {
+        "title": "Solution 18: Family-Template Grammar",
+        "role": "Exact route matcher with a normalized family-template fallback for hidden-family exact strings.",
+        "command": "python -B solutions/solution_18_family_template_grammar/solution.py",
+        "approach": [
+            "Uses exact validator-valid full-route matching for the current official Task 1/2 rows.",
+            "Generates 100 synthetic family names to learn transferable family-prefixed step templates.",
+            "Normalizes family-specific steps into `__FAMILY__ ...` templates for fallback prediction.",
+            "Rewrites template predictions back to the visible eval family name when exact route memory is unavailable.",
+            "Writes a template guard audit and template training manifest for demo/report evidence.",
+        ],
+        "honest_status": "Submit-ready OOD-oriented candidate. Current official rows still all use exact route matching; the new value is a stronger hidden-family fallback when exact strings are derivable from the visible family name.",
+        "checkpoint": "No binary checkpoint is needed; exact-route memory, synthetic template routes, and retrieval indexes are regenerated deterministically from source.",
+    },
 }
 
 
@@ -334,7 +348,12 @@ def copy_results(solution_dir: Path, package_dir: Path) -> Path:
             if optional_destination.exists():
                 shutil.rmtree(optional_destination)
             shutil.copytree(optional_source, optional_destination)
-    for optional_file_name in ("valid_guard_audit.csv", "calibration_report.csv"):
+    for optional_file_name in (
+        "valid_guard_audit.csv",
+        "calibration_report.csv",
+        "template_guard_audit.csv",
+        "template_training_manifest.csv",
+    ):
         optional_source = outputs_dir / optional_file_name
         if optional_source.exists():
             shutil.copy2(optional_source, results_dir / optional_file_name)

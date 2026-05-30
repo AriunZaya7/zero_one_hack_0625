@@ -81,6 +81,7 @@ submission surface:
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | `python -B solutions/solution_15_route_memory_mbr/solution.py` | Complete: route-memory MBR docs, official-input outputs, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts. | Guarded upper-bound variant; perfect result still depends on input coupling, and fallback stress probe is much weaker. |
 | [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | `python -B solutions/solution_16_pseudolabel_metric_audit/solution.py` | Complete: pseudo-label audit docs, official-input outputs, metric logs, and submit guide. | Complete package generated with official 600/600/987 row counts plus pseudo-label audit logs. | Pseudo-label scores are not hidden official scores; they are a strict development audit of the released input bundle. |
 | [`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html) | `python -B solutions/solution_17_conformal_route_guard/solution.py` | Complete: conformal guard docs, official-input outputs, calibration report, guard audit, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts plus guard audit files. | Guard audit is not an official scoring file; it explains fallback risk if exact route coverage drops. |
+| [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html) | `python -B solutions/solution_18_family_template_grammar/solution.py` | Complete: family-template fallback docs, official-input outputs, template audit, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts plus template audit files. | Current official rows still use exact route memory; new value is the OOD fallback for derivable family-prefixed exact strings. |
 
 To refresh all package folders after rerunning solution scripts:
 
@@ -144,7 +145,8 @@ This is why [`solution_13_transductive_generator_validator`](solution_13_transdu
 [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html),
 [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html),
 [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html),
-and [`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html)
+[`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html),
+and [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html)
 show perfect local coupled self-eval. They are measuring a real property of the
 released participant inputs. If the organizers decouple the Task 3 full valid
 routes from the Task 1/2 partial routes in final scoring, those upper-bound
@@ -276,6 +278,13 @@ Solution-specific LOFO details:
   transductive route match for prediction, then adds calibrated fallback-risk
   reporting. For LOFO, the exact released-file route coupling is not credited,
   so the reported Task 1 fallback matches the conservative Solution 2 family.
+- [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html): uses the same exact
+  transductive route match for current official rows, then adds a normalized
+  `__FAMILY__` template fallback for derivable hidden-family strings. The
+  standard LOFO table below still reports the conservative Solution 2-style
+  fallback for comparability; Solution 18 separately reports a fallback-only
+  template diagnostic and should be read together with the 110-family scaling
+  probe.
 
 What LOFO does **not** mean:
 
@@ -314,6 +323,7 @@ engineering, but it is **not** a fair validation score.
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact prefix coverage `600/600`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`; fallback stress probe edit distance `0.1946` on 90 rows without transductive memory. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The route-memory exact gate is not credited as hidden-family generalization. | Yes: emits official-input CSVs plus metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic route memory with 22,309 official/public/generated routes; no third-party dependencies. | Strongest caveat handling: reports a no-transductive-memory fallback stress probe, where Task 1 Top-1 drops to `0.1111`. | Guarded route-memory variant: exact path for current files, MBR suffix fallback over retrieved valid routes if exact matches disappear. | Strong open-stack fit: route memory, generated data, transparent retrieval/MBR, no external model downloads. | Strong: standalone docs explain MBR, fallback stress, input coupling, and manual submission. | Still relies on input coupling for perfect numbers; fallback stress shows next-step quality is weak without exact full-route memory. |
 | [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | Implemented and run | Local coupled self-eval and official pseudo-label audit: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; pseudo-label coverage `600/600`. | Local coupled self-eval and official pseudo-label audit: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`. | Local coupled self-eval and official pseudo-label audit: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` pseudo-valid and `387` pseudo-forbidden rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The pseudo-label audit is not credited as hidden-family generalization. | Yes: emits official-input CSVs, pseudo-label ground truth, raw `eval_metrics.py` logs, metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact route matching plus official metric script; no third-party dependencies. | Strong: explicitly separates pseudo-label audit scores from hidden official scores. | Strong submission-safety choice: proves the current predictions pass the official parser/scorer against labels implied by released input coupling. | Strong open-stack fit: uses released CSVs, public validator, and official scoring script only. | Strong: standalone docs explain pseudo labels, metric logs, and manual submission. | It is an audit harness, not new learned generalization; if exact released-file coupling disappears, pseudo-label coverage falls. |
 | [`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact route coverage `600/600`; conformal fallback rank cutoff `2`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`; fallback completion 95% edit threshold `0.3913`. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The conformal guard is a fallback-risk audit, not hidden-family credit. | Yes: emits official-input CSVs, guard audit, calibration report, metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic route match plus calibrated rank/edit thresholds; no third-party dependencies. | Strong: reports exact-route coverage, guard acceptance, and fallback calibration separately from hidden official scores. | Strong risk-control addition: accepted current rows all use exact matching, while fallback risk is quantified if coverage drops. | Strong open-stack fit: released CSVs, public validator, conformal-style calibration, no external model downloads. | Strong: standalone docs explain conformal rank cutoff, fallback edit threshold, and manual submission. | It does not improve fallback Top-1; it makes fallback risk measurable. |
+| [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact route coverage `600/600`; fallback-only Task 1 Top-1 `0.7250`, Top-3 `1.0000`, MRR `0.8617`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`; fallback-only completion exact `0.0017`, edit `0.2544`, block `0.7121`. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400` for the standard conservative proxy; the new template fallback is measured separately and targets derivable hidden-family exact strings. | Yes: emits official-input CSVs, template guard audit, template training manifest, metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact route matching plus 100 synthetic template families; no third-party dependencies. | Strong: reports exact-route rows, template-fallback rows, and fallback-only metrics separately from hidden official scores. | Best OOD-facing addition so far: learns `__FAMILY__ ...` templates and rewrites them to the visible eval family name. | Strong open-stack fit: released CSVs, public validator, generated hidden-family stress data, and transparent retrieval tables. | Strong: standalone docs explain exact route memory, template normalization, template audit, and manual submission. | It only solves derivable family-prefixed exact strings; completely unseen and non-derivable hidden strings remain an information limit. |
 
 ## Local LOFO Task 1 Proxy Results
 
@@ -341,6 +351,7 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The exact route-memory gate is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
 | [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The pseudo-label audit is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
 | [`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The conformal guard is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
+| [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The standard LOFO proxy remains the conservative Solution 2-style fallback for comparability; Solution 18's extra template fallback is reported separately because it is designed for derivable family-prefixed strings and the 110-family scaling probe. |
 
 ## 10-Seed Stability Summary
 
@@ -353,13 +364,15 @@ seed changes the local train/held-out split, anomaly shuffle, and OOD sampling.
 Metrics marked as constant did not change across those split seeds.
 
 The saved report now covers all implemented solution folders from Solution 0
-through Solution 17. Solutions 9 and 10 use Solution 3-style deterministic
+through Solution 18. Solutions 9 and 10 use Solution 3-style deterministic
 generator augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 reuse the same
 cached Monte Carlo suffix library during the 10-seed run so the reported
 metrics still match their committed method while avoiding redundant generation
-work. Solutions 13, 14, 15, 16, and 17 are transductive upper-bound checks; their perfect
-local coupled self-eval depends on the local anomaly input containing the full
-valid routes used to create the Task 1/2 partials.
+work. Solutions 13, 14, 15, 16, 17, and 18 are transductive upper-bound checks
+for the coupled path; their perfect local coupled self-eval depends on the
+local anomaly input containing the full valid routes used to create the Task 1/2
+partials. Solution 18 additionally has a one-run fallback-only template
+diagnostic and the separate 110-family scaling probe for the new OOD mechanism.
 
 | Solution | Seed behavior | Task 1 Top-1 mean | best | worst | Task 1 MRR mean | Task 2 block mean | Task 2 edit mean | Task 3 accuracy mean | OOD avg Top-1 mean |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -381,6 +394,7 @@ valid routes used to create the Task 1/2 partials.
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to a full valid route; MBR fallback is deterministic. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 | [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to a full valid route; pseudo-label metric audit is deterministic. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 | [`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to a full valid route; guard calibration is deterministic for each split. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
+| [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to a full valid route; template fallback is deterministic and separately audited. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 
 Diagnostic-only alias-normalized canonical process-step report across the same
 10 seeds. This table explains exact-string misses; it is not an official
@@ -406,6 +420,7 @@ leaderboard table.
 | [`solution_15_route_memory_mbr`](solution_15_route_memory_mbr/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 | [`solution_16_pseudolabel_metric_audit`](solution_16_pseudolabel_metric_audit/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 | [`solution_17_conformal_route_guard`](solution_17_conformal_route_guard/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
+| [`solution_18_family_template_grammar`](solution_18_family_template_grammar/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 
 ## Criteria Notes
 

@@ -30,6 +30,9 @@ This branch contains our Industrial AI (Infineon) solution attempts under
   pitch
 - [`solutions/many_family_scaling_probe/analysis.html`](./solutions/many_family_scaling_probe/analysis.html) -
   110-family scaling probe with fixed 10-family validation curves
+- [`solutions/solution_18_family_template_grammar/`](./solutions/solution_18_family_template_grammar/) -
+  current OOD-facing candidate: exact route memory plus normalized
+  `__FAMILY__` template fallback for derivable hidden-family strings
 - [`REPORT.md`](./REPORT.md) - root submission report
 - [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
   metrics and solution comparison
@@ -86,6 +89,7 @@ python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
 python -B solutions/solution_15_route_memory_mbr/solution.py
 python -B solutions/solution_16_pseudolabel_metric_audit/solution.py
 python -B solutions/solution_17_conformal_route_guard/solution.py
+python -B solutions/solution_18_family_template_grammar/solution.py
 python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```
