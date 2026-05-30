@@ -2,16 +2,17 @@
 
 ## TL;DR
 
-We built a reproducible suite of six Industrial AI sequence-modeling solution
+We built a reproducible suite of seven Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
 
-The strongest seed-42 in-distribution attempt so far is
-`solutions/solution_3_synthetic_augmented_retrieval`. The strongest
-generalization proxy among the deterministic attempts is
-`solutions/solution_2_eval_aware_retrieval` / `solution_4_length_aware_completion`
-on leave-one-family-out Task 1.
+The strongest seed-42 Task 1 in-distribution attempt so far is
+`solutions/solution_3_synthetic_augmented_retrieval`. The strongest Task 2
+completion attempt by normalized edit distance is
+`solutions/solution_7_monte_carlo_suffix_ensemble`. The strongest
+generalization proxy among the deterministic attempts remains the Solution 2
+family of eval-aware retrieval models on leave-one-family-out Task 1.
 
 ## Problem
 
@@ -43,6 +44,8 @@ are clearly marked as local self-eval scores.
   5-gram rank scores.
 - `solution_6_alias_calibrated_retrieval`: keeps the eval-aware retriever but
   adds canonical-context exact-label alias calibration.
+- `solution_7_monte_carlo_suffix_ensemble`: keeps Solution 2 for Task 1 but
+  uses a larger generated Monte Carlo suffix library for Task 2 completion.
 
 ## How To Run It
 
@@ -57,6 +60,7 @@ python -B solutions/solution_3_synthetic_augmented_retrieval/solution.py
 python -B solutions/solution_4_length_aware_completion/solution.py
 python -B solutions/solution_5_tuned_rank_ensemble/solution.py
 python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
+python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -82,6 +86,7 @@ Headline seed-42 local self-eval:
 | `solution_4_length_aware_completion` | `0.7317` | `0.8650` | `0.2468` | `0.7188` | `1.0000` |
 | `solution_5_tuned_rank_ensemble` | `0.7300` | `0.8642` | `0.2420` | `0.7167` | `1.0000` |
 | `solution_6_alias_calibrated_retrieval` | `0.7317` | `0.8644` | `0.2405` | `0.7189` | `1.0000` |
+| `solution_7_monte_carlo_suffix_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 
 Task 3 is perfect locally because the current solution family uses the public
 validator oracle. That is useful as a baseline and sanity check, but it is not
@@ -89,8 +94,11 @@ evidence of learned anomaly detection.
 
 ## What Worked
 
-- All six solutions emit the required Industrial AI CSV shapes.
+- All seven solutions emit the required Industrial AI CSV shapes.
 - Retrieval strongly improves Task 2 completion over the simple n-gram baseline.
+- The larger Monte Carlo suffix library in Solution 7 improves local Task 2
+  edit distance, token accuracy, and block accuracy over the earlier
+  deterministic attempts.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
   alias misses rather than process-order mistakes.
 - Each solution now has a submission package matching the repo checklist.

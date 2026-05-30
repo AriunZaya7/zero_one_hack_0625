@@ -107,6 +107,19 @@ SOLUTION_META = {
         "honest_status": "Preserves Task 1 coverage and slightly improves Task 2 completion metrics, but does not beat Solution 3 in-distribution.",
         "checkpoint": "No binary checkpoint is needed; alias counts and retrieval tables are rebuilt deterministically.",
     },
+    "solution_7_monte_carlo_suffix_ensemble": {
+        "title": "Solution 7: Monte Carlo Suffix Ensemble",
+        "role": "Task-specialized ensemble with a larger generated suffix library for completion.",
+        "command": "python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py",
+        "approach": [
+            "Uses Solution 2 eval-aware retrieval for Task 1 next-step ranking.",
+            "Generates 10,000 valid public-grammar sequences per known family for Task 2 completion retrieval.",
+            "Keeps the generated suffix library in memory instead of committing bulky generated CSVs.",
+            "Keeps the public symbolic validator oracle for Task 3.",
+        ],
+        "honest_status": "Best deterministic Task 2 completion attempt so far by normalized edit distance, but still not a neural model and still alias-limited for exact Top-1.",
+        "checkpoint": "No binary checkpoint is needed; generated suffix library and retrieval tables are rebuilt deterministically.",
+    },
 }
 
 

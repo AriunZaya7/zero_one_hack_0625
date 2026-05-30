@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit Solution 7</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #1c2530;
+      background: #ffffff;
+      line-height: 1.58;
+    }
+    main {
+      width: min(980px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 72px;
+    }
+    header {
+      border-bottom: 1px solid #d9e0e8;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+    }
+    h1 { margin: 0 0 10px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-top: 10px; border-top: 1px solid #d9e0e8; font-size: 1.28rem; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 1.05rem; letter-spacing: 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: #13202d;
+      background: #eef2f6;
+      border: 1px solid #dbe3ec;
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-size: 0.93em;
+    }
+    pre {
+      overflow-x: auto;
+      background: #0f1b26;
+      color: #edf4fb;
+      border-radius: 6px;
+      padding: 14px 16px;
+      line-height: 1.45;
+      font-size: 0.91rem;
+    }
+    pre code { background: transparent; color: inherit; border: 0; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; }
+    th, td { border: 1px solid #d9e0e8; padding: 9px 10px; vertical-align: top; }
+    th { background: #eef3f7; text-align: left; }
+    .note { background: #f6f8fb; border-left: 4px solid #176b87; padding: 12px 14px; margin: 14px 0; }
+    .warning { background: #fff8eb; border-left: 4px solid #875c13; padding: 12px 14px; margin: 14px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>How To Submit Solution 7</h1>
+    <p>
+      This page explains the manual steps for submitting
+      <code>solution_7_monte_carlo_suffix_ensemble</code>. It assumes you are a
+      team member working from the repository root.
+    </p>
+  </header>
+
+  <section>
+    <h2>What This Folder Contains</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>File or folder</th>
+          <th>Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>solution.py</code></td>
+          <td>Runs the Solution 7 model and writes the three output CSVs.</td>
+        </tr>
+        <tr>
+          <td><code>outputs/nextstep.csv</code></td>
+          <td>Task 1 local next-step predictions in the required column shape.</td>
+        </tr>
+        <tr>
+          <td><code>outputs/completion.csv</code></td>
+          <td>Task 2 local suffix completion predictions in the required column shape.</td>
+        </tr>
+        <tr>
+          <td><code>outputs/anomaly.csv</code></td>
+          <td>Task 3 local anomaly predictions in the required column shape.</td>
+        </tr>
+        <tr>
+          <td><code>outputs/metrics.json</code> and <code>outputs/metrics.md</code></td>
+          <td>Local self-evaluation results. These are not official hidden-eval scores.</td>
+        </tr>
+        <tr>
+          <td><code>submission_package/</code></td>
+          <td>Generated package folder with report, mirrored CSVs, metrics, and demo notes.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Step 1: Confirm The Branch</h2>
+    <p>
+      We are only working on <code>dev/bati</code>. Before doing anything else,
+      open a terminal and run:
+    </p>
+    <pre><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current</code></pre>
+    <p>
+      The output should be:
+    </p>
+    <pre><code>dev/bati</code></pre>
+    <p>
+      If it is not <code>dev/bati</code>, switch before regenerating anything:
+    </p>
+    <pre><code>git switch dev/bati</code></pre>
+  </section>
+
+  <section>
+    <h2>Step 2: Regenerate The Local Outputs</h2>
+    <p>
+      Run the Solution 7 script:
+    </p>
+    <pre><code>python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py</code></pre>
+    <p>
+      This script takes longer than the smallest baselines because it generates
+      10,000 valid completion-library sequences per known family. That is
+      expected. At the end, it prints a JSON metrics block and writes:
+    </p>
+    <pre><code>solutions/solution_7_monte_carlo_suffix_ensemble/outputs/nextstep.csv
+solutions/solution_7_monte_carlo_suffix_ensemble/outputs/completion.csv
+solutions/solution_7_monte_carlo_suffix_ensemble/outputs/anomaly.csv
+solutions/solution_7_monte_carlo_suffix_ensemble/outputs/metrics.json
+solutions/solution_7_monte_carlo_suffix_ensemble/outputs/metrics.md</code></pre>
+  </section>
+
+  <section>
+    <h2>Step 3: Regenerate The Submission Package</h2>
+    <p>
+      From the repository root, run:
+    </p>
+    <pre><code>python -B solutions/prepare_submission_packages.py</code></pre>
+    <p>
+      This creates or refreshes:
+    </p>
+    <pre><code>solutions/solution_7_monte_carlo_suffix_ensemble/submission_package/</code></pre>
+    <p>
+      That folder mirrors the official checklist as closely as possible in this
+      checkout. It contains:
+    </p>
+    <ul>
+      <li><code>README.md</code></li>
+      <li><code>REPORT.md</code></li>
+      <li><code>extras/results/nextstep.csv</code></li>
+      <li><code>extras/results/completion.csv</code></li>
+      <li><code>extras/results/anomaly.csv</code></li>
+      <li><code>extras/results/metrics.json</code></li>
+      <li><code>extras/results/metrics.md</code></li>
+      <li><code>extras/results/per_family_breakdown.md</code></li>
+      <li><code>extras/training_artifacts/training_log.md</code></li>
+      <li><code>extras/training_artifacts/checkpoint_manifest.md</code></li>
+      <li><code>extras/demo/video_script.md</code></li>
+      <li><code>extras/demo/pitch_slides_outline.md</code></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Step 4: Inspect The CSV Shapes</h2>
+    <p>
+      The three CSVs should have 600 local rows plus a header row. You can check
+      this quickly:
+    </p>
+    <pre><code>wc -l solutions/solution_7_monte_carlo_suffix_ensemble/outputs/nextstep.csv
+wc -l solutions/solution_7_monte_carlo_suffix_ensemble/outputs/completion.csv
+wc -l solutions/solution_7_monte_carlo_suffix_ensemble/outputs/anomaly.csv</code></pre>
+    <p>
+      Expected line count for each file:
+    </p>
+    <pre><code>601</code></pre>
+    <p>
+      Check the headers:
+    </p>
+    <pre><code>head -1 solutions/solution_7_monte_carlo_suffix_ensemble/outputs/nextstep.csv
+head -1 solutions/solution_7_monte_carlo_suffix_ensemble/outputs/completion.csv
+head -1 solutions/solution_7_monte_carlo_suffix_ensemble/outputs/anomaly.csv</code></pre>
+    <p>
+      Expected headers:
+    </p>
+    <pre><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5
+EXAMPLE_ID,PREDICTED_SEQUENCE
+EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE</code></pre>
+  </section>
+
+  <section>
+    <h2>Step 5: Understand What To Upload</h2>
+    <div class="warning">
+      <p>
+        The CSVs currently generated by this folder are local self-eval outputs,
+        not official hidden-eval outputs. The official organizer eval input
+        files and hidden ground truth are not present in this checkout.
+      </p>
+    </div>
+    <p>
+      If the organizers give files named like <code>eval_input_valid.csv</code>
+      and <code>eval_input_anomaly.csv</code>, the submission script should be
+      adapted to read those official input rows and emit the same three CSV
+      formats. The output columns must remain the same.
+    </p>
+    <p>
+      The manual upload mapping should be:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Organizer task</th>
+          <th>Upload from Solution 7 package</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 next-step prediction</td>
+          <td><code>submission_package/extras/results/nextstep.csv</code></td>
+        </tr>
+        <tr>
+          <td>Task 2 completion</td>
+          <td><code>submission_package/extras/results/completion.csv</code></td>
+        </tr>
+        <tr>
+          <td>Task 3 anomaly detection</td>
+          <td><code>submission_package/extras/results/anomaly.csv</code></td>
+        </tr>
+        <tr>
+          <td>Technical report</td>
+          <td><code>submission_package/REPORT.md</code>, converted to PDF if the platform requires PDF.</td>
+        </tr>
+        <tr>
+          <td>Slides and demo video</td>
+          <td>Use <code>extras/demo/pitch_slides_outline.md</code> and <code>extras/demo/video_script.md</code> as the source material for the final uploaded media.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Step 6: Suggested Pitch Notes</h2>
+    <p>
+      When explaining this solution to judges, say it directly:
+    </p>
+    <ul>
+      <li>
+        "We found that next-step ranking and full completion reward different
+        behavior, so Solution 7 uses task-specialized specialists."
+      </li>
+      <li>
+        "For next-step ranking, we preserve the stronger leave-one-family-out
+        retrieval model."
+      </li>
+      <li>
+        "For completion, we generate a larger valid route library from the
+        public process grammar and retrieve the most compatible remaining
+        suffix."
+      </li>
+      <li>
+        "This improved local completion normalized edit distance to 0.2333,
+        token accuracy to 0.4737, and block accuracy to 0.7367."
+      </li>
+      <li>
+        "The exact full-suffix metric remains harsh because valid optional steps
+        and aliases create many plausible futures."
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Step 7: Commit And Push When Changed</h2>
+    <p>
+      If you changed the solution or regenerated package files and want to save
+      the work on our branch:
+    </p>
+    <pre><code>git status --short
+git add solutions/solution_7_monte_carlo_suffix_ensemble solutions/prepare_submission_packages.py solutions/solutions_comparison.md solutions/submission_readiness_audit.md README.md REPORT.md systematic_researches/systematic_research_2.md
+git diff --cached --check
+git commit -m "Add Monte Carlo suffix ensemble solution"
+git push</code></pre>
+    <p>
+      Do not commit or push outside <code>dev/bati</code> unless Batikan
+      explicitly asks for that.
+    </p>
+  </section>
+</main>
+</body>
+</html>
