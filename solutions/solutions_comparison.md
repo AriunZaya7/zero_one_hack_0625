@@ -26,9 +26,10 @@ For the local self-eval numbers in this file, the solutions use
 1. The available public sequence files in `training_data/` are loaded.
 2. For each known family (`mosfet`, `igbt`, `ic`), 100 public
    `long_format_sequence` records are selected as the local held-out set.
-3. All other records are used as local training data. Canonical
-   single-sequence files are training-only references and are not selected for
-   the held-out set.
+3. All other records are used as local training data. The repo also contains
+   canonical reference single-sequence files, such as the one reference MOSFET
+   route in `training_data/synthetic_mosfet.csv`. Those files are
+   training-only references and are not selected for the held-out set.
 4. Task 1 and Task 2 local valid examples are made from the held-out sequences:
    each held-out sequence is cut at `60%` and `80%`, producing
    `100 sequences * 3 families * 2 cuts = 600` valid rows.
@@ -37,6 +38,48 @@ For the local self-eval numbers in this file, the solutions use
    is injected, producing `600` anomaly rows.
 
 Unless a row says otherwise, the single-run table uses local split seed `42`.
+
+### What "Canonical" Means Here
+
+This comparison file uses the word `canonical` in two related but different
+ways. They should not be mixed up:
+
+1. **Canonical reference sequence:** this means a single reference route file in
+   the public training data. Example: `training_data/synthetic_mosfet.csv`
+   stores one ordered MOSFET route, not hundreds of generated MOSFET variants.
+   In the input audit those files are labeled `canonical_single_sequence`.
+   They are used as training references only. They are not sampled into the
+   local held-out validation rows.
+2. **Canonical process-step metric:** this means an alias-normalized Task 1
+   diagnostic. Some different step strings appear to describe the same
+   manufacturing operation. For example, `STRIP PHOTORESIST`, `STRIP RESIST`,
+   and `STRIP RESIST LEVEL 2` are treated as the same canonical operation ID:
+   `STRIP_RESIST`. The implementation is the `CANONICAL_GROUPS` mapping in
+   `solutions/solution_2_eval_aware_retrieval/solution.py`.
+
+Canonical process-step metrics are **not official jury metrics**. They are our
+local diagnostic for understanding whether a model predicted the right
+operation but lost exact-string credit because the public generator sometimes
+uses equivalent labels.
+
+Precise metric meanings:
+
+- `exact Top-1`: the first predicted string must exactly equal the ground-truth
+  next-step string. Example: `STRIP RESIST` only matches `STRIP RESIST`.
+- `canonical process-step Top-1`: the first predicted string and the
+  ground-truth string are mapped through `CANONICAL_GROUPS` first. Example:
+  `STRIP RESIST` counts as correct if the truth is `STRIP PHOTORESIST`, because
+  both map to `STRIP_RESIST`.
+- `canonical process-step Top-2`: at least one of the first two predicted
+  strings has the same canonical operation ID as the ground truth.
+- `same-canonical miss-rate`: among rows where exact Top-1 is wrong, this is
+  the fraction where the first predicted string still has the same canonical
+  operation ID as the truth. A high value means many exact misses are alias
+  misses rather than process-order mistakes.
+
+If a step string is not listed in `CANONICAL_GROUPS`, it maps to itself. That
+means the canonical metric only relaxes known alias groups; it does not make
+unrelated process steps equivalent.
 
 ### Leave-One-Family-Out Proxy
 
@@ -94,10 +137,10 @@ engineering, but it is **not** a fair validation score.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `solution_0_rule_mock` | Implemented and run | Local self-eval: Top-1 `0.6800`, Top-3 `0.9883`, Top-5 `1.0000`, MRR `0.8336` over 600 rows. | Local self-eval: exact match `0.0000`, normalized edit distance `0.6152`, token accuracy `0.2073`, block accuracy `0.3922`. | Local self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`, because this uses the public validator oracle. | Leave-one-family-out n-gram proxy: Top-1 `0.7400` MOSFET, `0.7150` IGBT, `0.6350` IC. | Yes: emits all three submission-shaped CSVs plus self-eval inputs, ground truth, metrics, and input audit. | Good: stdlib plus existing repo files, seed fixed to 42, uses 14 sequence source files and 6,709 train sequences. | Good: explicitly marks official eval as unavailable and self-eval as local. | Good: intentionally simple n-gram plus symbolic validator; uses only ordered STEP columns. | Partial: open and reproducible, but not yet a Leonardo training run. | Partial: measurable outputs and input audit exist; no dashboard/slides yet. | Too simple to be the final winning model; Task 3 is an oracle mock, not learned logic. |
 | `solution_1_hybrid_retrieval` | Implemented and run | Local self-eval: Top-1 `0.7283`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8633` over 600 rows. | Local self-eval: exact match `0.0017`, normalized edit distance `0.2420`, token accuracy `0.4485`, block accuracy `0.7167`. | Local self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`, because this still uses the public validator oracle. | Leave-one-family-out hybrid proxy: Top-1 `0.7600` MOSFET, `0.7200` IGBT, `0.6150` IC. | Yes: emits all three submission-shaped CSVs plus self-eval inputs, ground truth, metrics, input audit, explanation HTML, and submission guide. | Good: stdlib plus existing repo files, seed fixed to 42, uses the same deterministic split and all sequence sources as Solution 0. | Good: marks official eval as unavailable, says Task 3 is oracle-based, and notes Task 2 does not use hidden true remainder length. | Stronger: research-backed context retrieval near 60%/80% cuts plus trigram fallback and validator oracle. | Partial: open and reproducible, but still not a Leonardo training run or trained transformer. | Better: includes research artifact, detailed explanation HTML, and how-to-submit HTML. | Retrieval improves completion but can imitate similar routes without proving learned transferable process grammar. |
-| `solution_2_eval_aware_retrieval` | Implemented and run | Fair local self-eval: exact Top-1 `0.7317`, exact Top-2 `0.9950`, Top-3/Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. Public-overlap diagnostic: exact Top-1 `1.0000` if held-out rows are allowed in the lookup. | Fair local self-eval: exact match `0.0017`, normalized edit distance `0.2420`, token accuracy `0.4485`, block accuracy `0.7167`. Public-overlap diagnostic: exact completion `1.0000` if eval partials are already in public data. | Local self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`, because this still uses the public validator oracle. | Leave-one-family-out eval-aware proxy: Top-1 `0.7800` MOSFET, `0.7200` IGBT, `0.6400` IC. | Yes: emits all three submission-shaped CSVs plus metrics, input audit, explanation HTML, and submission guide. | Good: stdlib plus existing repo files, seed fixed to 42, exact lookup is deterministic and fallback is Solution 1. | Strong: separates fair self-eval from public-overlap diagnostic and explicitly quantifies alias-driven misses. | Stronger for submission: exact public cut-prefix lookup, hybrid fallback, family-aware grammar rerank, canonical ambiguity audit. | Partial: open and reproducible, but still not a Leonardo training run or trained transformer. | Strong: includes a clear defense of why `0.85` exact Top-1 is unrealistic under randomized aliases, while MRR and canonical accuracy are high. | Fair exact Top-1 still cannot approach `0.85`; the useful improvement is evaluation awareness and honest ambiguity handling, not a large exact-string gain. |
-| `solution_3_synthetic_augmented_retrieval` | Implemented and run | Local self-eval: Top-1 `0.7350`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8661`; canonical Top-1 `0.9783`. | Local self-eval: exact match `0.0000`, normalized edit distance `0.2395`, token accuracy `0.4580`, block accuracy `0.7252`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7450`, IGBT `0.7050`, IC `0.5700`. During each LOFO run, generator augmentation is restricted to the two non-held-out families only. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: stdlib plus existing repo generator; generates 2,000 extra valid sequences per known family in memory for normal local self-eval. | Good: states generator augmentation cannot solve alias randomness and does not write extra generated CSVs. | Stronger seed-42 attempt: public grammar augmentation plus hybrid retrieval. | Better open-stack fit: uses the provided generator as a reproducible data-scaling method. | Good: includes metrics and HTML docs. | Best seed-42 in-distribution attempt so far, but its IC LOFO proxy is weaker than Solution 2/4. |
-| `solution_4_length_aware_completion` | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; canonical Top-1 `0.9783`. | Local self-eval: exact match `0.0017`, normalized edit distance `0.2468`, token accuracy `0.4495`, block accuracy `0.7188`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Same Task 1 behavior as Solution 2; length trimming mainly changes Task 2. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: deterministic length statistics learned from public train cuts. | Good: explicitly calls out the Task 2 metric tradeoff. | Focused attempt: length-aware suffix trimming for completion metrics. | Partial: open and reproducible, but no training infrastructure. | Good: docs explain when this tradeoff might be worth using. | Improves block alignment slightly but worsens normalized edit distance, so not the best overall. |
-| `solution_5_tuned_rank_ensemble` | Implemented and run | Local self-eval: Top-1 `0.7300`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8642`; canonical Top-1 `0.9750`. | Local self-eval: exact match `0.0017`, normalized edit distance `0.2420`, token accuracy `0.4485`, block accuracy `0.7167`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7600`, IGBT `0.7150`, IC `0.6150`. This measures the tuned ranker trained on the other two known families. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: deterministic retrieval plus n-gram orders 3/4/5 with fixed weights. | Good: documented as a rank-weighting attempt, not a breakthrough. | Useful ablation: retrieval plus multi-order n-gram score ensemble. | Partial: open and reproducible, but no training infrastructure. | Good: docs explain what n-gram order means. | Nearly matches Solution 2 but does not beat Solution 3 in-distribution or Solution 2/4 on LOFO. |
+| `solution_2_eval_aware_retrieval` | Implemented and run | Fair local self-eval: exact Top-1 `0.7317`, exact Top-2 `0.9950`, Top-3/Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. Public-overlap diagnostic: exact Top-1 `1.0000` if held-out rows are allowed in the lookup. | Fair local self-eval: exact match `0.0017`, normalized edit distance `0.2420`, token accuracy `0.4485`, block accuracy `0.7167`. Public-overlap diagnostic: exact completion `1.0000` if eval partials are already in public data. | Local self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`, because this still uses the public validator oracle. | Leave-one-family-out eval-aware proxy: Top-1 `0.7800` MOSFET, `0.7200` IGBT, `0.6400` IC. | Yes: emits all three submission-shaped CSVs plus metrics, input audit, explanation HTML, and submission guide. | Good: stdlib plus existing repo files, seed fixed to 42, exact lookup is deterministic and fallback is Solution 1. | Strong: separates fair self-eval from public-overlap diagnostic and explicitly quantifies alias-driven misses. | Stronger for submission: exact public cut-prefix lookup, hybrid fallback, family-aware grammar rerank, canonical process-step ambiguity audit. | Partial: open and reproducible, but still not a Leonardo training run or trained transformer. | Strong: includes a clear defense of why `0.85` exact Top-1 is unrealistic under randomized aliases, while MRR and canonical process-step accuracy are high. | Fair exact Top-1 still cannot approach `0.85`; the useful improvement is evaluation awareness and honest ambiguity handling, not a large exact-string gain. |
+| `solution_3_synthetic_augmented_retrieval` | Implemented and run | Local self-eval: Top-1 `0.7350`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8661`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0000`, normalized edit distance `0.2395`, token accuracy `0.4580`, block accuracy `0.7252`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7450`, IGBT `0.7050`, IC `0.5700`. During each LOFO run, generator augmentation is restricted to the two non-held-out families only. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: stdlib plus existing repo generator; generates 2,000 extra valid sequences per known family in memory for normal local self-eval. | Good: states generator augmentation cannot solve alias randomness and does not write extra generated CSVs. | Stronger seed-42 attempt: public grammar augmentation plus hybrid retrieval. | Better open-stack fit: uses the provided generator as a reproducible data-scaling method. | Good: includes metrics and HTML docs. | Best seed-42 in-distribution attempt so far, but its IC LOFO proxy is weaker than Solution 2/4. |
+| `solution_4_length_aware_completion` | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0017`, normalized edit distance `0.2468`, token accuracy `0.4495`, block accuracy `0.7188`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Uses exact lookup plus retrieval fallback for Task 1; length trimming mainly changes Task 2. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: deterministic length statistics learned from public train cuts. | Good: explicitly calls out the Task 2 metric tradeoff. | Focused attempt: length-aware suffix trimming for completion metrics. | Partial: open and reproducible, but no training infrastructure. | Good: docs explain when this tradeoff might be worth using. | Improves block alignment slightly but worsens normalized edit distance, so not the best overall. |
+| `solution_5_tuned_rank_ensemble` | Implemented and run | Local self-eval: Top-1 `0.7300`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8642`; canonical process-step Top-1 `0.9750`. | Local self-eval: exact match `0.0017`, normalized edit distance `0.2420`, token accuracy `0.4485`, block accuracy `0.7167`. | Local self-eval: accuracy/rule attribution both `1.0000`, because this still uses the public validator oracle. | LOFO Top-1: MOSFET `0.7600`, IGBT `0.7150`, IC `0.6150`. This measures the tuned ranker trained on the other two known families. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, and submission guide. | Good: deterministic retrieval plus n-gram orders 3/4/5 with fixed weights. | Good: documented as a rank-weighting attempt, not a breakthrough. | Useful ablation: retrieval plus multi-order n-gram score ensemble. | Partial: open and reproducible, but no training infrastructure. | Good: docs explain what n-gram order means. | Nearly matches Solution 2 but does not beat Solution 3 in-distribution or Solution 2/4 on LOFO. |
 
 ## Local LOFO Task 1 Proxy Results
 
@@ -111,7 +154,7 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 | `solution_1_hybrid_retrieval` | `0.7600` / `0.8800` | `0.7200` / `0.8392` | `0.6150` / `0.7887` | Train retrieval index and trigram fallback only on the two non-held-out families. |
 | `solution_2_eval_aware_retrieval` | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Exact lookup is built only from the two non-held-out families; it cannot exact-match held-out-family prefixes. |
 | `solution_3_synthetic_augmented_retrieval` | `0.7450` / `0.8717` | `0.7050` / `0.8325` | `0.5700` / `0.7675` | Train on the two non-held-out public families plus generated synthetic sequences from those two families only. |
-| `solution_4_length_aware_completion` | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Same Task 1 strategy as Solution 2; the length model affects Task 2 completion, not LOFO Task 1. |
+| `solution_4_length_aware_completion` | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use exact lookup plus retrieval fallback for Task 1; the length model affects Task 2 completion, not LOFO Task 1. |
 | `solution_5_tuned_rank_ensemble` | `0.7600` / `0.8800` | `0.7150` / `0.8367` | `0.6150` / `0.7887` | Train tuned retrieval plus n-gram rank ensemble only on the two non-held-out families. |
 
 ## 10-Seed Stability Summary
@@ -134,9 +177,9 @@ Metrics marked as constant did not change across those split seeds.
 | `solution_1_hybrid_retrieval` | Split-seed variation only; model deterministic for a fixed split. | `0.6918` | `0.7150` (seed `9`) | `0.6650` (seed `6`) | `0.8433` | `0.7150` | `0.2387` | `1.0000` constant | `0.6627` |
 | `solution_2_eval_aware_retrieval` | Split-seed variation only; model deterministic for a fixed split. Public lookup diagnostic is constant at `1.0000`. | `0.6962` | `0.7200` (seed `9`) | `0.6667` (seed `6`) | `0.8455` | `0.7150` | `0.2387` | `1.0000` constant | `0.6787` |
 
-Alias/canonical diagnostic across the same 10 seeds:
+Alias-normalized canonical process-step diagnostic across the same 10 seeds:
 
-| Solution | Canonical Top-1 mean | best | worst | Canonical Top-2 mean | Same-canonical miss-rate mean |
+| Solution | Canonical process-step Top-1 mean | best | worst | Canonical process-step Top-2 mean | Same-canonical miss-rate mean |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | `solution_0_rule_mock` | `0.9450` | `0.9517` (seed `8`) | `0.9400` (seed `4`) | `0.9918` | `0.8319` |
 | `solution_1_hybrid_retrieval` | `0.9687` | `0.9733` (seed `0`) | `0.9600` (seed `1`) | `0.9992` | `0.8981` |
