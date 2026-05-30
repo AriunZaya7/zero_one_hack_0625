@@ -2,6 +2,7 @@
   "attachments": [
     "FINAL_PITCH_OOD_STRATEGY.html",
     "baseline_vs_model_examples.md",
+    "final_candidate_selection_audit.md",
     "how_to_submit_solution_21.html",
     "paired_length_guard_audit.csv",
     "pitch_slides_outline.md",
@@ -23,6 +24,8 @@
     "template_xgb_feature_names.json",
     "video_script.md"
   ],
+  "diagnostic_package": "solution_21_template_boosted_bridge",
+  "scored_csv_source": "evidence cascade; mirrored by solution_21_template_boosted_bridge official_submission",
   "scored_csvs": {
     "anomaly.csv": {
       "header": [
@@ -31,7 +34,8 @@
         "SCORE",
         "PREDICTED_RULE"
       ],
-      "matches_solution21_official_submission": true,
+      "matches_final_diagnostic_package": true,
+      "matches_selected_evidence_cascade": true,
       "rows": 987,
       "sha256": "9154fae9ceae404a7b2d13aaf00df1873969df5926913f526793d9cb41ad7a58"
     },
@@ -40,7 +44,8 @@
         "EXAMPLE_ID",
         "PREDICTED_SEQUENCE"
       ],
-      "matches_solution21_official_submission": true,
+      "matches_final_diagnostic_package": true,
+      "matches_selected_evidence_cascade": true,
       "rows": 600,
       "sha256": "c5b808447582ed35d94aadfd77c8daf50bf9183ce038160a5ba3db843fde12a1"
     },
@@ -53,10 +58,11 @@
         "RANK_4",
         "RANK_5"
       ],
-      "matches_solution21_official_submission": true,
+      "matches_final_diagnostic_package": true,
+      "matches_selected_evidence_cascade": true,
       "rows": 600,
       "sha256": "da267b6e15392c1b4be28caac0857879230f3d472d1a091bb2b3b336d5bc10b1"
     }
   },
-  "solution": "solution_21_template_boosted_bridge"
+  "selection_rule": "highest measured objective scored CSVs first; diagnostics only as tie-break evidence"
 }

@@ -402,6 +402,15 @@ Solution 20 adds a paired-length completion diagnostic and the updated
 separate XGBoost 10-seed bridge diagnostic over the 110-family setup; that
 diagnostic is not the same thing as the split-seed table below.
 
+**Final scorer-file selection rule:** do not select by latest solution number.
+Select by objective scorer-facing evidence first, then use OOD diagnostics and
+explainability as tie-break evidence. The final scored CSVs are the best
+released-input evidence-cascade outputs: they tie the maximum measured coupled
+Task 1/2/3 objective proxy (`1.0000` / `1.0000` / `1.0000`) and are byte-for-byte
+identical across the Solution 20 evidence cascade and Solution 21 diagnostic
+package. The XGBoost bridge in Solution 21 is supporting evidence, not a reason
+to replace stronger scorer CSVs with weaker learned-model predictions.
+
 | Solution | Seed behavior | Task 1 Top-1 mean | best | worst | Task 1 MRR mean | Task 2 block mean | Task 2 edit mean | Task 3 accuracy mean | OOD avg Top-1 mean |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
 | [`solution_0_rule_mock`](solution_0_rule_mock/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6722` | `0.6983` (seed `1`) | `0.6550` (seed `5`) | `0.8309` | `0.3723` | `0.6045` | `1.0000` constant | `0.6743` |

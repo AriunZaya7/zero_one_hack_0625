@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[2]
 BUNDLE = Path(__file__).resolve().parent
 SCORED = BUNDLE / "scored_csvs"
 SOURCE = ROOT / "solutions" / "solution_21_template_boosted_bridge" / "outputs" / "official_submission"
+EVIDENCE_CASCADE_SOURCE = ROOT / "solutions" / "solution_20_paired_length_lattice" / "outputs" / "official_submission"
 
 CONTRACTS = {
     "nextstep.csv": {
@@ -47,7 +48,9 @@ def csv_shape(path: Path) -> tuple[list[str], int]:
 
 def main() -> None:
     manifest = {
-        "solution": "solution_21_template_boosted_bridge",
+        "selection_rule": "highest measured objective scored CSVs first; diagnostics only as tie-break evidence",
+        "scored_csv_source": "evidence cascade; mirrored by solution_21_template_boosted_bridge official_submission",
+        "diagnostic_package": "solution_21_template_boosted_bridge",
         "scored_csvs": {},
         "attachments": sorted(path.name for path in (BUNDLE / "attachments").iterdir() if path.is_file()),
     }
@@ -60,10 +63,13 @@ def main() -> None:
     for name, contract in CONTRACTS.items():
         path = SCORED / name
         source_path = SOURCE / name
+        evidence_path = EVIDENCE_CASCADE_SOURCE / name
         if not path.exists():
             raise SystemExit(f"Missing scored CSV: {path}")
         if not source_path.exists():
             raise SystemExit(f"Missing source official CSV: {source_path}")
+        if not evidence_path.exists():
+            raise SystemExit(f"Missing evidence-cascade official CSV: {evidence_path}")
         header, rows = csv_shape(path)
         if header != contract["header"]:
             raise SystemExit(f"{name} header {header!r}, expected {contract['header']!r}")
@@ -71,13 +77,17 @@ def main() -> None:
             raise SystemExit(f"{name} row count {rows}, expected {contract['rows']}")
         scored_hash = sha256(path)
         source_hash = sha256(source_path)
+        evidence_hash = sha256(evidence_path)
         if scored_hash != source_hash:
-            raise SystemExit(f"{name} differs from Solution 21 official_submission source")
+            raise SystemExit(f"{name} differs from final diagnostic package official_submission source")
+        if scored_hash != evidence_hash:
+            raise SystemExit(f"{name} differs from selected evidence-cascade source")
         manifest["scored_csvs"][name] = {
             "rows": rows,
             "header": header,
             "sha256": scored_hash,
-            "matches_solution21_official_submission": True,
+            "matches_selected_evidence_cascade": True,
+            "matches_final_diagnostic_package": True,
         }
 
     manifest_path = BUNDLE / "FINAL_SUBMISSION_MANIFEST.json"

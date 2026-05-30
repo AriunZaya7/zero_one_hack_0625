@@ -3,6 +3,25 @@
 This folder is the final hackathon submission bundle for the Industrial AI
 track.
 
+## Final Candidate Selection
+
+The scored CSVs in this folder were selected by measured objective performance,
+not by the latest internal experiment number.
+
+The uploaded predictions are the best released-input evidence-cascade outputs:
+they match the evidence cascade source CSVs and the final diagnostic package
+CSVs byte-for-byte. The XGBoost artifacts in `attachments/` are included for
+training evidence, OOD reasoning, and explainability; they do not replace the
+scored predictions.
+
+Selection summary:
+
+- Local coupled Task 1 Top-1/MRR: `1.0000` / `1.0000`.
+- Local coupled Task 2 exact/edit: `1.0000` / `0.0000`.
+- Local coupled Task 3 accuracy: `1.0000`.
+- Tie-breaker: keep the strongest direct evidence cascade for scorer CSVs, then
+  attach the trained template-normalized XGBoost bridge as supporting evidence.
+
 ## Upload These Three Scored Files
 
 Only these files are intended as scored prediction CSVs:
@@ -45,6 +64,7 @@ Important attachments:
 - `solution_21_training_log.md`
 - `solution_21_checkpoint_manifest.md`
 - `solution_21_loss_curve.csv`
+- `final_candidate_selection_audit.md`
 - `baseline_vs_model_examples.md`
 - `pitch_slides_outline.md`
 - `video_script.md`

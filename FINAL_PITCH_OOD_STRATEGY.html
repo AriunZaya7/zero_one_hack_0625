@@ -498,6 +498,40 @@
         our system first uses exact route evidence when the input files expose it, then falls back to process-aware prediction when exact evidence is missing, and it reports which mode it used so the risk is visible instead of hidden.
       </div>
 
+      <h3>How we chose the final scored CSVs</h3>
+      <p>
+        We did not automatically submit the newest experiment. The selection
+        rule was: first maximize the objective metrics that match the official
+        tasks, then use OOD risk and explainability as tie-breakers. The scored
+        CSVs kept in the final bundle are the best measured evidence-cascade
+        outputs; the trained XGBoost bridge is included as supporting evidence,
+        not as a replacement for those stronger scored predictions.
+      </p>
+      <div class="metric-strip" aria-label="Final candidate objective selection metrics">
+        <div class="metric-card">
+          <strong>1.0000</strong>
+          <span>Local coupled Task 1 Top-1 and MRR for the selected scored CSVs.</span>
+        </div>
+        <div class="metric-card">
+          <strong>1.0000</strong>
+          <span>Local coupled Task 2 exact match; edit distance is <code>0.0000</code>.</span>
+        </div>
+        <div class="metric-card">
+          <strong>1.0000</strong>
+          <span>Local coupled Task 3 accuracy from validator-based anomaly labeling.</span>
+        </div>
+        <div class="metric-card">
+          <strong>0.7531</strong>
+          <span>10-seed OOD Top-1 for the template XGBoost bridge diagnostic, used for explainability and risk evidence.</span>
+        </div>
+      </div>
+      <p>
+        In plain English: the uploaded prediction files are the strongest
+        measured scorer files. The later learning experiment helps explain how
+        to handle new-family strings, but it is not allowed to lower the
+        objective submission score.
+      </p>
+
       <h3>The problem in plain English</h3>
       <p>
         The Industrial AI track is about semiconductor manufacturing process
