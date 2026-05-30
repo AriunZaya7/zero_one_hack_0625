@@ -1,0 +1,46 @@
+{
+  "model": "ngram_n3",
+  "families": [
+    "IC",
+    "IGBT",
+    "MOSFET"
+  ],
+  "train_families": [
+    "IC",
+    "IGBT",
+    "MOSFET"
+  ],
+  "task1": {
+    "top1": 0.6833333333333333,
+    "top3": 0.9866666666666667,
+    "top5": 1.0,
+    "mrr": 0.8369166666666664,
+    "n": 600
+  },
+  "task2": {
+    "exact_match": 0.0,
+    "norm_edit_dist": 0.6553314078827703,
+    "token_acc": 0.20930453684283742,
+    "block_acc": 0.4678384293355953,
+    "n": 600
+  },
+  "task3": {
+    "binary_acc": 0.9866666666666667,
+    "precision": 0.9738562091503268,
+    "recall": 1.0,
+    "f1": 0.9867549668874172,
+    "roc_auc": 0.9983554824658873,
+    "confusion": {
+      "tp": 149,
+      "tn": 147,
+      "fp": 4,
+      "fn": 0
+    },
+    "n": 300,
+    "threshold": 0.595362646287246,
+    "rule_attribution_acc": 1.0,
+    "rule_attribution_n": 149
+  },
+  "elapsed_s": 2.1,
+  "timestamp": "2026-05-30 12:36:08"
+}
