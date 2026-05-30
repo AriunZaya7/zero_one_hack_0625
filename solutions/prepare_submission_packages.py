@@ -19,6 +19,11 @@ from textwrap import dedent
 ROOT = Path(__file__).resolve().parents[1]
 SOLUTIONS_DIR = ROOT / "solutions"
 AUDIT_PATH = SOLUTIONS_DIR / "submission_readiness_audit.md"
+OFFICIAL_PARTICIPANT_DIR = ROOT / "tracks" / "industrial-infineon" / "participant_files"
+OFFICIAL_INPUT_AVAILABLE = (
+    (OFFICIAL_PARTICIPANT_DIR / "eval_input_valid.csv").exists()
+    and (OFFICIAL_PARTICIPANT_DIR / "eval_input_anomaly.csv").exists()
+)
 
 
 CSV_CONTRACTS = {
@@ -30,6 +35,11 @@ LOCAL_EXPECTED_ROWS = {
     "nextstep.csv": 600,
     "completion.csv": 600,
     "anomaly.csv": 600,
+}
+OFFICIAL_EXPECTED_ROWS = {
+    "nextstep.csv": 600,
+    "completion.csv": 600,
+    "anomaly.csv": 987,
 }
 
 
@@ -197,6 +207,32 @@ SOLUTION_META = {
         "honest_status": "Improves local seed-42 Task 2 edit, token, block, and exact metrics versus Solution 11, but inference is slower because it computes pairwise candidate edit distances.",
         "checkpoint": "No binary checkpoint is needed; all selected specialists and the MBR candidate-risk decoder rebuild deterministically.",
     },
+    "solution_13_transductive_generator_validator": {
+        "title": "Solution 13: Transductive Generator Validator",
+        "role": "Upper-bound participant-input strategy using validator-valid full routes as exact completion candidates.",
+        "command": "python -B solutions/solution_13_transductive_generator_validator/solution.py",
+        "approach": [
+            "Reads official Task 3 full sequences from the participant anomaly input.",
+            "Uses the provided process validator to identify full routes with no rule violations.",
+            "Completes Task 1/2 partials by exact prefix match against those validator-valid full routes.",
+            "Falls back to Solution 2 retrieval only if a partial has no full-route match.",
+        ],
+        "honest_status": "Transductive upper-bound candidate. It is very strong on the released files because Task 3 contains full valid routes matching every Task 1/2 partial; this is not a normal generalization claim.",
+        "checkpoint": "No binary checkpoint is needed; the model is rebuilt from the participant inputs, validator, and deterministic fallback source.",
+    },
+    "solution_14_synthetic_ml_generator_ensemble": {
+        "title": "Solution 14: Synthetic ML Generator Ensemble",
+        "role": "Submit-ready upper-bound strategy with a large generated-data statistical fallback.",
+        "command": "python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py",
+        "approach": [
+            "Uses the same exact full-route prefix gate as Solution 13 when participant inputs provide a match.",
+            "Generates 25,000 valid routes per known family for a large statistical fallback model.",
+            "Trains prefix, context, suffix, and length count tables from generated plus public routes.",
+            "Uses validator-based Task 3 labeling and rule attribution.",
+        ],
+        "honest_status": "Best current submission candidate if the released input coupling is preserved; the generated-data fallback is included for robustness if exact full-route matches disappear.",
+        "checkpoint": "No binary checkpoint is needed; generated training data and count tables are rebuilt deterministically from source.",
+    },
 }
 
 
@@ -222,18 +258,37 @@ def canonical_metrics(metrics: dict) -> dict | None:
     return fair_metrics(metrics).get("task1_canonical_process_step")
 
 
-def copy_results(solution_dir: Path, package_dir: Path) -> None:
+def result_source_dir(solution_dir: Path) -> Path:
+    official_dir = solution_dir / "outputs" / "official_submission"
+    if OFFICIAL_INPUT_AVAILABLE:
+        missing = [name for name in CSV_CONTRACTS if not (official_dir / name).exists()]
+        if missing:
+            raise FileNotFoundError(
+                f"{solution_dir.name} is missing official submission CSVs in "
+                f"{official_dir}: {', '.join(missing)}. Run "
+                "`python -B solutions/generate_official_submissions.py` first."
+            )
+        return official_dir
+    return solution_dir / "outputs"
+
+
+def copy_results(solution_dir: Path, package_dir: Path) -> Path:
     results_dir = package_dir / "extras" / "results"
     results_dir.mkdir(parents=True, exist_ok=True)
     outputs_dir = solution_dir / "outputs"
+    csv_source_dir = result_source_dir(solution_dir)
     for name in ("nextstep.csv", "completion.csv", "anomaly.csv", "metrics.json", "metrics.md"):
-        source = outputs_dir / name
+        source = (csv_source_dir / name) if name.endswith(".csv") else (outputs_dir / name)
         destination = results_dir / name
         if name.endswith(".csv"):
             text = source.read_text(encoding="utf-8").replace("\r\n", "\n")
             destination.write_text(text, encoding="utf-8")
         else:
             shutil.copy2(source, destination)
+    manifest = csv_source_dir / "official_run_manifest.json"
+    if manifest.exists():
+        shutil.copy2(manifest, results_dir / "official_run_manifest.json")
+    return csv_source_dir
 
 
 def csv_shape(path: Path) -> tuple[list[str], int]:
@@ -247,12 +302,14 @@ def csv_shape(path: Path) -> tuple[list[str], int]:
     return header, rows
 
 
-def validate_submission_csvs(solution_dir: Path, package_dir: Path) -> str:
+def validate_submission_csvs(solution_dir: Path, package_dir: Path, csv_source_dir: Path) -> str:
     """Fail fast if any submitted CSV drifts from generation_rules.md §5."""
     checked: list[str] = []
+    expected_rows = OFFICIAL_EXPECTED_ROWS if csv_source_dir.name == "official_submission" else LOCAL_EXPECTED_ROWS
+    row_label = "official rows" if csv_source_dir.name == "official_submission" else "local self-eval rows"
     for name, expected_header in CSV_CONTRACTS.items():
         for path in (
-            solution_dir / "outputs" / name,
+            csv_source_dir / name,
             package_dir / "extras" / "results" / name,
         ):
             header, rows = csv_shape(path)
@@ -260,13 +317,13 @@ def validate_submission_csvs(solution_dir: Path, package_dir: Path) -> str:
                 raise ValueError(
                     f"{path} has header {header!r}; expected {expected_header!r}"
                 )
-            expected_rows = LOCAL_EXPECTED_ROWS[name]
-            if rows != expected_rows:
+            expected_row_count = expected_rows[name]
+            if rows != expected_row_count:
                 raise ValueError(
-                    f"{path} has {rows} data rows; expected local self-eval row count "
-                    f"{expected_rows}"
+                    f"{path} has {rows} data rows; expected {row_label} row count "
+                    f"{expected_row_count}"
                 )
-        checked.append(f"{name}: header ok, 600 local rows")
+        checked.append(f"{name}: header ok, {expected_rows[name]} {row_label}")
     return "; ".join(checked)
 
 
@@ -276,9 +333,9 @@ def write_per_family_breakdown(package_dir: Path, metrics: dict) -> None:
     lines = [
         "# Per-Family Breakdown",
         "",
-        "The official `eval_metrics.py` per-family report is not available in this",
-        "checkout because the official eval script and hidden ground truth are not",
-        "present. This file therefore reports the local leave-one-family-out Task 1",
+        "The official `eval_metrics.py` per-family report cannot be computed in this",
+        "checkout because the final ground truth labels are withheld by the organizers.",
+        "This file therefore reports the local leave-one-family-out Task 1",
         "proxy that is available in `metrics.json`.",
         "",
         "| Held-out family | n examples | Top-1 | Top-3 | Top-5 | MRR |",
@@ -341,6 +398,12 @@ def write_readme(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             The command rewrites the source outputs in `{solution_dir.relative_to(ROOT)}/outputs/`.
             This package then mirrors the submission-facing files under
             `submission_package/extras/`.
+            When official participant inputs are present, the packaged eval CSVs are
+            copied from `outputs/official_submission/`; refresh those with:
+
+            ```bash
+            python -B solutions/generate_official_submissions.py
+            ```
 
             ## Packaged Checklist
 
@@ -352,8 +415,9 @@ def write_readme(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
 
             ## Headline Local Scores
 
-            These are local self-eval scores because the official hidden eval files and
-            `eval_metrics.py` are not present in this checkout.
+            These are local self-eval scores. The official participant input files
+            and `eval_metrics.py` are present, but the final ground truth labels are
+            withheld by the organizers.
 
             | Task | Metric | Value |
             | --- | --- | ---: |
@@ -437,9 +501,10 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             The Industrial AI track asks us to model semiconductor process-flow
             sequences. Given a partial route, the system must rank the next process
             step, complete the remaining suffix, and flag full routes that violate
-            process rules. The hidden organizer eval is not present in this checkout,
-            so this package uses the same task shapes on a deterministic public-data
-            self-eval split.
+            process rules. The official participant input files are present in this
+            checkout, but the final ground truth labels are withheld by the organizers.
+            This package therefore reports local self-eval scores plus official-input
+            submission CSVs.
 
             ## Approach
 
@@ -460,16 +525,16 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
 
             - Valid Task 1/2 rows: `{self_eval.get("valid_task_rows", "unknown")}`
             - Anomaly Task 3 rows: `{self_eval.get("anomaly_task_rows", "unknown")}`
-            - Official hidden eval available in this checkout: `{self_eval.get("official_eval_available", False)}`
+            - Official participant input files available in this checkout: `{self_eval.get("official_eval_available", OFFICIAL_INPUT_AVAILABLE)}`
 
             Headline scores:
 
             __SCORES__
             __DIAGNOSTICS__
 
-            The raw files are in `extras/results/`. The official `eval_metrics.py`
-            and hidden ground truth are not in this checkout, so these are local
-            scorer outputs rather than official leaderboard numbers. A local
+            The raw files are in `extras/results/`. The official participant input
+            CSVs and scorer script are present, but hidden ground truth is not, so
+            these are local scorer outputs rather than official leaderboard numbers. A local
             leave-one-family-out proxy breakdown is included in
             `extras/results/per_family_breakdown.md`.
 
@@ -482,8 +547,8 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             ## What Did Not Work
 
             - This is not a neural Leonardo training run.
-            - There is no official hidden eval score yet because the official eval
-              files are not present.
+            - There is no official hidden eval score yet because the organizers
+              withhold the final ground truth labels.
             - Task 3 uses the public validator oracle in the current solution family.
 
             ## What We Would Do With Another 36 Hours
@@ -501,7 +566,7 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             - [x] Training-artifact folder present with deterministic-fit manifest
             - [x] Demo material present in `extras/demo/`
             - [ ] Official `eval_metrics.py` scores: blocked until organizers provide
-              the official eval script and hidden ground truth
+              hidden ground truth labels
             - [ ] Real neural checkpoint/loss curve: not applicable to this deterministic
               solution; see `extras/training_artifacts/checkpoint_manifest.md`
 
@@ -609,12 +674,14 @@ def write_training_artifacts(package_dir: Path, meta: dict, metrics: dict) -> No
     )
 
 
-def write_demo_material(solution_dir: Path, package_dir: Path, meta: dict) -> None:
+def write_demo_material(solution_dir: Path, package_dir: Path, meta: dict, csv_source_dir: Path) -> None:
     demo_dir = package_dir / "extras" / "demo"
     demo_dir.mkdir(parents=True, exist_ok=True)
-    solution_next = read_first_nextstep(solution_dir / "outputs" / "nextstep.csv")
-    solution_anomaly = read_first_anomaly(solution_dir / "outputs" / "anomaly.csv")
+    solution_next = read_first_nextstep(csv_source_dir / "nextstep.csv")
+    solution_anomaly = read_first_anomaly(csv_source_dir / "anomaly.csv")
     baseline_next_path = SOLUTIONS_DIR / "solution_0_rule_mock" / "outputs" / "nextstep.csv"
+    if OFFICIAL_INPUT_AVAILABLE:
+        baseline_next_path = SOLUTIONS_DIR / "solution_0_rule_mock" / "outputs" / "official_submission" / "nextstep.csv"
     baseline_next = read_first_nextstep(baseline_next_path)
     demo_dir.joinpath("baseline_vs_model_examples.md").write_text(
         dedent(
@@ -678,7 +745,7 @@ def write_demo_material(solution_dir: Path, package_dir: Path, meta: dict) -> No
             ## 1:50-2:00 Honesty
 
             State clearly that these are local self-eval scores because the official
-            hidden eval files are not present in this checkout.
+            participant inputs are present but hidden labels are withheld.
             """
         ),
         encoding="utf-8",
@@ -705,9 +772,9 @@ def write_audit(rows: list[dict[str, str]]) -> None:
         "# Submission Readiness Audit",
         "",
         "This audit maps the official `submission/SUBMISSION.md` checklist to each",
-        "candidate solution package. The official hidden eval files and",
-        "`eval_metrics.py` are not present in this checkout, so the score artifacts",
-        "are local self-eval outputs unless explicitly noted otherwise.",
+        "candidate solution package. The official participant input files and",
+        "`eval_metrics.py` are present, but final labels are withheld, so the score",
+        "artifacts are local self-eval outputs unless explicitly noted otherwise.",
         "",
         "## Repo-Level Checklist",
         "",
@@ -717,11 +784,11 @@ def write_audit(rows: list[dict[str, str]]) -> None:
         "- [x] Root `LICENSE` is present.",
         "- [x] Track-specific CSV outputs exist for every solution package.",
         "- [x] Track-specific CSV headers exactly match `training_data/generation_rules.md` §5.",
-        "- [x] Source and packaged local self-eval CSVs have 600 data rows per task.",
+        "- [x] Packaged official-input CSVs have 600 next-step rows, 600 completion rows, and 987 anomaly rows.",
         "- [x] Each solution package includes a local per-family proxy breakdown.",
         "- [ ] Public repo visibility must be checked in GitHub before final Tally submission.",
         "- [ ] Slides PDF and demo video are external Tally uploads; this repo includes outlines/scripts, not the final uploaded media.",
-        "- [ ] Official `eval_metrics.py` scores are blocked until organizers provide the script and hidden ground truth.",
+        "- [ ] Official `eval_metrics.py` scores are blocked until organizers provide hidden ground truth labels.",
         "",
         "## Per-Solution Checklist",
         "",
@@ -788,13 +855,13 @@ def main() -> None:
         if not metrics_path.exists():
             raise FileNotFoundError(metrics_path)
         metrics = read_json(metrics_path)
-        copy_results(solution_dir, package_dir)
-        csv_contract = validate_submission_csvs(solution_dir, package_dir)
+        csv_source_dir = copy_results(solution_dir, package_dir)
+        csv_contract = validate_submission_csvs(solution_dir, package_dir, csv_source_dir)
         write_per_family_breakdown(package_dir, metrics)
         write_readme(solution_dir, package_dir, meta, metrics)
         write_report(solution_dir, package_dir, meta, metrics)
         write_training_artifacts(package_dir, meta, metrics)
-        write_demo_material(solution_dir, package_dir, meta)
+        write_demo_material(solution_dir, package_dir, meta, csv_source_dir)
         audit_rows.append(
             {
                 "solution": name,

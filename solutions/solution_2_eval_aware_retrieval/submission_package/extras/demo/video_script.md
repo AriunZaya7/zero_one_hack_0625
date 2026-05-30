@@ -28,4 +28,4 @@ this solution's ranked next-step output.
 ## 1:50-2:00 Honesty
 
 State clearly that these are local self-eval scores because the official
-hidden eval files are not present in this checkout.
+participant inputs are present but hidden labels are withheld.

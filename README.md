@@ -29,6 +29,10 @@ Each solution has:
 
 - a runnable `solution.py`
 - `outputs/nextstep.csv`, `outputs/completion.csv`, `outputs/anomaly.csv`
+- when official participant inputs are present,
+  `outputs/official_submission/nextstep.csv`,
+  `outputs/official_submission/completion.csv`, and
+  `outputs/official_submission/anomaly.csv`
 - local metrics in `outputs/metrics.md` and `outputs/metrics.json`
 - a standalone `explanation.html`
 - a manual `how_to_submit_this_solution.html`
@@ -66,12 +70,16 @@ python -B solutions/solution_9_judge_aware_portfolio/solution.py
 python -B solutions/solution_10_confidence_gated_consensus/solution.py
 python -B solutions/solution_11_ood_guarded_consensus/solution.py
 python -B solutions/solution_12_mbr_completion/solution.py
+python -B solutions/solution_13_transductive_generator_validator/solution.py
+python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
+python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```
 
-The official hidden eval files and `eval_metrics.py` are not present in this
-checkout, so committed scores are local self-eval scores unless explicitly
-stated otherwise.
+The official participant input files and `eval_metrics.py` are now present under
+`tracks/industrial-infineon/participant_files/`. The organizers still withhold
+final ground truth labels, so committed scores are local self-eval or
+official-input diagnostics unless explicitly stated otherwise.
 
 ---
 

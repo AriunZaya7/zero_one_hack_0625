@@ -11,9 +11,10 @@ completion, and anomaly detection. Baseline/mock. Task 3 is an oracle validator,
 The Industrial AI track asks us to model semiconductor process-flow
 sequences. Given a partial route, the system must rank the next process
 step, complete the remaining suffix, and flag full routes that violate
-process rules. The hidden organizer eval is not present in this checkout,
-so this package uses the same task shapes on a deterministic public-data
-self-eval split.
+process rules. The official participant input files are present in this
+checkout, but the final ground truth labels are withheld by the organizers.
+This package therefore reports local self-eval scores plus official-input
+submission CSVs.
 
 ## Approach
 
@@ -36,7 +37,7 @@ Local self-eval rows:
 
 - Valid Task 1/2 rows: `600`
 - Anomaly Task 3 rows: `600`
-- Official hidden eval available in this checkout: `False`
+- Official participant input files available in this checkout: `False`
 
 Headline scores:
 
@@ -54,9 +55,9 @@ Headline scores:
 - **Task 3 rule attribution accuracy:** `1.0000`
 
 
-The raw files are in `extras/results/`. The official `eval_metrics.py`
-and hidden ground truth are not in this checkout, so these are local
-scorer outputs rather than official leaderboard numbers. A local
+The raw files are in `extras/results/`. The official participant input
+CSVs and scorer script are present, but hidden ground truth is not, so
+these are local scorer outputs rather than official leaderboard numbers. A local
 leave-one-family-out proxy breakdown is included in
 `extras/results/per_family_breakdown.md`.
 
@@ -69,8 +70,8 @@ leave-one-family-out proxy breakdown is included in
 ## What Did Not Work
 
 - This is not a neural Leonardo training run.
-- There is no official hidden eval score yet because the official eval
-  files are not present.
+- There is no official hidden eval score yet because the organizers
+  withhold the final ground truth labels.
 - Task 3 uses the public validator oracle in the current solution family.
 
 ## What We Would Do With Another 36 Hours
@@ -88,7 +89,7 @@ leave-one-family-out proxy breakdown is included in
 - [x] Training-artifact folder present with deterministic-fit manifest
 - [x] Demo material present in `extras/demo/`
 - [ ] Official `eval_metrics.py` scores: blocked until organizers provide
-  the official eval script and hidden ground truth
+  hidden ground truth labels
 - [ ] Real neural checkpoint/loss curve: not applicable to this deterministic
   solution; see `extras/training_artifacts/checkpoint_manifest.md`
 

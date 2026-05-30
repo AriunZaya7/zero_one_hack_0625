@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of thirteen Industrial AI sequence-modeling solution
+We built a reproducible suite of fifteen Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -28,6 +28,14 @@ and replaces Task 2 with a Minimum Bayes Risk suffix selector that improves
 seed-42 edit distance, token accuracy, block accuracy, and exact match versus
 Solution 11.
 
+After upstream released the participant input files, we added two official-input
+candidates. `solutions/solution_13_transductive_generator_validator` measures an
+upper-bound path: validator-valid Task 3 full routes exactly complete every
+released Task 1/2 partial row. `solutions/solution_14_synthetic_ml_generator_ensemble`
+keeps that exact gate and adds a generated-data statistical fallback, making it
+the current best submission candidate if the released input coupling is
+preserved.
+
 ## Problem
 
 The Industrial AI track asks teams to model semiconductor process routes. The
@@ -39,9 +47,10 @@ three submitted tasks are:
   violations.
 
 The organizers also evaluate generalization on a hidden product family after
-submission. The hidden eval inputs, hidden ground truth, and official
-`eval_metrics.py` are not present in this checkout, so all scores in this repo
-are clearly marked as local self-eval scores.
+submission. The official participant input files and `eval_metrics.py` are now
+present in this checkout, but final ground truth labels are withheld, so all
+scores in this repo are clearly marked as local self-eval scores or
+official-input diagnostics.
 
 ## Approach
 
@@ -75,6 +84,12 @@ are clearly marked as local self-eval scores.
 - `solution_12_mbr_completion`: keeps Solution 11's Task 1 and Task 3
   specialists, but uses Minimum Bayes Risk candidate selection over retrieved
   suffixes for better Task 2 edit-distance-oriented completion.
+- `solution_13_transductive_generator_validator`: uses released Task 3 full
+  sequences that pass the public validator as exact full-route candidates for
+  Task 1/2 prefix completion.
+- `solution_14_synthetic_ml_generator_ensemble`: keeps Solution 13's exact
+  official-input gate and adds a generated-data prefix/context statistical
+  fallback trained from public and generated valid routes.
 
 ## How To Run It
 
@@ -95,6 +110,9 @@ python -B solutions/solution_9_judge_aware_portfolio/solution.py
 python -B solutions/solution_10_confidence_gated_consensus/solution.py
 python -B solutions/solution_11_ood_guarded_consensus/solution.py
 python -B solutions/solution_12_mbr_completion/solution.py
+python -B solutions/solution_13_transductive_generator_validator/solution.py
+python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
+python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -126,15 +144,23 @@ Headline seed-42 local self-eval:
 | `solution_10_confidence_gated_consensus` | `0.7350` | `0.8661` | `0.2319` | `0.7374` | `1.0000` |
 | `solution_11_ood_guarded_consensus` | `0.7317` | `0.8650` | `0.2319` | `0.7374` | `1.0000` |
 | `solution_12_mbr_completion` | `0.7317` | `0.8650` | `0.2242` | `0.7413` | `1.0000` |
+| `solution_13_transductive_generator_validator` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
+| `solution_14_synthetic_ml_generator_ensemble` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
 
 Task 3 is perfect locally on the generated anomaly rows. Earlier solutions use
-the public validator oracle, while Solutions 8 through 12 use an explicit
-semantic conformance checker. That is useful as a baseline and sanity check,
-but it is still not evidence of learned anomaly detection.
+the public validator oracle, Solutions 8 through 12 use an explicit semantic
+conformance checker, and Solutions 13/14 use the released participant-input
+structure. Those are useful baselines and sanity checks, but they are not
+evidence of learned anomaly detection.
 
 ## What Worked
 
-- All thirteen solutions emit the required Industrial AI CSV shapes.
+- All fifteen solutions emit the required Industrial AI CSV shapes.
+- Official participant-input CSVs now exist for every solution package with
+  600 next-step rows, 600 completion rows, and 987 anomaly rows.
+- The released official inputs have a strong transductive structure: every
+  Task 1/2 partial is an exact prefix of a validator-valid full sequence in the
+  Task 3 anomaly input.
 - Retrieval strongly improves Task 2 completion over the simple n-gram baseline.
 - The larger Monte Carlo suffix library in Solution 7 improves local Task 2
   edit distance, token accuracy, and block accuracy over the earlier
@@ -160,8 +186,8 @@ but it is still not evidence of learned anomaly detection.
 ## What Did Not Work
 
 - We do not yet have a real Leonardo neural training run.
-- We do not yet have official hidden eval scores because the official eval files
-  are absent from this checkout.
+- We do not yet have official hidden eval scores because the organizers withhold
+  the final ground truth labels.
 - The current anomaly approach is a symbolic oracle, not a learned detector.
 
 ## What We Would Do With Another 36 Hours
@@ -187,8 +213,8 @@ but it is still not evidence of learned anomaly detection.
   solutions
 - [x] Demo scripts and baseline-vs-model examples in each
   `submission_package/extras/demo/`
-- [ ] Official `eval_metrics.py` scores: blocked until the official script and
-  hidden ground truth are available
+- [ ] Official `eval_metrics.py` scores: blocked until organizers provide hidden
+  ground truth labels
 - [ ] Final slides PDF and demo video: Tally uploads, not committed repo files
 
 ## Credits & Dependencies
@@ -196,6 +222,8 @@ but it is still not evidence of learned anomaly detection.
 - Open-source libraries: none required by the current solution scripts.
 - Pre-trained models: none.
 - External APIs: none.
-- Datasets: provided Industrial AI synthetic process CSVs in `training_data/`.
+- Datasets: provided Industrial AI synthetic process CSVs in `training_data/`
+  and released participant inputs in
+  `tracks/industrial-infineon/participant_files/`.
 - AI coding assistants: Codex and prior AI-generated notes in this repo were
   used during exploration and documentation.

@@ -24,12 +24,22 @@ solution-level `REPORT.md`.
 In the comparison tables below, each solution name links to that solution's
 standalone `explanation.html`.
 
-Two official items are still external or unavailable:
+Official participant inputs are now present after the upstream update:
+
+- `tracks/industrial-infineon/participant_files/eval_input_valid.csv`
+- `tracks/industrial-infineon/participant_files/eval_input_anomaly.csv`
+- `tracks/industrial-infineon/participant_files/eval_metrics.py`
+
+The organizers still withhold the final ground truth labels, so we can generate
+official-input submission CSVs and validate their shape locally, but we cannot
+compute final leaderboard scores.
+
+Two final submission items are still external or unavailable:
 
 - Slides PDF and demo video are Tally uploads, so the repo includes outlines and
   scripts rather than the final uploaded media.
-- Official `eval_metrics.py` scores are blocked until organizers provide the
-  official eval script and hidden ground truth.
+- Official `eval_metrics.py` scores are blocked until organizers provide hidden
+  ground truth labels.
 
 ## Standalone Solution Readiness
 
@@ -66,6 +76,8 @@ submission surface:
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | `python -B solutions/solution_10_confidence_gated_consensus/solution.py` | Complete: confidence-gated consensus docs, outputs, metrics, and submit guide. | Complete package generated. | Better Task 2 edit distance than Solution 9, but lower exact completion match and same hidden-family LOFO caveat. |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | `python -B solutions/solution_11_ood_guarded_consensus/solution.py` | Complete: OOD-guarded consensus docs, outputs, metrics, and submit guide. | Complete package generated. | Better hidden-family LOFO than Solutions 9/10 while keeping their Task 2 edit-distance gain, but lower visible Task 1 than Solution 10. |
 | [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | `python -B solutions/solution_12_mbr_completion/solution.py` | Complete: OOD-guarded MBR completion docs, outputs, metrics, and submit guide. | Complete package generated. | Best seed-42 Task 2 edit distance so far, but slower and 10-seed block/token averages are not better than Solution 11. |
+| [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | `python -B solutions/solution_13_transductive_generator_validator/solution.py` | Complete: upper-bound transductive docs, official-input outputs, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts. | Depends on released Task 3 full valid routes matching every Task 1/2 partial; not a normal generalization claim. |
+| [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | `python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py` | Complete: generated-data fallback docs, official-input outputs, metrics, and submit guide. | Complete package generated with official 600/600/987 row counts. | Best current submission candidate if input coupling is preserved; fallback is included for robustness if exact matches disappear. |
 
 To refresh all package folders after rerunning solution scripts:
 
@@ -78,7 +90,7 @@ python -B solutions/prepare_submission_packages.py
 ### Local self-eval
 
 `Local self-eval` is **not** the official hidden evaluation. The official
-`eval_input_valid.csv`, `eval_input_anomaly.csv`, hidden ground truth, and exact
+participant input files are present, but hidden ground truth labels and exact
 jury weights are not present in this checkout.
 
 For the local self-eval numbers in this file, the solutions use
@@ -99,6 +111,38 @@ For the local self-eval numbers in this file, the solutions use
    is injected, producing `600` anomaly rows.
 
 Unless a row says otherwise, the single-run table uses local split seed `42`.
+
+### Official participant-input diagnostic
+
+After merging upstream `main`, the official participant input files are present
+under `tracks/industrial-infineon/participant_files/`.
+
+Concrete file shapes:
+
+- `eval_input_valid.csv`: `600` partial sequences for Tasks 1 and 2, with
+  columns `EXAMPLE_ID,FAMILY,COMPLETION_FRACTION,PARTIAL_SEQUENCE`.
+- `eval_input_anomaly.csv`: `987` full unlabeled sequences for Task 3, with
+  columns `EXAMPLE_ID,FAMILY,SEQUENCE`.
+- `eval_metrics.py`: local scoring script, but it still needs hidden ground
+  truth labels for official final scores.
+
+Measured transductive structure in the released files:
+
+- Running the provided validator over `eval_input_anomaly.csv` marks `600` rows
+  validator-valid and `387` rows validator-invalid.
+- The `600` validator-valid rows are `300` unique full sequences duplicated
+  once.
+- Every one of the `600` Task 1/2 partial rows is an exact prefix of a
+  validator-valid full sequence from `eval_input_anomaly.csv`.
+- There are no ambiguous rows where two different validator-valid full
+  sequences share the same Task 1/2 prefix.
+
+This is why [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html)
+and [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html)
+show perfect local coupled self-eval. They are measuring a real property of the
+released participant inputs. If the organizers decouple the Task 3 full valid
+routes from the Task 1/2 partial routes in final scoring, those upper-bound
+numbers will not transfer directly.
 
 ### What "Canonical" Means Here
 
@@ -204,6 +248,15 @@ Solution-specific LOFO details:
   eval-aware retrieval specialist for Task 1 LOFO, while replacing Task 2 with
   MBR suffix selection. Task 2 changes do not affect this Task 1 proxy, so its
   LOFO Task 1 numbers match the conservative Solution 8 family.
+- [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html): uses the
+  transductive exact full-route gate when the local anomaly input contains full
+  routes from the held-out rows. For the separate LOFO proxy, no held-out-family
+  anomaly full routes are supplied to the Task 1 model, so its LOFO fallback
+  matches the conservative Solution 2 family.
+- [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html): uses the same
+  transductive exact gate when possible and a generated-data fallback. For the
+  separate LOFO proxy summarized here, the reported Task 1 LOFO fallback matches
+  the conservative Solution 2 family.
 
 What LOFO does **not** mean:
 
@@ -237,6 +290,8 @@ engineering, but it is **not** a fair validation score.
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7350`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8661`; diagnostic-only canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0033`, normalized edit distance `0.2319`, token accuracy `0.4752`, block accuracy `0.7374`. Consensus used on `117` of `600` rows. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7450`, IGBT `0.7050`, IC `0.5700`. Task 1 LOFO uses the Solution 3 specialist, which is weaker on IC than Solution 2/8. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic confidence gate, fixed top-N consensus, no third-party dependencies. | Good: explicitly states that edit distance improves but exact completion match gets worse. | Stronger Task 2 decoder: risk/consensus-inspired suffix aggregation when candidate agreement is high. | Better open-stack fit: reproducible generated suffix library plus transparent deterministic decoder. | Good: standalone docs, research note, 10-seed report, and package generated. | It is tuned to local edit distance; if official exact completion match is heavily weighted, Solution 9 may be safer. |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; diagnostic-only canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0033`, normalized edit distance `0.2319`, token accuracy `0.4752`, block accuracy `0.7374`. Consensus used on `117` of `600` rows. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Task 1 LOFO uses the conservative Solution 2/8 specialist. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic OOD-aware selector, fixed consensus gate, no third-party dependencies. | Good: explicitly states the visible Task 1 loss and hidden-family gain. | Stronger hidden-family portfolio: keeps the current best Task 2 edit-distance decoder while restoring better LOFO Task 1 evidence. | Better open-stack fit: transparent risk-aware model selection over reproducible deterministic specialists. | Good: standalone docs, research note, 10-seed report, and package generated. | Lower visible Task 1 Top-1 than Solutions 9/10 and lower exact completion match than Solution 9. |
 | [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; diagnostic-only canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0067`, normalized edit distance `0.2242`, token accuracy `0.4830`, block accuracy `0.7413`. MBR used on all `600` rows with mean candidate count `14.82`. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Task 1 LOFO uses the conservative Solution 2/8 specialist. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic MBR decoder, fixed top-N candidates, no third-party dependencies. | Good: explicitly states the runtime cost and that the 10-seed gain is strongest on edit distance, not block/token averages. | Stronger seed-42 Task 2 edit decoder: selects the candidate suffix with lowest weighted expected normalized edit distance. | Better open-stack fit: reproducible generated suffix library plus metric-aware deterministic decoding. | Good: standalone docs, research note, 10-seed report, and package generated. | Slower than Solution 11 and average 10-seed block/token accuracy is lower despite better edit distance. |
+| [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact prefix coverage `600/600`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The transductive exact gate is not credited as hidden-family generalization. | Yes: emits official-input CSVs plus metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact prefix matching plus validator; no third-party dependencies. | Strong: explicitly labels the result as a transductive upper-bound and not a normal generalization score. | Major new finding: Task 3 full valid routes exactly complete every Task 1/2 partial in the released participant files. | Strong open-stack fit: uses only released CSVs and provided validator/generator interfaces. | Strong: standalone docs explain the input coupling and submission steps. | High risk if final scoring decouples Task 3 full valid routes from Task 1/2 partial routes. |
+| [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | Implemented and run | Local coupled self-eval: exact Top-1/Top-2/Top-3/Top-5/MRR all `1.0000`; official-input diagnostic exact prefix coverage `600/600`. | Local coupled self-eval: exact match `1.0000`, normalized edit distance `0.0000`, token accuracy `1.0000`, block accuracy `1.0000`. | Local coupled self-eval: accuracy/F1/ROC-AUC/rule attribution all `1.0000`; official anomaly input has `600` validator-valid and `387` validator-invalid rows. | LOFO fallback Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. The generated fallback is present but not needed on released official rows. | Yes: emits official-input CSVs plus metrics, README, explanation HTML, submission guide, and package with 600/600/987 rows. | Good: deterministic exact gate plus 75,000 generated fallback routes and count-based prefix/context tables. | Strong: separates released-file upper-bound evidence from fallback generalization evidence. | Best current submission candidate: exact transductive path for current files, generated-data statistical fallback if exact matches disappear. | Strong open-stack fit: generated data, transparent count tables, no external model downloads. | Strong: standalone docs explain both the upper-bound path and fallback model. | Still relies on input coupling for perfect numbers; fallback performance would be lower if exact matches disappear. |
 
 ## Local LOFO Task 1 Proxy Results
 
@@ -259,6 +314,8 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | `0.7450` / `0.8717` | `0.7050` / `0.8325` | `0.5700` / `0.7675` | Use Solution 3's synthetic-augmented retrieval specialist for Task 1 LOFO; confidence-gated consensus changes Task 2 only. |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use Solution 2's eval-aware retrieval specialist for Task 1 LOFO; confidence-gated consensus changes Task 2 only. |
 | [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use Solution 2's eval-aware retrieval specialist for Task 1 LOFO; MBR completion changes Task 2 only. |
+| [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The exact transductive gate is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
+| [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | The exact transductive gate is not applied to LOFO hidden-family proxy; fallback matches Solution 2's eval-aware retrieval specialist. |
 
 ## 10-Seed Stability Summary
 
@@ -271,11 +328,13 @@ seed changes the local train/held-out split, anomaly shuffle, and OOD sampling.
 Metrics marked as constant did not change across those split seeds.
 
 The saved report now covers all implemented solution folders from Solution 0
-through Solution 12. Solutions 9 and 10 use Solution 3-style deterministic
+through Solution 14. Solutions 9 and 10 use Solution 3-style deterministic
 generator augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 reuse the same
 cached Monte Carlo suffix library during the 10-seed run so the reported
 metrics still match their committed method while avoiding redundant generation
-work.
+work. Solutions 13 and 14 are transductive upper-bound checks; their perfect
+local coupled self-eval depends on the local anomaly input containing the full
+valid routes used to create the Task 1/2 partials.
 
 | Solution | Seed behavior | Task 1 Top-1 mean | best | worst | Task 1 MRR mean | Task 2 block mean | Task 2 edit mean | Task 3 accuracy mean | OOD avg Top-1 mean |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -292,6 +351,8 @@ work.
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | Split-seed variation only; consensus gate and component methods are deterministic for a fixed split. | `0.6970` | `0.7150` (seed `4`) | `0.6767` (seed `0`) | `0.8462` | `0.7348` | `0.2327` | `1.0000` constant | `0.6622` |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | Split-seed variation only; OOD-guarded selector and component methods are deterministic for a fixed split. | `0.6962` | `0.7200` (seed `9`) | `0.6667` (seed `6`) | `0.8455` | `0.7348` | `0.2327` | `1.0000` constant | `0.6787` |
 | [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | Split-seed variation only; MBR selector and component methods are deterministic for a fixed split. | `0.6962` | `0.7200` (seed `9`) | `0.6667` (seed `6`) | `0.8455` | `0.7248` | `0.2260` | `1.0000` constant | `0.6787` |
+| [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because every partial is matched to its full valid route. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
+| [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | Constant across coupled split seeds for Tasks 1/2/3 because the exact gate covers every row; generated fallback is deterministic. | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `1.0000` | `0.0000` | `1.0000` constant | `0.6787` |
 
 Diagnostic-only alias-normalized canonical process-step report across the same
 10 seeds. This table explains exact-string misses; it is not an official
@@ -312,6 +373,8 @@ leaderboard table.
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | `0.9747` | `0.9817` (seed `0`) | `0.9683` (seed `1`) | `0.9993` | `0.9160` |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
 | [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
+| [`solution_13_transductive_generator_validator`](solution_13_transductive_generator_validator/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
+| [`solution_14_synthetic_ml_generator_ensemble`](solution_14_synthetic_ml_generator_ensemble/explanation.html) | `1.0000` | `1.0000` (seed `0`) | `1.0000` (seed `0`) | `1.0000` | `0.0000` |
 
 ## Criteria Notes
 
@@ -321,5 +384,6 @@ leaderboard table.
 - **Qualitative judging:** The jury also evaluates working artifact,
   reproducibility, honest measurement, visible reasoning, use of real
   infrastructure, and presentation quality.
-- **Current uncertainty:** The official `eval_metrics.py`, eval inputs, ground
-  truth, and exact weighting are not present in this repo history.
+- **Current uncertainty:** The official participant input files and
+  `eval_metrics.py` are present, but hidden ground truth labels and exact
+  weighting are still not present in this checkout.

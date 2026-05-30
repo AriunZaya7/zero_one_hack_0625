@@ -1,8 +1,8 @@
 # Per-Family Breakdown
 
-The official `eval_metrics.py` per-family report is not available in this
-checkout because the official eval script and hidden ground truth are not
-present. This file therefore reports the local leave-one-family-out Task 1
+The official `eval_metrics.py` per-family report cannot be computed in this
+checkout because the final ground truth labels are withheld by the organizers.
+This file therefore reports the local leave-one-family-out Task 1
 proxy that is available in `metrics.json`.
 
 | Held-out family | n examples | Top-1 | Top-3 | Top-5 | MRR |

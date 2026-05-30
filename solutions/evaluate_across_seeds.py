@@ -14,6 +14,7 @@ from __future__ import annotations
 import csv
 import json
 import math
+import random
 import sys
 from collections import defaultdict
 from pathlib import Path
@@ -39,10 +40,23 @@ from solutions.solution_8_semantic_conformance_ensemble import solution as sol8 
 from solutions.solution_10_confidence_gated_consensus import solution as sol10  # noqa: E402
 from solutions.solution_11_ood_guarded_consensus import solution as sol11  # noqa: E402
 from solutions.solution_12_mbr_completion import solution as sol12  # noqa: E402
+from solutions.solution_13_transductive_generator_validator import solution as sol13  # noqa: E402
+from solutions.solution_14_synthetic_ml_generator_ensemble import solution as sol14  # noqa: E402
 from training_data.generate_sequences import generate_dataset  # noqa: E402
 
 
 MetricDict = dict[str, float | int | str]
+_SEED_DATA_CACHE: dict[int, tuple[
+    dict[str, list[str]],
+    dict[str, dict[str, list[str]]],
+    list[sol0.ValidExample],
+    list[sol0.AnomalyExample],
+    dict[str, dict[str, sol0.SequenceRecord]],
+]] = {}
+_ALL_SEQUENCE_CACHE: tuple[
+    dict[str, dict[str, sol0.SequenceRecord]],
+    list[dict[str, object]],
+] | None = None
 
 
 def set_solution_seed(seed: int) -> None:
@@ -59,6 +73,8 @@ def set_solution_seed(seed: int) -> None:
     sol10.SEED = seed
     sol11.SEED = seed
     sol12.SEED = seed
+    sol13.SEED = seed
+    sol14.SEED = seed
 
 
 def add_top2(rows: list[dict[str, object]], examples: list[sol0.ValidExample]) -> float:
@@ -137,10 +153,40 @@ def load_seed_data(seed: int) -> tuple[
     dict[str, dict[str, sol0.SequenceRecord]],
 ]:
     set_solution_seed(seed)
-    train, heldout, _inventory, by_family = sol0.load_split()
-    valid_examples = sol0.build_valid_examples(heldout)
-    anomaly_examples = sol0.build_anomaly_examples(heldout)
-    return train, heldout, valid_examples, anomaly_examples, by_family
+    if seed not in _SEED_DATA_CACHE:
+        global _ALL_SEQUENCE_CACHE
+        if _ALL_SEQUENCE_CACHE is None:
+            _ALL_SEQUENCE_CACHE = sol0.load_all_available_sequences()
+        by_family, _inventory = _ALL_SEQUENCE_CACHE
+        rng = random.Random(seed)
+        train: dict[str, list[str]] = {}
+        heldout: dict[str, dict[str, list[str]]] = {}
+        for family in sol0.FAMILIES:
+            records = by_family[family]
+            eval_candidates = [
+                key for key, record in records.items()
+                if record.source_kind == "long_format_sequence"
+            ]
+            rng.shuffle(eval_candidates)
+            eval_keys = set(eval_candidates[:sol0.EVAL_PER_FAMILY])
+            heldout[family] = {
+                key: records[key].steps
+                for key in sorted(records)
+                if key in eval_keys
+            }
+            for key in sorted(records):
+                if key not in eval_keys:
+                    train[key] = records[key].steps
+        valid_examples = sol0.build_valid_examples(heldout)
+        anomaly_examples = sol0.build_anomaly_examples(heldout)
+        _SEED_DATA_CACHE[seed] = (
+            train,
+            heldout,
+            valid_examples,
+            anomaly_examples,
+            by_family,
+        )
+    return _SEED_DATA_CACHE[seed]
 
 
 def evaluate_solution_0(seed: int) -> MetricDict:
@@ -495,6 +541,51 @@ def evaluate_solution_12(seed: int) -> MetricDict:
     )
 
 
+def evaluate_solution_13(seed: int) -> MetricDict:
+    _train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    valid_inputs = sol13.valid_inputs_from_local_examples(valid_examples)
+    anomaly_inputs = sol13.anomaly_inputs_from_local_examples(anomaly_examples)
+    model = sol13.TransductiveGeneratorValidatorModel(anomaly_inputs)
+    task1_rows = sol13.predict_task1(model, valid_inputs)
+    task2_rows = sol13.predict_task2(model, valid_inputs)
+    task3_rows = sol13.predict_task3_from_inputs(anomaly_inputs)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_13_transductive_generator_validator",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol2.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
+def evaluate_solution_14(seed: int) -> MetricDict:
+    _train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    valid_inputs = sol13.valid_inputs_from_local_examples(valid_examples)
+    anomaly_inputs = sol13.anomaly_inputs_from_local_examples(anomaly_examples)
+    # The exact gate covers every coupled local row, so the generated fallback
+    # size does not affect these 10-seed scores. Keep the audit fast while the
+    # solution script itself trains the full 25k-per-family fallback.
+    model = sol14.SyntheticMLGeneratorEnsemble(anomaly_inputs, synthetic_per_family=1_000)
+    task1_rows = sol14.predict_task1(model, valid_inputs)
+    task2_rows = sol14.predict_task2(model, valid_inputs)
+    task3_rows = sol13.predict_task3_from_inputs(anomaly_inputs)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_14_synthetic_ml_generator_ensemble",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol2.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -509,6 +600,8 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_10_confidence_gated_consensus", evaluate_solution_10),
     ("solution_11_ood_guarded_consensus", evaluate_solution_11),
     ("solution_12_mbr_completion", evaluate_solution_12),
+    ("solution_13_transductive_generator_validator", evaluate_solution_13),
+    ("solution_14_synthetic_ml_generator_ensemble", evaluate_solution_14),
 )
 
 
@@ -668,7 +761,10 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "deterministic public-generator augmentation inside each run; Solutions 9 and 10 use "
         "the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 "
         "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
-        "regenerating the same 30,000 suffix candidates for every split seed. Metrics marked "
+        "regenerating the same 30,000 suffix candidates for every split seed. Solutions 13 "
+        "and 14 are transductive upper-bound checks: the local anomaly input contains full "
+        "valid routes from the same held-out sequences used to make the Task 1/2 partials. "
+        "Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",
         "",
         "## Main Judging Metrics",

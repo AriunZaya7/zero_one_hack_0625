@@ -2,7 +2,7 @@
 
 This report evaluates the current solutions across seeds `0` through `9`.
 
-Important interpretation: these solutions do not train stochastic neural weights. For a fixed local split, each one is deterministic. Here, the seed changes the local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses deterministic public-generator augmentation inside each run; Solutions 9 and 10 use the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 use a cached deterministic Monte Carlo suffix library in this evaluator to avoid regenerating the same 30,000 suffix candidates for every split seed. Metrics marked `constant_across_split_seeds` did not change at all across the 10 runs.
+Important interpretation: these solutions do not train stochastic neural weights. For a fixed local split, each one is deterministic. Here, the seed changes the local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses deterministic public-generator augmentation inside each run; Solutions 9 and 10 use the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 use a cached deterministic Monte Carlo suffix library in this evaluator to avoid regenerating the same 30,000 suffix candidates for every split seed. Solutions 13 and 14 are transductive upper-bound checks: the local anomaly input contains full valid routes from the same held-out sequences used to make the Task 1/2 partials. Metrics marked `constant_across_split_seeds` did not change at all across the 10 runs.
 
 ## Main Judging Metrics
 
@@ -21,6 +21,8 @@ Important interpretation: these solutions do not train stochastic neural weights
 | `solution_10_confidence_gated_consensus` | 0.6970 | 0.7150 (seed 4) | 0.6767 (seed 0) | 0.8462 | 0.7348 | 0.2327 | 1.0000 | 0.6622 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7348 | 0.2327 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7248 | 0.2260 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 1.0000 | 0.0000 | 1.0000 | 0.6787 | constant_across_split_seeds |
 
 ## Alias / Canonical Diagnostic
 
@@ -43,6 +45,8 @@ is much lower than process understanding.
 | `solution_10_confidence_gated_consensus` | 0.9747 | 0.9817 (seed 0) | 0.9683 (seed 1) | 0.9993 | 0.9160 |
 | `solution_11_ood_guarded_consensus` | 0.9730 | 0.9783 (seed 9) | 0.9683 (seed 1) | 0.9992 | 0.9110 |
 | `solution_12_mbr_completion` | 0.9730 | 0.9783 (seed 9) | 0.9683 (seed 1) | 0.9992 | 0.9110 |
+| `solution_13_transductive_generator_validator` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
+| `solution_14_synthetic_ml_generator_ensemble` | 1.0000 | 1.0000 (seed 0) | 1.0000 (seed 0) | 1.0000 | 0.0000 |
 
 ## Full Summary Table
 
@@ -148,6 +152,56 @@ is much lower than process understanding.
 | `solution_12_mbr_completion` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_12_mbr_completion` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_12_mbr_completion` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `ood_avg_top1` | higher_is_better | 0.6787 | 0.0181 | 0.7183 | 0 | 0.6550 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `ood_ic_mrr` | higher_is_better | 0.8174 | 0.0130 | 0.8367 | 7 | 0.7929 | 5 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `ood_ic_top1` | higher_is_better | 0.6440 | 0.0266 | 0.6800 | 7 | 0.5950 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `ood_igbt_mrr` | higher_is_better | 0.8274 | 0.0148 | 0.8558 | 9 | 0.8092 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `ood_igbt_top1` | higher_is_better | 0.6880 | 0.0244 | 0.7300 | 9 | 0.6550 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `ood_mosfet_mrr` | higher_is_better | 0.8510 | 0.0189 | 0.8862 | 0 | 0.8196 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `ood_mosfet_top1` | higher_is_better | 0.7040 | 0.0374 | 0.7750 | 0 | 0.6450 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_13_transductive_generator_validator` | `public_lookup_coverage` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_13_transductive_generator_validator` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_13_transductive_generator_validator` | `task1_canonical_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_canonical_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_mrr` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_same_canonical_miss_rate` | higher_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_top3` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task2_block_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task2_exact_match` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task2_normalized_edit_distance` | lower_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task2_token_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_13_transductive_generator_validator` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_avg_top1` | higher_is_better | 0.6787 | 0.0181 | 0.7183 | 0 | 0.6550 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_ic_mrr` | higher_is_better | 0.8174 | 0.0130 | 0.8367 | 7 | 0.7929 | 5 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_ic_top1` | higher_is_better | 0.6440 | 0.0266 | 0.6800 | 7 | 0.5950 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_igbt_mrr` | higher_is_better | 0.8274 | 0.0148 | 0.8558 | 9 | 0.8092 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_igbt_top1` | higher_is_better | 0.6880 | 0.0244 | 0.7300 | 9 | 0.6550 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_mosfet_mrr` | higher_is_better | 0.8510 | 0.0189 | 0.8862 | 0 | 0.8196 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `ood_mosfet_top1` | higher_is_better | 0.7040 | 0.0374 | 0.7750 | 0 | 0.6450 | 7 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_14_synthetic_ml_generator_ensemble` | `public_lookup_coverage` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_14_synthetic_ml_generator_ensemble` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_canonical_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_canonical_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_mrr` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_same_canonical_miss_rate` | higher_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_top1` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_top2` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_top3` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task2_block_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task2_exact_match` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task2_normalized_edit_distance` | lower_is_better | 0.0000 | 0.0000 | 0.0000 | 0 | 0.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task2_token_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_14_synthetic_ml_generator_ensemble` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_1_hybrid_retrieval` | `ood_avg_top1` | higher_is_better | 0.6627 | 0.0177 | 0.7067 | 0 | 0.6367 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `ood_ic_mrr` | higher_is_better | 0.7984 | 0.0147 | 0.8167 | 7 | 0.7758 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `ood_ic_top1` | higher_is_better | 0.6250 | 0.0263 | 0.6600 | 7 | 0.5750 | 4 | varies_by_local_split_seed_model_itself_deterministic |

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Submit Solution 13</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.55; margin: 0; color: #17202a; background: #f7f8fb; }
+    main { max-width: 980px; margin: 0 auto; padding: 32px 20px 56px; background: white; }
+    h1, h2, h3 { line-height: 1.2; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    pre { background: #101820; color: #f8fbff; padding: 16px; overflow: auto; border-radius: 6px; }
+    .note { border-left: 4px solid #1f6feb; padding: 12px 16px; background: #edf4ff; }
+    .warn { border-left: 4px solid #b7791f; padding: 12px 16px; background: #fff8e6; }
+    li { margin: 6px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>How to Submit Solution 13</h1>
+
+  <p>This page gives manual submission steps for the transductive generator-validator solution. It assumes you are in the repository root on branch <code>dev/bati</code>.</p>
+
+  <h2>1. Confirm the official input files are present</h2>
+  <pre><code>ls tracks/industrial-infineon/participant_files</code></pre>
+  <p>You should see:</p>
+  <ul>
+    <li><code>eval_input_valid.csv</code></li>
+    <li><code>eval_input_anomaly.csv</code></li>
+    <li><code>eval_metrics.py</code></li>
+  </ul>
+
+  <h2>2. Regenerate this solution</h2>
+  <pre><code>python -B solutions/solution_13_transductive_generator_validator/solution.py</code></pre>
+  <p>The command writes the three official-shaped CSV files into <code>solutions/solution_13_transductive_generator_validator/outputs/</code> and mirrors them into <code>outputs/official_submission/</code>.</p>
+
+  <h2>3. Check the files that matter for submission</h2>
+  <pre><code>python -B - &lt;&lt;'PY'
+from pathlib import Path
+import csv
+
+root = Path("solutions/solution_13_transductive_generator_validator/outputs/official_submission")
+expected = {
+    "nextstep.csv": (["EXAMPLE_ID", "RANK_1", "RANK_2", "RANK_3", "RANK_4", "RANK_5"], 600),
+    "completion.csv": (["EXAMPLE_ID", "PREDICTED_SEQUENCE"], 600),
+    "anomaly.csv": (["EXAMPLE_ID", "IS_VALID", "SCORE", "PREDICTED_RULE"], 987),
+}
+for name, (header, rows_expected) in expected.items():
+    with (root / name).open(newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        actual_header = next(reader)
+        rows = sum(1 for _ in reader)
+    print(name, actual_header == header, rows)
+    assert actual_header == header
+    assert rows == rows_expected
+PY</code></pre>
+
+  <h2>4. Refresh the package folder</h2>
+  <pre><code>python -B solutions/prepare_submission_packages.py</code></pre>
+  <p>This copies the official submission CSVs into:</p>
+  <ul>
+    <li><code>solutions/solution_13_transductive_generator_validator/submission_package/extras/results/nextstep.csv</code></li>
+    <li><code>solutions/solution_13_transductive_generator_validator/submission_package/extras/results/completion.csv</code></li>
+    <li><code>solutions/solution_13_transductive_generator_validator/submission_package/extras/results/anomaly.csv</code></li>
+  </ul>
+
+  <h2>5. Upload or attach the CSVs</h2>
+  <p>When the hackathon submission form asks for the Industrial AI CSV files, use the three files under the solution package's <code>extras/results/</code> folder. Do not rename columns and do not change delimiters.</p>
+
+  <h2>6. Explain the method honestly</h2>
+  <div class="warn">
+    <p>Say that this is a transductive participant-input strategy. It uses validator-valid full sequences from the anomaly input as full-route candidates for exact prefix completion. That is why it is an upper-bound candidate for the released files.</p>
+  </div>
+
+  <h2>7. Commit and push after changes</h2>
+  <pre><code>git status --short --branch
+git add solutions/solution_13_transductive_generator_validator solutions/solutions_comparison.md solutions/submission_readiness_audit.md
+git commit -m "Add transductive generator validator solution"
+git push origin dev/bati</code></pre>
+</main>
+</body>
+</html>

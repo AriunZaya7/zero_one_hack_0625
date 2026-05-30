@@ -10,12 +10,12 @@ Example ID: `valid_0001`
 
 | System | Rank 1 | Rank 2 | Rank 3 | Rank 4 | Rank 5 |
 | --- | --- | --- | --- | --- | --- |
-| Solution 0 baseline | `CLEAN AFTER VIA ETCH` | `CLEAN AFTER METAL ETCH` | `CLEAN PAD OPENING` | `CLEAN AFTER ETCH` | `CLEAN AFTER POLY ETCH` |
-| This solution | `CLEAN AFTER VIA ETCH` | `CLEAN AFTER METAL ETCH` | `CLEAN PAD OPENING` | `CLEAN AFTER ETCH` | `CLEAN AFTER POLY ETCH` |
+| Solution 0 baseline | `DEPOSIT METAL SEED` | `DEPOSIT TUNGSTEN SEED` | `DEVELOP PHOTORESIST` | `SOFT BAKE` | `SPIN COAT PHOTORESIST` |
+| This solution | `DEPOSIT METAL SEED` | `DEPOSIT TUNGSTEN SEED` | `DEVELOP PHOTORESIST` | `SOFT BAKE` | `SPIN COAT PHOTORESIST` |
 
 ## Task 3 Example
 
-Example ID: `anomaly_0537`
+Example ID: `anomaly_0459`
 
 - Predicted valid flag: `1`
 - Score: `1.0`

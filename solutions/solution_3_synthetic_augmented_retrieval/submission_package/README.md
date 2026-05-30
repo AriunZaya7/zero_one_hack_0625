@@ -16,6 +16,12 @@ python -B solutions/solution_3_synthetic_augmented_retrieval/solution.py
 The command rewrites the source outputs in `solutions/solution_3_synthetic_augmented_retrieval/outputs/`.
 This package then mirrors the submission-facing files under
 `submission_package/extras/`.
+When official participant inputs are present, the packaged eval CSVs are
+copied from `outputs/official_submission/`; refresh those with:
+
+```bash
+python -B solutions/generate_official_submissions.py
+```
 
 ## Packaged Checklist
 
@@ -27,8 +33,9 @@ This package then mirrors the submission-facing files under
 
 ## Headline Local Scores
 
-These are local self-eval scores because the official hidden eval files and
-`eval_metrics.py` are not present in this checkout.
+These are local self-eval scores. The official participant input files
+and `eval_metrics.py` are present, but the final ground truth labels are
+withheld by the organizers.
 
 | Task | Metric | Value |
 | --- | --- | ---: |

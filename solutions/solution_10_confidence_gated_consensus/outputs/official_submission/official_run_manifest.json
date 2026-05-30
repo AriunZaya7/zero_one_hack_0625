@@ -1,0 +1,17 @@
+{
+  "anomaly_rows": 987,
+  "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+  "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+  "mode": "official_participant_input_prediction",
+  "solution": "solution_10_confidence_gated_consensus",
+  "task2_consensus": {
+    "avg_share_threshold": 0.8,
+    "consensus_min_items": 120,
+    "consensus_rows_used": 114,
+    "consensus_top_n": 10,
+    "fallback_rows_used": 486,
+    "mean_candidate_agreement": 0.617461901105465
+  },
+  "train_sequences": 7009,
+  "valid_rows": 600
+}
