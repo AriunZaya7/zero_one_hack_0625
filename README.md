@@ -25,6 +25,8 @@ This branch contains our Industrial AI (Infineon) solution attempts under
 - [`FINAL_PITCH_OOD_STRATEGY.html`](./FINAL_PITCH_OOD_STRATEGY.html) - final
   pitch for the OOD-ready strategy around new exact strings and new
   family-specific blocks
+- [`solutions/ood_fourth_family_probe/`](./solutions/ood_fourth_family_probe/) -
+  hypothetical fourth-family OOD stress test used by the final pitch
 - [`REPORT.md`](./REPORT.md) - root submission report
 - [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
   metrics and solution comparison

@@ -1,0 +1,434 @@
+[
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top1",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top2",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top3",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top5",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_mrr",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task2_exact_match",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.0,
+    "direction": "lower_is_better",
+    "mean": 0.0,
+    "metric": "task2_normalized_edit_distance",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 0.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task2_token_accuracy",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task2_block_accuracy",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_accuracy",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_rule_attribution_accuracy",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "exact_route_coverage",
+    "scenario": "coupled_exact_route_memory",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.47,
+    "direction": "higher_is_better",
+    "mean": 0.404,
+    "metric": "task1_top1",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.038392707640904924,
+    "worst": 0.32
+  },
+  {
+    "best": 0.525,
+    "direction": "higher_is_better",
+    "mean": 0.48,
+    "metric": "task1_top2",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.031780497164141414,
+    "worst": 0.415
+  },
+  {
+    "best": 0.53,
+    "direction": "higher_is_better",
+    "mean": 0.4845,
+    "metric": "task1_top3",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.03372313745783451,
+    "worst": 0.42
+  },
+  {
+    "best": 0.55,
+    "direction": "higher_is_better",
+    "mean": 0.4965,
+    "metric": "task1_top5",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.031148836254345055,
+    "worst": 0.445
+  },
+  {
+    "best": 0.5001666666666666,
+    "direction": "higher_is_better",
+    "mean": 0.4459,
+    "metric": "task1_mrr",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.032774075120436265,
+    "worst": 0.3741666666666667
+  },
+  {
+    "best": 0.0,
+    "direction": "higher_is_better",
+    "mean": 0.0,
+    "metric": "task2_exact_match",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.0,
+    "worst": 0.0
+  },
+  {
+    "best": 0.5676648455929265,
+    "direction": "lower_is_better",
+    "mean": 0.590570755857836,
+    "metric": "task2_normalized_edit_distance",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.011675904029745629,
+    "worst": 0.6042121427679213
+  },
+  {
+    "best": 0.08593912402683081,
+    "direction": "higher_is_better",
+    "mean": 0.0769545912505227,
+    "metric": "task2_token_accuracy",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.0062871756823043344,
+    "worst": 0.06457030185423664
+  },
+  {
+    "best": 0.26073821213620796,
+    "direction": "higher_is_better",
+    "mean": 0.2445981757993644,
+    "metric": "task2_block_accuracy",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.009714420403230787,
+    "worst": 0.23041450150180293
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_accuracy",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_rule_attribution_accuracy",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.0,
+    "direction": "higher_is_better",
+    "mean": 0.0,
+    "metric": "exact_route_coverage",
+    "scenario": "decoupled_known_fallback_only",
+    "std": 0.0,
+    "worst": 0.0
+  },
+  {
+    "best": 0.855,
+    "direction": "higher_is_better",
+    "mean": 0.7775,
+    "metric": "task1_top1",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.039131189606246335,
+    "worst": 0.71
+  },
+  {
+    "best": 0.98,
+    "direction": "higher_is_better",
+    "mean": 0.9545,
+    "metric": "task1_top2",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.012932517156377558,
+    "worst": 0.935
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top3",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top5",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.9216666666666665,
+    "direction": "higher_is_better",
+    "mean": 0.8811666666666667,
+    "metric": "task1_mrr",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.020980149348054353,
+    "worst": 0.8466666666666667
+  },
+  {
+    "best": 0.005,
+    "direction": "higher_is_better",
+    "mean": 0.0005,
+    "metric": "task2_exact_match",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.0015,
+    "worst": 0.0
+  },
+  {
+    "best": 0.1534809719133871,
+    "direction": "lower_is_better",
+    "mean": 0.15653270024303417,
+    "metric": "task2_normalized_edit_distance",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.002224740394213303,
+    "worst": 0.1609472322490163
+  },
+  {
+    "best": 0.5671177580412552,
+    "direction": "higher_is_better",
+    "mean": 0.5214967571897144,
+    "metric": "task2_token_accuracy",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.03297966255662705,
+    "worst": 0.47216686112203843
+  },
+  {
+    "best": 0.7660222703303651,
+    "direction": "higher_is_better",
+    "mean": 0.7336751379475492,
+    "metric": "task2_block_accuracy",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.02184076009003518,
+    "worst": 0.7050696522520522
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_accuracy",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_rule_attribution_accuracy",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.0,
+    "direction": "higher_is_better",
+    "mean": 0.0,
+    "metric": "exact_route_coverage",
+    "scenario": "decoupled_visible_family_routes",
+    "std": 0.0,
+    "worst": 0.0
+  },
+  {
+    "best": 0.815,
+    "direction": "higher_is_better",
+    "mean": 0.776,
+    "metric": "task1_top1",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.023000000000000003,
+    "worst": 0.745
+  },
+  {
+    "best": 0.99,
+    "direction": "higher_is_better",
+    "mean": 0.9744999999999999,
+    "metric": "task1_top2",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.010111874208078351,
+    "worst": 0.955
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top3",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task1_top5",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.9058333333333333,
+    "direction": "higher_is_better",
+    "mean": 0.88375,
+    "metric": "task1_mrr",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.011518403149356687,
+    "worst": 0.8691666666666668
+  },
+  {
+    "best": 0.005,
+    "direction": "higher_is_better",
+    "mean": 0.001,
+    "metric": "task2_exact_match",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.002,
+    "worst": 0.0
+  },
+  {
+    "best": 0.14971748962449355,
+    "direction": "lower_is_better",
+    "mean": 0.1538857669798247,
+    "metric": "task2_normalized_edit_distance",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.002977425733772128,
+    "worst": 0.15942281637831868
+  },
+  {
+    "best": 0.6145828430185274,
+    "direction": "higher_is_better",
+    "mean": 0.5794136121541267,
+    "metric": "task2_token_accuracy",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.020301150679906267,
+    "worst": 0.5443943613360958
+  },
+  {
+    "best": 0.7964158895272734,
+    "direction": "higher_is_better",
+    "mean": 0.7727785121617394,
+    "metric": "task2_block_accuracy",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.01424290689568965,
+    "worst": 0.7478382241705679
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_accuracy",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 1.0,
+    "direction": "higher_is_better",
+    "mean": 1.0,
+    "metric": "task3_rule_attribution_accuracy",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.0,
+    "worst": 1.0
+  },
+  {
+    "best": 0.0,
+    "direction": "higher_is_better",
+    "mean": 0.0,
+    "metric": "exact_route_coverage",
+    "scenario": "oracle_fourth_family_generator_training",
+    "std": 0.0,
+    "worst": 0.0
+  }
+]
