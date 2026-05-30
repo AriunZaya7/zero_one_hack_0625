@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Solution 5 Explanation</title>
+  <style>
+    body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; color: #172033; background: #f5f7fb; }
+    main, header { max-width: 980px; margin: 0 auto; padding: 28px 24px; }
+    header { background: #fff; border-bottom: 1px solid #d8dee8; max-width: none; }
+    header > div { max-width: 980px; margin: 0 auto; }
+    section { background: #fff; border: 1px solid #d8dee8; border-radius: 8px; padding: 18px; margin: 18px 0; }
+    h1, h2 { line-height: 1.2; }
+    code { background: #edf2f7; padding: 2px 5px; border-radius: 5px; }
+    pre { background: #111827; color: #eef2ff; padding: 14px; border-radius: 8px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #d8dee8; padding: 9px; text-align: left; }
+    th { background: #edf3f8; }
+  </style>
+</head>
+<body>
+  <header><div><h1>Solution 5: Tuned Rank Ensemble</h1></div></header>
+  <main>
+    <section>
+      <h2>What This Solution Tries</h2>
+      <p>
+        Solution 5 changes only Task 1 scoring. Instead of using one trigram
+        fallback, it combines retrieval votes with n-gram models of order 3,
+        4, and 5.
+      </p>
+      <p>
+        An n-gram model predicts the next step from recent step history. Order
+        3 means "look at the previous two steps"; order 5 means "look at the
+        previous four steps". Combining several orders can make the ranker less
+        brittle when one context length is too specific or too vague.
+      </p>
+    </section>
+
+    <section>
+      <h2>Key Code Idea</h2>
+      <pre><code>for model in self.ngrams.values():
+    for rank, step in enumerate(model.next_step_ranking(prefix, k=20)):
+        scores[step] += NGRAM_WEIGHT / (rank + 1) / len(self.ngrams)</code></pre>
+      <p>
+        Retrieval still supplies the main route candidates. The n-gram ensemble
+        adjusts their ranking.
+      </p>
+    </section>
+
+    <section>
+      <h2>Current Metrics</h2>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Task 1 Top-1</td><td>0.7300</td></tr>
+        <tr><td>Task 1 MRR</td><td>0.8642</td></tr>
+        <tr><td>Canonical Top-1</td><td>0.9750</td></tr>
+        <tr><td>Task 2 token accuracy</td><td>0.4485</td></tr>
+        <tr><td>Task 2 block accuracy</td><td>0.7167</td></tr>
+        <tr><td>Task 3 accuracy</td><td>1.0000</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Interpretation</h2>
+      <p>
+        This confirms that simple rank-weight tuning can nearly match Solution
+        2, but it does not beat the synthetic-augmented Solution 3.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

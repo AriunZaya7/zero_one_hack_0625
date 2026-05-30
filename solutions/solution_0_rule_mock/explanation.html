@@ -1,0 +1,2113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 0 Rule Mock - Industrial AI Report</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17221f;
+      --muted: #5f6f69;
+      --line: #d7ded9;
+      --paper: #f7f8f4;
+      --panel: #ffffff;
+      --green: #126b57;
+      --green-2: #dff2e8;
+      --amber: #b46a16;
+      --amber-2: #fff0d8;
+      --red: #ad3434;
+      --red-2: #ffe4e4;
+      --blue: #285f95;
+      --blue-2: #dcebf8;
+      --violet: #604b8e;
+      --violet-2: #ebe6f6;
+      --shadow: 0 18px 46px rgba(38, 47, 43, 0.1);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    a {
+      color: var(--blue);
+      text-underline-offset: 3px;
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid rgba(23, 34, 31, 0.1);
+      background: rgba(247, 248, 244, 0.93);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      color: var(--ink);
+      font-weight: 780;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: conic-gradient(from 90deg, var(--green-2), var(--blue-2), var(--amber-2), var(--violet-2), var(--green-2));
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 680;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--ink);
+      border-color: var(--line);
+      background: #fff;
+      outline: none;
+    }
+
+    .definition-card {
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .definition-card h4 {
+      margin-top: 0;
+    }
+
+    .definition-card p {
+      margin-top: 8px;
+      font-size: 14px;
+    }
+
+    .example-box {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px solid rgba(40, 95, 149, 0.22);
+      border-radius: var(--radius);
+      background: #f7fbff;
+    }
+
+    .example-box h4 {
+      margin-bottom: 10px;
+    }
+
+    .formula {
+      display: inline-flex;
+      max-width: 100%;
+      margin: 8px 0;
+      padding: 7px 9px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: #fff;
+      color: var(--ink);
+      font-weight: 780;
+      overflow-wrap: anywhere;
+    }
+
+    main {
+      overflow: hidden;
+    }
+
+    .hero {
+      min-height: calc(100svh - 59px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+      gap: clamp(24px, 5vw, 64px);
+      align-items: center;
+      padding: clamp(34px, 6vw, 76px) clamp(16px, 5vw, 76px) 42px;
+    }
+
+    .eyebrow,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      max-width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .tag {
+      border: 0;
+      background: var(--green-2);
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .tag.blue {
+      background: var(--blue-2);
+      color: var(--blue);
+    }
+
+    .tag.amber {
+      background: var(--amber-2);
+      color: var(--amber);
+    }
+
+    .tag.red {
+      background: var(--red-2);
+      color: var(--red);
+    }
+
+    .tag.violet {
+      background: var(--violet-2);
+      color: var(--violet);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin: 0;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin-top: 18px;
+      font-size: clamp(38px, 6.3vw, 84px);
+    }
+
+    h2 {
+      font-size: clamp(30px, 4vw, 52px);
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.2vw, 27px);
+    }
+
+    h4 {
+      font-size: 16px;
+    }
+
+    p {
+      margin: 0;
+      color: #3e4e48;
+    }
+
+    .lede {
+      max-width: 780px;
+      margin: 22px 0 0;
+      font-size: clamp(18px, 2.05vw, 24px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 760;
+      transition: transform 150ms ease, border-color 150ms ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(23, 34, 31, 0.3);
+      outline: none;
+    }
+
+    .btn.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .route-board {
+      border: 1px solid rgba(23, 34, 31, 0.13);
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(23, 34, 31, 0.055) 1px, transparent 1px),
+        linear-gradient(rgba(23, 34, 31, 0.055) 1px, transparent 1px),
+        #ffffff;
+      background-size: 34px 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .board-inner {
+      padding: clamp(20px, 4vw, 34px);
+    }
+
+    .board-title {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .board-title span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 720;
+    }
+
+    .pipeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .pipe-row {
+      display: grid;
+      grid-template-columns: 112px minmax(0, 1fr);
+      gap: 12px;
+      align-items: center;
+    }
+
+    .pipe-label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 760;
+      text-transform: uppercase;
+    }
+
+    .pipe-track {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 52px;
+      align-items: center;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.88);
+    }
+
+    .step-pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      max-width: 100%;
+      padding: 6px 9px;
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: 7px;
+      background: #fff;
+      color: #22312c;
+      font-size: 12px;
+      font-weight: 760;
+      white-space: normal;
+    }
+
+    .step-pill.green {
+      border-color: rgba(18, 107, 87, 0.28);
+      background: var(--green-2);
+      color: var(--green);
+    }
+
+    .step-pill.blue {
+      border-color: rgba(40, 95, 149, 0.28);
+      background: var(--blue-2);
+      color: var(--blue);
+    }
+
+    .step-pill.amber {
+      border-color: rgba(180, 106, 22, 0.28);
+      background: var(--amber-2);
+      color: var(--amber);
+    }
+
+    .score-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .score-mini {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.9);
+    }
+
+    .score-mini strong {
+      display: block;
+      font-size: clamp(24px, 3.5vw, 42px);
+      line-height: 1;
+    }
+
+    .score-mini span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 680;
+    }
+
+    .page-section {
+      padding: clamp(42px, 7vw, 86px) clamp(16px, 5vw, 76px);
+      scroll-margin-top: 80px;
+    }
+
+    .hero.page-section {
+      padding: clamp(34px, 6vw, 76px) clamp(16px, 5vw, 76px) 42px;
+    }
+
+    .section-head {
+      max-width: 920px;
+      margin-bottom: 24px;
+    }
+
+    .section-head p {
+      margin-top: 12px;
+      font-size: clamp(17px, 1.8vw, 21px);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .panel {
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.06);
+    }
+
+    .pad {
+      padding: clamp(18px, 3vw, 26px);
+    }
+
+    .panel h3,
+    .panel h4 {
+      margin-top: 12px;
+    }
+
+    .panel p {
+      margin-top: 12px;
+    }
+
+    .callout {
+      padding: 18px 20px;
+      border: 1px solid rgba(18, 107, 87, 0.22);
+      border-left: 5px solid var(--green);
+      border-radius: var(--radius);
+      background: #fff;
+      color: #2f403a;
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.05);
+    }
+
+    .callout.warning {
+      border-color: rgba(180, 106, 22, 0.24);
+      border-left-color: var(--amber);
+      background: #fffaf2;
+    }
+
+    .callout.danger {
+      border-color: rgba(173, 52, 52, 0.2);
+      border-left-color: var(--red);
+      background: #fff8f8;
+    }
+
+    .callout strong {
+      color: var(--ink);
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.04);
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--ink);
+      background: #fbfcf8;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    td {
+      color: #34443e;
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .metric-table td:last-child,
+    .metric-table th:last-child {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-card {
+      display: grid;
+      gap: 10px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .metric-card strong {
+      font-size: clamp(26px, 4vw, 44px);
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .metric-card span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .meter {
+      height: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e8eee9;
+    }
+
+    .meter-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .code-panel {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+      gap: 18px;
+      align-items: start;
+      margin-top: 18px;
+    }
+
+    .code-box {
+      overflow: auto;
+      max-height: 480px;
+      margin: 0;
+      padding: 18px;
+      border: 1px solid rgba(23, 34, 31, 0.14);
+      border-radius: var(--radius);
+      background: #14211d;
+      color: #e6f2ec;
+      font-size: 13px;
+      line-height: 1.55;
+      tab-size: 4;
+    }
+
+    .code-box.light {
+      background: #ffffff;
+      color: #21312b;
+    }
+
+    .explain-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .explain-list div {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .explain-list strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .explain-list p {
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .flow-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .file-grid {
+      display: grid;
+      gap: 10px;
+    }
+
+    .file-link {
+      display: grid;
+      gap: 4px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      text-decoration: none;
+    }
+
+    .file-link strong {
+      color: var(--blue);
+    }
+
+    .file-link span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .judge-grid {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .mini-timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      position: relative;
+      padding: 16px 16px 16px 42px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .timeline-item::before {
+      content: attr(data-step);
+      position: absolute;
+      top: 16px;
+      left: 14px;
+      width: 20px;
+      height: 20px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .timeline-item p {
+      margin-top: 6px;
+      font-size: 14px;
+    }
+
+    .note-list {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: #3e4e48;
+    }
+
+    .note-list li {
+      margin: 7px 0;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1050px) {
+      .hero,
+      .judge-grid,
+      .code-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .route-board {
+        min-height: 0;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .grid.two,
+      .grid.three,
+      .score-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .pipe-row {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: clamp(36px, 12vw, 56px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">0</span>
+      <span>solution_0_rule_mock</span>
+    </div>
+    <div class="nav" role="navigation" aria-label="Page sections">
+      <a href="#what">What It Is</a>
+      <a href="#primer">Primer</a>
+      <a href="#judging">Judging</a>
+      <a href="#data">Data</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#csvs">CSVs</a>
+      <a href="#rules">Rules</a>
+      <a href="#results">Results</a>
+      <a href="#metrics">Metrics</a>
+      <a href="#next">Next</a>
+    </div>
+  </div>
+
+  <div role="main">
+    <div class="page-section hero" id="top">
+      <div>
+        <div class="eyebrow">Industrial AI / Infineon / baseline report</div>
+        <h1>Solution 0 is a complete, honest, deliberately simple baseline.</h1>
+        <p class="lede">
+          It reads the provided semiconductor process traces, builds a small count-based n-gram model, writes all three official-shaped submission files, and scores itself with the same metric families described by the track docs. Every technical term used here is explained below from first principles.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#results">Jump to judging-style results</a>
+          <a class="btn" href="#tasks">Understand the code path</a>
+        </div>
+      </div>
+
+      <div class="route-board" aria-label="Solution 0 pipeline diagram">
+        <div class="board-inner">
+          <div class="board-title">
+            <div>
+              <span>What the program does</span>
+              <h3>From partial route to measurable outputs</h3>
+            </div>
+            <span class="tag amber">mock baseline</span>
+          </div>
+
+          <div class="pipeline">
+            <div class="pipe-row">
+              <div class="pipe-label">Input</div>
+              <div class="pipe-track">
+                <span class="step-pill">RECEIVE WAFER LOT</span>
+                <span class="step-pill">LOT IDENTIFICATION</span>
+                <span class="step-pill">INITIAL WAFER INSPECTION</span>
+                <span class="arrow">...</span>
+              </div>
+            </div>
+            <div class="pipe-row">
+              <div class="pipe-label">Model</div>
+              <div class="pipe-track">
+                <span class="step-pill blue">trigram counts</span>
+                <span class="step-pill blue">greedy rollout</span>
+                <span class="step-pill blue">public validator</span>
+              </div>
+            </div>
+            <div class="pipe-row">
+              <div class="pipe-label">Output</div>
+              <div class="pipe-track">
+                <span class="step-pill green">nextstep.csv</span>
+                <span class="step-pill green">completion.csv</span>
+                <span class="step-pill green">anomaly.csv</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="score-strip">
+            <div class="score-mini">
+              <strong>6709</strong>
+              <span>training sequences after holdout</span>
+            </div>
+            <div class="score-mini">
+              <strong>600</strong>
+              <span>valid self-eval task rows</span>
+            </div>
+            <div class="score-mini">
+              <strong>14</strong>
+              <span>sequence source files used</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="what">
+      <div class="section-head">
+        <h2>What Solution 0 Is</h2>
+        <p>Think of it as the first working scoreboard. It is not trying to win yet. It makes the problem runnable, measurable, and explainable.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="panel pad">
+          <span class="tag blue">Task 1</span>
+          <h3>Autocomplete for process steps</h3>
+          <p>
+            For a partial process route, the n-gram model ranks the five most likely next steps. This is like code autocomplete, except the tokens are semiconductor manufacturing steps instead of Python keywords.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Task 2</span>
+          <h3>Continue the remaining route</h3>
+          <p>
+            It repeatedly predicts one next step until it reaches <code>SHIP LOT</code>, an end marker, or a repeated context. This gives a full predicted suffix after the provided cut point.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Task 3</span>
+          <h3>Rule-check anomaly detection</h3>
+          <p>
+            It calls the public validator from <code>training_data/generate_sequences.py</code>. That is why this part is called a mock or oracle: it uses the known rules directly instead of learning them from examples.
+          </p>
+        </div>
+      </div>
+
+      <div class="callout warning" style="margin-top: 20px;">
+        <strong>Honest naming:</strong> I chose <code>solution_0_rule_mock</code> instead of <code>solution_0_stupid</code>. The solution is simple, but it is not random. It understands the official task shapes, reads the provided data, writes measurable outputs, and makes the judging gaps visible. "Rule mock" is more precise because Task 3 is deliberately solved with a rule oracle.
+      </div>
+    </div>
+
+    <div class="page-section" id="primer">
+      <div class="section-head">
+        <h2>Beginner Primer: The Words We Keep Using</h2>
+        <p>This section is for a junior teammate who has never built a sequence model. The rest of the report becomes much easier once these ideas are clear.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="definition-card">
+          <span class="tag blue">Vocabulary</span>
+          <h4>Step</h4>
+          <p>A step is one named manufacturing operation, such as <code>HF DIP</code>, <code>DEPOSIT PASSIVATION</code>, or <code>WAFER SORT TEST</code>.</p>
+          <p>In normal NLP, a model predicts words. In this track, the model predicts process steps.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag blue">Vocabulary</span>
+          <h4>Token</h4>
+          <p>A token is the atomic item the model sees. Here, each full process step string is treated as one token.</p>
+          <p>That means <code>DEPOSIT BACKSIDE METAL</code> is one token, not three word tokens.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag blue">Vocabulary</span>
+          <h4>Sequence</h4>
+          <p>A sequence is an ordered list of tokens. One wafer-lot route might be 120 to 150 steps long.</p>
+          <p>The order is the point. <code>SHIP LOT</code> is valid near the end, but invalid before testing.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Input shape</span>
+          <h4>Prefix / partial sequence</h4>
+          <p>A prefix is the part of the route we are allowed to see. If the full route has 120 steps and the eval cuts it at 60%, the prefix contains about 72 steps.</p>
+          <p>The model must infer what comes next using only that visible prefix.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Target shape</span>
+          <h4>Suffix / remainder</h4>
+          <p>The suffix is the hidden part after the cut point. For Task 2, we predict the suffix only.</p>
+          <p>We do not repeat the prefix in <code>completion.csv</code>, because the official docs say to predict only the steps after the cut point.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Modeling</span>
+          <h4>Baseline</h4>
+          <p>A baseline is the simple method everyone should beat. It tells us whether a fancy model is actually useful.</p>
+          <p>If a transformer only ties this baseline, then the expensive model is not giving us a convincing win.</p>
+        </div>
+      </div>
+
+      <div class="panel pad" style="margin-top: 20px;">
+        <span class="tag green">The big one</span>
+        <h3>What is an n-gram model?</h3>
+        <p>
+          An n-gram model is a counting model for sequences. It does not have neural network layers, embeddings, attention heads, or GPU training. It simply counts what usually follows a short recent history.
+        </p>
+        <p>
+          The "n" tells us how many tokens are in the pattern. A 2-gram, also called a bigram, looks at one previous token plus the next token. A 3-gram, also called a trigram, looks at two previous tokens plus the next token. In Solution 0, <code>n=3</code>, so the model mostly asks: "given the last two steps I saw, what step most often followed those two steps in training?"
+        </p>
+
+        <div class="example-box">
+          <h4>Tiny made-up counting example</h4>
+          <p>Suppose the training data contains these local patterns:</p>
+          <div class="flow-line">
+            <span class="step-pill">CURE PASSIVATION</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill">MEASURE PASSIVATION THICKNESS</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill green">OPEN PAD WINDOW</span>
+          </div>
+          <div class="flow-line">
+            <span class="step-pill">CURE PASSIVATION</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill">MEASURE PASSIVATION THICKNESS</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill green">OPEN PAD WINDOW</span>
+          </div>
+          <div class="flow-line">
+            <span class="step-pill">CURE PASSIVATION</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill">MEASURE PASSIVATION THICKNESS</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill blue">MEASURE PASSIVATION QUALITY</span>
+          </div>
+          <p>
+            If the visible prefix ends with <code>CURE PASSIVATION | MEASURE PASSIVATION THICKNESS</code>, the trigram model has counted that <code>OPEN PAD WINDOW</code> followed this context twice and <code>MEASURE PASSIVATION QUALITY</code> followed it once. So it ranks <code>OPEN PAD WINDOW</code> higher.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 20px;">
+        <div class="panel pad">
+          <span class="tag amber">Why it works at all</span>
+          <h3>Industrial routes have repeated local structure</h3>
+          <p>
+            Semiconductor process flows are not random text. Many local chunks repeat: lithography often has coat, bake, align, expose, develop; etch is often followed by strip and clean; test happens near the end. Counting those chunks already gives a surprisingly useful signal.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag red">Why it fails</span>
+          <h3>Local memory is not process understanding</h3>
+          <p>
+            A trigram can know what usually follows the last two steps, but it does not truly know which lithography level it is in, whether the route already passed passivation, or whether it is globally near the end. Long routes need longer-range state and constraints.
+          </p>
+        </div>
+      </div>
+
+      <div class="code-panel">
+        <pre class="code-box"><code>class NGramModel:
+    def __init__(self, n: int = 3, alpha: float = 0.4):
+        self.n = n
+        self.alpha = alpha
+        # counts[order][context_tuple][token] -&gt; count ; order 0 == unigram
+        self.counts: list[dict] = [defaultdict(Counter) for _ in range(n)]
+        self.vocab: set[str] = set()
+        self.total: int = 0
+
+    def fit(self, sequences):
+        for seq in sequences:
+            s = ["&lt;bos&gt;"] + list(seq) + ["&lt;eos&gt;"]
+            self.vocab.update(s)
+            for i, tok in enumerate(s):
+                self.total += 1
+                for order in range(self.n):
+                    if i - order &lt; 0:
+                        break
+                    ctx = tuple(s[i - order:i])
+                    self.counts[order][ctx][tok] += 1
+        return self</code></pre>
+        <div class="explain-list">
+          <div>
+            <strong><code>&lt;bos&gt;</code> and <code>&lt;eos&gt;</code></strong>
+            <p>These are special markers. <code>&lt;bos&gt;</code> means "beginning of sequence" and <code>&lt;eos&gt;</code> means "end of sequence." They help the model learn what usually starts and ends a route.</p>
+          </div>
+          <div>
+            <strong><code>self.vocab</code></strong>
+            <p>The vocabulary is the set of all step tokens the model has seen. The model can only rank tokens from this vocabulary.</p>
+          </div>
+          <div>
+            <strong><code>context_tuple</code></strong>
+            <p>The context is the recent history. For a trigram, the most specific context has two previous tokens.</p>
+          </div>
+          <div>
+            <strong><code>Counter</code></strong>
+            <p>A Python <code>Counter</code> stores counts like "after this context, this next token appeared 37 times."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel pad" style="margin-top: 20px;">
+        <span class="tag violet">Backoff and alpha</span>
+        <h3>What happens when the exact recent history was never seen?</h3>
+        <p>
+          Sometimes the model sees a context in eval that never appeared in training. If the exact last-two-step context was unseen, the model backs off to a shorter context. In plain English: "I do not know what follows these exact two previous steps, so I will look only at the previous one step. If that still fails, I will look at overall step frequency."
+        </p>
+        <p>
+          The <code>alpha=0.4</code> value is a discount for backed-off guesses. A prediction from an exact two-step context should be trusted more than a prediction from a weaker one-step or zero-step context.
+        </p>
+      </div>
+    </div>
+
+    <div class="page-section" id="judging">
+      <div class="section-head">
+        <h2>How This Work Will Be Judged</h2>
+        <p>The track has both objective metrics and qualitative judging. Solution 0 mirrors the objective metric names, but its scores are local self-eval scores because the official hidden eval files are not present in the repo.</p>
+      </div>
+
+      <div class="judge-grid">
+        <div class="callout danger">
+          <strong>Important caveat:</strong> We checked reachable repo history, including upstream. The official <code>eval_metrics.py</code>, <code>eval_input_valid.csv</code>, <code>eval_input_anomaly.csv</code>, and hidden labels are not available. A prior upstream commit only removed a README mention of <code>eval_metrics.py</code>; it did not expose the file itself.
+          <br><br>
+          So this page does not claim official leaderboard scores. It claims: "our local self-eval uses the same task definitions, output columns, and metric families described by the official docs."
+        </div>
+
+        <div class="panel pad">
+          <span class="tag green">Official systematics we copy</span>
+          <h3>Three submitted files, same metric families</h3>
+          <p>
+            The industrial brief says teams submit <code>nextstep.csv</code>, <code>completion.csv</code>, and <code>anomaly.csv</code>. The organizers then score Task 1, Task 2, Task 3, and separately check hidden OOD generalization on an undisclosed fourth family.
+          </p>
+          <div class="flow-line">
+            <span class="step-pill">partial sequence</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill blue">rank next steps</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill green">Top-k / MRR</span>
+          </div>
+          <div class="flow-line">
+            <span class="step-pill">partial sequence</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill blue">predict suffix</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill green">edit / token / block metrics</span>
+          </div>
+          <div class="flow-line">
+            <span class="step-pill">complete sequence</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill blue">valid or invalid</span>
+            <span class="arrow">-&gt;</span>
+            <span class="step-pill green">F1 / AUC / rule attribution</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 20px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Task</th>
+              <th>Official input</th>
+              <th>Solution 0 output</th>
+              <th>Judging metrics copied from docs</th>
+              <th>Local self-eval difference</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Task 1: Next-step prediction</td>
+              <td><code>eval_input_valid.csv</code>, 600 rows</td>
+              <td><code>outputs/nextstep.csv</code></td>
+              <td>Top-1, Top-3, Top-5, MRR</td>
+              <td>Same row count and truncation pattern: 100 held-out sequences per family, each cut at 60% and 80%.</td>
+            </tr>
+            <tr>
+              <td>Task 2: Sequence completion</td>
+              <td><code>eval_input_valid.csv</code>, 600 rows</td>
+              <td><code>outputs/completion.csv</code></td>
+              <td>Exact match, normalized edit distance, token accuracy, block-level accuracy</td>
+              <td>Same 600 partial routes as Task 1. We compare only the predicted suffix after the cut point.</td>
+            </tr>
+            <tr>
+              <td>Task 3: Anomaly detection</td>
+              <td><code>eval_input_anomaly.csv</code>, official docs say 987 rows</td>
+              <td><code>outputs/anomaly.csv</code></td>
+              <td>Accuracy, precision, recall, F1, confusion matrix, ROC-AUC, rule attribution</td>
+              <td>Our local set has 600 rows: 300 valid held-out sequences plus 300 injected invalid variants. This is useful, but it is not the exact hidden anomaly distribution.</td>
+            </tr>
+            <tr>
+              <td>Task 4: OOD generalization</td>
+              <td>Organizer-only hidden fourth family</td>
+              <td>No separate submitted file</td>
+              <td>Performance drop from ID to OOD</td>
+              <td>We use leave-one-family-out next-step scoring as a proxy: train on two known families, test on the third.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 20px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Qualitative judging criterion</th>
+              <th>What the jury likely wants</th>
+              <th>Solution 0 status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Working artifact</td>
+              <td>Something that runs, not only slides.</td>
+              <td>Yes. Run <code>python solutions/solution_0_rule_mock/solution.py</code>.</td>
+            </tr>
+            <tr>
+              <td>Reproducibility</td>
+              <td>Clear commands and deterministic results.</td>
+              <td>Yes. Seed is fixed to <code>42</code>; outputs are regenerated deterministically.</td>
+            </tr>
+            <tr>
+              <td>Honest evaluation</td>
+              <td>Show metrics, what worked, and what did not.</td>
+              <td>Yes. Task 2 is visibly weak; Task 3 is marked as an oracle/mock.</td>
+            </tr>
+            <tr>
+              <td>Technical depth</td>
+              <td>Model/data decisions that show process-logic understanding.</td>
+              <td>Low to medium by design. It is a baseline, not the final model.</td>
+            </tr>
+            <tr>
+              <td>Training and benchmark setup</td>
+              <td>Baseline-vs-trained comparison, loss curves, checkpoints, maybe Leonardo runs.</td>
+              <td>Incomplete. No trained transformer, no loss curve, no checkpoint.</td>
+            </tr>
+            <tr>
+              <td>Demo and presentation</td>
+              <td>Side-by-side outputs and understandable visuals.</td>
+              <td>This HTML report helps explain Solution 0. A final demo still needs baseline vs trained model.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section" id="data">
+      <div class="section-head">
+        <h2>What Data and Repo Context It Used</h2>
+        <p>Solution 0 now audits the repo, not just one convenient CSV. It uses every available process sequence source it can parse safely.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="panel pad">
+          <span class="tag blue">Used for model training</span>
+          <h3>Ordered step sequences</h3>
+          <p>
+            The model only learns from ordered <code>STEP</code> values. Long-format files provide many sequences with <code>SEQUENCE_ID, STEP</code>. Canonical single-sequence files provide one reference route each.
+          </p>
+          <ul class="note-list">
+            <li><code>*_variants.csv</code> files are used.</li>
+            <li><code>*_generated_extra.csv</code> files are used when present.</li>
+            <li><code>synthetic*.csv</code> files are used.</li>
+            <li><code>*_Longdescr.csv</code> and <code>*_longdescription_parameters.csv</code> contribute only their ordered <code>STEP</code> column.</li>
+          </ul>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Reviewed, but not modeled as features</span>
+          <h3>Text and fab parameters</h3>
+          <p>
+            The enriched description/parameter files are important context, but Solution 0 intentionally does not use natural-language descriptions or fab-level parameters as predictive features. That keeps the baseline narrow: it answers "how far can step order alone get us?"
+          </p>
+          <p>
+            A stronger Solution 1 or Solution 2 can add those columns as extra conditioning signals or use them for explanation, but that would be a new modeling choice.
+          </p>
+        </div>
+      </div>
+
+      <div class="table-wrap" style="margin-top: 20px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Sequence source file</th>
+              <th>Family</th>
+              <th>Kind</th>
+              <th>Sequences</th>
+              <th>Valid</th>
+              <th>Length min/mean/max</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>training_data/IC_Longdescr.csv</code></td><td>ic</td><td>canonical single sequence</td><td>1</td><td>1</td><td>109 / 109.0 / 109</td></tr>
+            <tr><td><code>training_data/IC_generated_extra.csv</code></td><td>ic</td><td>long-format sequence</td><td>2000</td><td>2000</td><td>105 / 115.1 / 123</td></tr>
+            <tr><td><code>training_data/IC_longdescription_parameters.csv</code></td><td>ic</td><td>canonical single sequence</td><td>1</td><td>1</td><td>109 / 109.0 / 109</td></tr>
+            <tr><td><code>training_data/IC_variants.csv</code></td><td>ic</td><td>long-format sequence</td><td>1000</td><td>1000</td><td>107 / 115.1 / 122</td></tr>
+            <tr><td><code>training_data/IGBT_Longdescr.csv</code></td><td>igbt</td><td>canonical single sequence</td><td>1</td><td>1</td><td>137 / 137.0 / 137</td></tr>
+            <tr><td><code>training_data/IGBT_generated_extra.csv</code></td><td>igbt</td><td>long-format sequence</td><td>2000</td><td>2000</td><td>138 / 148.0 / 157</td></tr>
+            <tr><td><code>training_data/IGBT_longdescription_parameters.csv</code></td><td>igbt</td><td>canonical single sequence</td><td>1</td><td>1</td><td>139 / 139.0 / 139</td></tr>
+            <tr><td><code>training_data/IGBT_variants.csv</code></td><td>igbt</td><td>long-format sequence</td><td>1000</td><td>1000</td><td>139 / 148.0 / 155</td></tr>
+            <tr><td><code>training_data/MOSFET_Longdescr.csv</code></td><td>mosfet</td><td>canonical single sequence</td><td>1</td><td>1</td><td>126 / 126.0 / 126</td></tr>
+            <tr><td><code>training_data/MOSFET_longdescription_parameters.csv</code></td><td>mosfet</td><td>canonical single sequence</td><td>1</td><td>1</td><td>126 / 126.0 / 126</td></tr>
+            <tr><td><code>training_data/MOSFET_variants.csv</code></td><td>mosfet</td><td>long-format sequence</td><td>1000</td><td>1000</td><td>117 / 125.3 / 134</td></tr>
+            <tr><td><code>training_data/syntheticIC.csv</code></td><td>ic</td><td>canonical single sequence</td><td>1</td><td>1</td><td>107 / 107.0 / 107</td></tr>
+            <tr><td><code>training_data/syntheticIGBT.csv</code></td><td>igbt</td><td>canonical single sequence</td><td>1</td><td>1</td><td>151 / 151.0 / 151</td></tr>
+            <tr><td><code>training_data/synthetic_mosfet.csv</code></td><td>mosfet</td><td>canonical single sequence</td><td>1</td><td>1</td><td>126 / 126.0 / 126</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid two" style="margin-top: 20px;">
+        <div class="panel pad">
+          <span class="tag green">Docs reviewed</span>
+          <h3>Why this matters</h3>
+          <p>
+            The important strategic guidance is in <code>CLAUDE.md</code> and <code>PLAN.md</code>: the final solution should prove process-grammar learning, not just next-step memorization. The final model should also avoid a hard family embedding token because hidden Task 4 uses an undisclosed fourth family.
+          </p>
+          <ul class="note-list">
+            <li><a href="../../README.md">README.md</a></li>
+            <li><a href="../../CLAUDE.md">CLAUDE.md</a></li>
+            <li><a href="../../PLAN.md">PLAN.md</a></li>
+            <li><a href="../../industrial-infineon/Track_industrial_en.md">industrial-infineon/Track_industrial_en.md</a></li>
+            <li><a href="../../training_data/generation_rules.md">training_data/generation_rules.md</a></li>
+            <li><a href="../../submission/REPORT_TEMPLATE.md">submission/REPORT_TEMPLATE.md</a></li>
+          </ul>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Prior code reviewed</span>
+          <h3>What we inherited</h3>
+          <p>
+            The repo already had useful starter work: a tokenizer, a data loader, an n-gram model, baseline experiments, extra generated data, and an unfinished small-transformer training attempt. Solution 0 reuses the stable local pieces instead of inventing a separate format.
+          </p>
+          <ul class="note-list">
+            <li><code>data.py</code>, <code>tokenizer.py</code>, <code>ngram.py</code></li>
+            <li><code>run_baseline.py</code>, <code>ablation_n.py</code></li>
+            <li><code>test_baseline_1/</code>, <code>test_baseline_2/</code></li>
+            <li><code>small_transformer_model/</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="selfeval">
+      <div class="section-head">
+        <h2>How the Self-Eval Set Is Built</h2>
+        <p>The goal is to imitate the official shape closely enough that future solutions can be compared without waiting for hidden organizer files.</p>
+      </div>
+
+      <div class="mini-timeline">
+        <div class="timeline-item" data-step="1">
+          <h3>Load every sequence source</h3>
+          <p>The loader scans <code>training_data/*.csv</code>, detects the product family from the file name, parses long-format sequences when possible, and falls back to one canonical sequence from <code>STEP</code>-only files.</p>
+        </div>
+        <div class="timeline-item" data-step="2">
+          <h3>Validate the loaded sequences</h3>
+          <p>Every sequence is passed through <code>validate_sequence()</code>. The inventory records how many valid and invalid sequences each source contains. In the current provided data, all loaded sequences are valid.</p>
+        </div>
+        <div class="timeline-item" data-step="3">
+          <h3>Hold out 100 long-format sequences per family</h3>
+          <p>That gives 300 held-out complete routes across MOSFET, IGBT, and IC. Only long-format generated variants are held out, so canonical reference routes can still help the baseline learn structure.</p>
+        </div>
+        <div class="timeline-item" data-step="4">
+          <h3>Create two valid partial examples from each held-out route</h3>
+          <p>Each route is cut at 60% and 80%, matching the official <code>eval_input_valid.csv</code> design. That creates 600 examples for Task 1 and Task 2.</p>
+        </div>
+        <div class="timeline-item" data-step="5">
+          <h3>Create anomaly examples</h3>
+          <p>For each held-out route, Solution 0 keeps one valid copy and creates one invalid copy by moving or deleting steps until the public validator confirms a rule violation. That creates 600 anomaly rows.</p>
+        </div>
+      </div>
+
+      <div class="code-panel">
+        <pre class="code-box"><code>def load_split() -&gt; tuple[
+    dict[str, list[str]],
+    dict[str, dict[str, list[str]]],
+    list[dict[str, object]],
+    dict[str, dict[str, SequenceRecord]],
+]:
+    """Return train sequences and held-out self-eval sequences per family."""
+    rng = random.Random(SEED)
+    train: dict[str, list[str]] = {}
+    heldout: dict[str, dict[str, list[str]]] = {}
+    by_family, inventory = load_all_available_sequences()
+
+    for family in FAMILIES:
+        records = by_family[family]
+        eval_candidates = [
+            key for key, record in records.items()
+            if record.source_kind == "long_format_sequence"
+        ]
+        rng.shuffle(eval_candidates)
+        eval_keys = set(eval_candidates[:EVAL_PER_FAMILY])
+
+        keys = sorted(records)
+        heldout[family] = {
+            key: records[key].steps
+            for key in keys
+            if key in eval_keys
+        }
+        for key in keys:
+            if key not in eval_keys:
+                train[key] = records[key].steps
+
+    return train, heldout, inventory, by_family</code></pre>
+        <div class="explain-list">
+          <div>
+            <strong><code>random.Random(SEED)</code></strong>
+            <p>This makes the held-out sample deterministic. If you rerun the script, you get the same split.</p>
+          </div>
+          <div>
+            <strong><code>record.source_kind == "long_format_sequence"</code></strong>
+            <p>The self-eval set comes from generated multi-sequence files, not from single canonical reference files.</p>
+          </div>
+          <div>
+            <strong><code>EVAL_PER_FAMILY</code></strong>
+            <p>This constant is <code>100</code>. With three families, that creates 300 complete held-out routes.</p>
+          </div>
+          <div>
+            <strong><code>train[key] = records[key].steps</code></strong>
+            <p>Everything not held out becomes training data. That is how we get 6709 training sequences.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="tasks">
+      <div class="section-head">
+        <h2>What the Code Does for Each Task</h2>
+        <p>The file <a href="solution.py">solution.py</a> is intentionally one complete script. That makes it easy for a teammate or judge to read end to end.</p>
+      </div>
+
+      <div class="panel pad" style="margin-bottom: 20px;">
+        <span class="tag green">Script map</span>
+        <h3>The small Python objects used by the script</h3>
+        <p>
+          Before reading the task functions, it helps to know the three tiny data containers. These are <code>dataclass</code> objects, which means they mostly exist to bundle related fields together with clear names.
+        </p>
+        <div class="grid three" style="margin-top: 16px;">
+          <div class="definition-card">
+            <h4><code>SequenceRecord</code></h4>
+            <p>Represents one complete process route loaded from a CSV file.</p>
+            <p>It stores a unique key, product family, source filename, source kind, and the ordered list of steps.</p>
+          </div>
+          <div class="definition-card">
+            <h4><code>ValidExample</code></h4>
+            <p>Represents one partial-route example for Task 1 and Task 2.</p>
+            <p>It stores the visible prefix, the true next step, and the true hidden remainder.</p>
+          </div>
+          <div class="definition-card">
+            <h4><code>AnomalyExample</code></h4>
+            <p>Represents one full-route example for Task 3.</p>
+            <p>It stores the full sequence, whether it is valid, and the known rule label if it was intentionally made invalid.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid three" style="margin-bottom: 20px;">
+        <div class="definition-card">
+          <span class="tag blue">Constant</span>
+          <h4><code>SEED = 42</code></h4>
+          <p>This makes random choices repeatable. If two teammates rerun the script, they should get the same self-eval split and the same metrics.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Constant</span>
+          <h4><code>EVAL_PER_FAMILY = 100</code></h4>
+          <p>This matches the official valid eval shape: 100 held-out sequences per product family.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Constant</span>
+          <h4><code>FRACTIONS = (0.6, 0.8)</code></h4>
+          <p>Each held-out route is cut twice, once after 60% of its steps and once after 80% of its steps.</p>
+        </div>
+      </div>
+
+      <div class="panel pad">
+        <span class="tag blue">Task 1 code path</span>
+        <h3>Next-step prediction: ask the n-gram model for five candidates</h3>
+        <p>
+          An n-gram model counts local step patterns. With <code>n=3</code>, it mainly looks at the last two steps in the prefix, then asks: "after this two-step context, what usually came next in training?"
+        </p>
+        <div class="code-panel">
+          <pre class="code-box"><code>def predict_task1(model: NGramModel, examples: list[ValidExample]) -&gt; list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for ex in examples:
+        ranks = model.next_step_ranking(ex.partial, k=5)
+        ranks = ranks + [""] * (5 - len(ranks))
+        rows.append(
+            {
+                "EXAMPLE_ID": ex.example_id,
+                "RANK_1": ranks[0],
+                "RANK_2": ranks[1],
+                "RANK_3": ranks[2],
+                "RANK_4": ranks[3],
+                "RANK_5": ranks[4],
+            }
+        )
+    return rows</code></pre>
+          <div class="explain-list">
+            <div>
+              <strong><code>model.next_step_ranking(ex.partial, k=5)</code></strong>
+              <p>This is the actual prediction. The model gets the visible partial route and returns its top five next-step guesses.</p>
+            </div>
+            <div>
+              <strong><code>ranks + [""] * ...</code></strong>
+              <p>The official file needs exactly five rank columns. If the model somehow returns fewer than five candidates, blanks fill the missing columns.</p>
+            </div>
+            <div>
+              <strong><code>RANK_1</code> through <code>RANK_5</code></strong>
+              <p>These column names match the official submission format from <code>generation_rules.md</code>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel pad" style="margin-top: 20px;">
+        <span class="tag violet">Task 2 code path</span>
+        <h3>Sequence completion: repeatedly predict one step</h3>
+        <p>
+          Completion is harder than Task 1 because one early mistake changes the prefix for every later prediction. This is why the same model can have perfect Top-5 next-step accuracy but still weak full-sequence completion.
+        </p>
+        <div class="code-panel">
+          <pre class="code-box"><code>def rollout_completion(model: NGramModel, prefix: list[str], max_new_steps: int) -&gt; list[str]:
+    """Greedy n-gram rollout with simple loop prevention.
+
+    The base n-gram can get trapped in repeating lithography cycles. That is a
+    real baseline limitation, but the submission file should still stay bounded.
+    """
+    seq = list(prefix)
+    predicted: list[str] = []
+    seen_contexts: set[tuple[str, ...]] = set()
+    context_width = max(1, model.n - 1)
+
+    for _ in range(max_new_steps):
+        context = tuple(seq[-context_width:])
+        if context in seen_contexts:
+            break
+        seen_contexts.add(context)
+
+        nxt = model.next_step_ranking(seq, k=1)[0]
+        if nxt == "&lt;eos&gt;" or nxt == seq[-1]:
+            break
+        predicted.append(nxt)
+        seq.append(nxt)
+        if nxt == "SHIP LOT":
+            break
+    return predicted</code></pre>
+          <div class="explain-list">
+            <div>
+              <strong><code>seq = list(prefix)</code></strong>
+              <p>The model starts from the partial route the eval input gives us.</p>
+            </div>
+            <div>
+              <strong><code>seen_contexts</code></strong>
+              <p>This prevents infinite loops. Semiconductor routes revisit similar lithography and etch patterns, so a simple local model can get stuck repeating itself.</p>
+            </div>
+            <div>
+              <strong><code>model.next_step_ranking(seq, k=1)[0]</code></strong>
+              <p>The rollout is greedy: it always takes the single most likely next step, appends it, and predicts again.</p>
+            </div>
+            <div>
+              <strong><code>SHIP LOT</code></strong>
+              <p>This is a natural stopping point. Once the lot ships, there should be no more manufacturing steps.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel pad" style="margin-top: 20px;">
+        <span class="tag amber">Task 3 code path</span>
+        <h3>Anomaly detection: use the public rule validator as an oracle</h3>
+        <p>
+          This is the most important honesty point in Solution 0. The code does not learn anomaly detection. It directly calls the rule checker that the repo provides. That creates a strong format baseline and a perfect local oracle, but it is not evidence of learned process understanding.
+        </p>
+        <div class="code-panel">
+          <pre class="code-box"><code>def predict_task3(examples: list[AnomalyExample]) -&gt; list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for ex in examples:
+        violations = validate_sequence(ex.sequence)
+        is_valid = 0 if violations else 1
+        rows.append(
+            {
+                "EXAMPLE_ID": ex.example_id,
+                "IS_VALID": is_valid,
+                "SCORE": 1.0 if is_valid else 0.0,
+                "PREDICTED_RULE": "" if is_valid else violations[0].rule,
+            }
+        )
+    return rows</code></pre>
+          <div class="explain-list">
+            <div>
+              <strong><code>validate_sequence(ex.sequence)</code></strong>
+              <p>This function comes from <code>training_data/generate_sequences.py</code>. It returns a list of rule violations found in the sequence.</p>
+            </div>
+            <div>
+              <strong><code>is_valid = 0 if violations else 1</code></strong>
+              <p>The official format uses <code>1</code> for valid and <code>0</code> for invalid. This line maps the validator result to that format.</p>
+            </div>
+            <div>
+              <strong><code>SCORE</code></strong>
+              <p>This is a valid-probability score. The oracle is totally confident, so valid sequences get <code>1.0</code> and invalid sequences get <code>0.0</code>.</p>
+            </div>
+            <div>
+              <strong><code>PREDICTED_RULE</code></strong>
+              <p>When invalid, the first validator rule ID is written out. That supports rule attribution accuracy.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="csvs">
+      <div class="section-head">
+        <h2>Exactly What Goes Into Each CSV</h2>
+        <p>The jury does not read Python objects. They receive CSV files. This section explains the three output files slowly, because format mistakes are one of the easiest ways to lose points.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="panel pad">
+          <span class="tag blue">Task 1</span>
+          <h3><code>nextstep.csv</code></h3>
+          <p>
+            One row per partial route. The row contains the example ID and five ranked guesses. <code>RANK_1</code> is the model's favorite answer. <code>RANK_5</code> is still a guess, but lower confidence.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Task 2</span>
+          <h3><code>completion.csv</code></h3>
+          <p>
+            One row per same partial route. The model writes the remaining steps as one pipe-separated string. The pipe character <code>|</code> is just a separator between step names.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Task 3</span>
+          <h3><code>anomaly.csv</code></h3>
+          <p>
+            One row per full route. The model says whether the route is valid, gives a validity score, and optionally names the rule that was broken.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 20px;">
+        <div class="panel pad">
+          <span class="tag blue">Sample shape</span>
+          <h3>Task 1 row</h3>
+          <pre class="code-box light"><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5
+valid_0001,MEASURE FILM THICKNESS,MEASURE OXIDE THICKNESS,WET CLEAN RCA1,RCA CLEAN 1,HF DIP</code></pre>
+          <p>
+            This means: for <code>valid_0001</code>, the model thinks <code>MEASURE FILM THICKNESS</code> is the most likely next step. If the ground truth next step is in any rank position, Top-5 gets credit. If it is exactly <code>RANK_1</code>, Top-1 gets credit.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Sample shape</span>
+          <h3>Task 2 row</h3>
+          <pre class="code-box light"><code>EXAMPLE_ID,PREDICTED_SEQUENCE
+valid_0001,MEASURE FILM THICKNESS|CMP DIELECTRIC|MEASURE PLANARITY|SPIN COAT PHOTORESIST</code></pre>
+          <p>
+            This row does not include the original partial sequence. It only includes the predicted continuation after the cut point. If the input already ended at step 80, this field starts at predicted step 81.
+          </p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 20px;">
+        <div class="panel pad">
+          <span class="tag amber">Sample shape</span>
+          <h3>Task 3 valid row</h3>
+          <pre class="code-box light"><code>EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE
+anomaly_0001,1,1.0,</code></pre>
+          <p>
+            <code>IS_VALID=1</code> means the sequence is predicted valid. The rule field is blank because no broken rule is being claimed.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag red">Sample shape</span>
+          <h3>Task 3 invalid row</h3>
+          <pre class="code-box light"><code>EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE
+anomaly_0002,0,0.0,RULE_SHIP_BEFORE_TEST</code></pre>
+          <p>
+            <code>IS_VALID=0</code> means invalid. <code>SCORE=0.0</code> means the oracle gives zero probability that this sequence is valid. <code>RULE_SHIP_BEFORE_TEST</code> says the sequence shipped before wafer sort testing.
+          </p>
+        </div>
+      </div>
+
+      <div class="callout" style="margin-top: 20px;">
+        <strong>Why this matters for future solutions:</strong> a later transformer, beam-search decoder, or learned anomaly detector can replace the prediction logic, but it should keep the same CSV contract. That lets us compare Solution 1 against Solution 0 without rewriting the scoring harness.
+      </div>
+    </div>
+
+    <div class="page-section" id="rules">
+      <div class="section-head">
+        <h2>The 10 Forbidden Rules in Plain English</h2>
+        <p>Task 3 is about detecting process-logic violations. Solution 0 uses the public validator directly, so it can catch these rules perfectly on our local generated anomalies. A final learned model should show it can discover or approximate these rules without simply calling the oracle at inference time.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Rule ID</th>
+              <th>Plain-English meaning</th>
+              <th>Why it matters</th>
+              <th>Example of the bad pattern</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>RULE_DEP_NO_CLEAN</code></td>
+              <td>A deposition step needs a recent cleaning or surface-prep step before it.</td>
+              <td>You do not want to deposit material onto a dirty or unprepared surface.</td>
+              <td><code>ETCH VIA -&gt; DEPOSIT BARRIER METAL</code> with no clean in between.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_METAL_ETCH_NO_LITHO</code></td>
+              <td>A metal etch needs a completed lithography pattern before it.</td>
+              <td>Etching metal without a pattern means the process has no mask defining where to etch.</td>
+              <td><code>DEPOSIT METAL 1 -&gt; ANNEAL METAL 1 -&gt; METAL ETCH</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_ETCH_NO_MASK</code></td>
+              <td>Most etch steps need a recent develop step from lithography.</td>
+              <td>The developed resist pattern tells the etch where material should be removed.</td>
+              <td><code>MEASURE OXIDE THICKNESS -&gt; OXIDE ETCH</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_LITHO_LEVEL_SKIP</code></td>
+              <td>Lithography mask levels must appear in sequence. Do not jump to level 3 before level 2 is complete.</td>
+              <td>Layer ordering matters; skipping a mask level breaks the process route.</td>
+              <td><code>ALIGN MASK LEVEL 3</code> appears before <code>ALIGN MASK LEVEL 2</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_IMPLANT_NO_MASK</code></td>
+              <td>Implant steps need an opened region from oxide etch or lithography.</td>
+              <td>Implanting dopants requires the correct region to be exposed.</td>
+              <td><code>MEASURE JUNCTION DEPTH -&gt; IMPLANT LDD</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_CMP_NO_DEP</code></td>
+              <td>CMP needs a recent deposition or fill step before it.</td>
+              <td>CMP planarizes material. If nothing was deposited or filled, CMP does not make process sense.</td>
+              <td><code>MEASURE PLANARITY -&gt; CMP METAL</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_PAD_OPEN_BEFORE_DEP</code></td>
+              <td>Pad windows should open only after passivation has been deposited and cured.</td>
+              <td>The pad opening is part of the passivation/bond-pad flow and should not happen before the protective layer exists.</td>
+              <td><code>OPEN PAD WINDOW -&gt; DEPOSIT PASSIVATION</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_TEST_BEFORE_PASSIVATION</code></td>
+              <td>Electrical tests should happen after passivation cure.</td>
+              <td>The device should pass through the protective passivation stage before final electrical testing.</td>
+              <td><code>DEPOSIT PASSIVATION -&gt; PARAMETRIC TEST -&gt; CURE PASSIVATION</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_SHIP_BEFORE_TEST</code></td>
+              <td><code>SHIP LOT</code> must not happen before <code>WAFER SORT TEST</code>.</td>
+              <td>You do not ship the lot before mandatory wafer sort testing.</td>
+              <td><code>SHIP LOT -&gt; WAFER SORT TEST</code>.</td>
+            </tr>
+            <tr>
+              <td><code>RULE_BACKSIDE_BEFORE_PASSIVATION</code></td>
+              <td>Backside metal deposition must happen after passivation cure.</td>
+              <td>The frontside should be protected before backside metallization.</td>
+              <td><code>DEPOSIT BACKSIDE METAL -&gt; DEPOSIT PASSIVATION</code>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warning" style="margin-top: 20px;">
+        <strong>Why Task 3 is perfect for Solution 0:</strong> the validator already knows these rules exactly. That is useful for creating a labeled local test set and validating CSV format, but it is not the final winning claim. The final claim should be: "our trained model learned signals that line up with these rules, and we can show where the sequence becomes suspicious."
+      </div>
+    </div>
+
+    <div class="page-section" id="results">
+      <div class="section-head">
+        <h2>Judging-Style Results</h2>
+        <p>These are the latest local self-eval numbers written by <a href="outputs/metrics.json">outputs/metrics.json</a>. They are useful for comparing our own future solutions.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="metric-card">
+          <span>Task 1 Top-1</span>
+          <strong>0.6800</strong>
+          <div class="meter"><div class="meter-fill" style="width: 68%; background: var(--blue);"></div></div>
+          <p>The first guess is correct 68% of the time.</p>
+        </div>
+        <div class="metric-card">
+          <span>Task 1 Top-5</span>
+          <strong>1.0000</strong>
+          <div class="meter"><div class="meter-fill" style="width: 100%; background: var(--green);"></div></div>
+          <p>The correct next step appears somewhere in the five guesses every time on this self-eval set.</p>
+        </div>
+        <div class="metric-card">
+          <span>Task 2 Exact Match</span>
+          <strong>0.0000</strong>
+          <div class="meter"><div class="meter-fill" style="width: 0%; background: var(--red);"></div></div>
+          <p>No predicted suffix exactly matches the full true remainder.</p>
+        </div>
+      </div>
+
+      <div class="grid three" style="margin-top: 18px;">
+        <div class="metric-card">
+          <span>Task 2 Token Accuracy</span>
+          <strong>0.2073</strong>
+          <div class="meter"><div class="meter-fill" style="width: 20.73%; background: var(--amber);"></div></div>
+          <p>Only about one in five predicted positions matches the exact true step.</p>
+        </div>
+        <div class="metric-card">
+          <span>Task 3 F1(valid)</span>
+          <strong>1.0000</strong>
+          <div class="meter"><div class="meter-fill" style="width: 100%; background: var(--green);"></div></div>
+          <p>Perfect because Task 3 uses the validator oracle, not a learned detector.</p>
+        </div>
+        <div class="metric-card">
+          <span>Task 3 Rule Attribution</span>
+          <strong>1.0000</strong>
+          <div class="meter"><div class="meter-fill" style="width: 100%; background: var(--green);"></div></div>
+          <p>Perfect locally because the same validator that detects the issue also returns the rule ID.</p>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 20px;">
+        <div class="table-wrap">
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Task 1 metric</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Top-1 Accuracy</td><td>0.6800</td></tr>
+              <tr><td>Top-3 Accuracy</td><td>0.9883</td></tr>
+              <tr><td>Top-5 Accuracy</td><td>1.0000</td></tr>
+              <tr><td>MRR</td><td>0.8336</td></tr>
+              <tr><td>Examples</td><td>600</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Task 2 metric</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Exact Match</td><td>0.0000</td></tr>
+              <tr><td>Normalized Edit Distance</td><td>0.6152</td></tr>
+              <tr><td>Token Accuracy</td><td>0.2073</td></tr>
+              <tr><td>Block Accuracy</td><td>0.3922</td></tr>
+              <tr><td>Examples</td><td>600</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 20px;">
+        <div class="table-wrap">
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Task 3 metric</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>Accuracy</td><td>1.0000</td></tr>
+              <tr><td>Precision(valid)</td><td>1.0000</td></tr>
+              <tr><td>Recall(valid)</td><td>1.0000</td></tr>
+              <tr><td>F1(valid)</td><td>1.0000</td></tr>
+              <tr><td>ROC-AUC(valid probability)</td><td>1.0000</td></tr>
+              <tr><td>Rule Attribution Accuracy</td><td>1.0000</td></tr>
+              <tr><td>Examples</td><td>600</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-wrap">
+          <table class="metric-table">
+            <thead>
+              <tr>
+                <th>Task 4 proxy held-out family</th>
+                <th>Top-1</th>
+                <th>Top-3</th>
+                <th>Top-5</th>
+                <th>MRR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>MOSFET</td><td>0.7400</td><td>1.0000</td><td>1.0000</td><td>0.8692</td></tr>
+              <tr><td>IGBT</td><td>0.7150</td><td>0.9650</td><td>0.9650</td><td>0.8375</td></tr>
+              <tr><td>IC</td><td>0.6350</td><td>0.9650</td><td>0.9700</td><td>0.7979</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="callout warning" style="margin-top: 20px;">
+        <strong>How to read these numbers:</strong> Task 1 is strong for a small baseline because local step order is highly structured. Task 2 is weak because long greedy generation compounds mistakes. Task 3 is perfect only because it is a rule oracle. The winning solution needs to keep Task 1 strong, fix Task 2 generation, and turn Task 3 from an oracle into learned evidence of process understanding.
+      </div>
+    </div>
+
+    <div class="page-section" id="metrics">
+      <div class="section-head">
+        <h2>Metric Glossary, Explained Like We Are New to This</h2>
+        <p>These are the judging words from the track docs. A metric is just a rule for converting predictions into a number. Different metrics reward different behavior.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="definition-card">
+          <span class="tag blue">Task 1</span>
+          <h4>Top-1 Accuracy</h4>
+          <p>Top-1 asks: "Was the model's first guess exactly the true next step?"</p>
+          <p class="formula">Top-1 = correct first guesses / number of examples</p>
+          <p>Our value is <code>0.6800</code>, so 68% of first guesses are correct on local self-eval.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag blue">Task 1</span>
+          <h4>Top-3 and Top-5 Accuracy</h4>
+          <p>Top-3 asks whether the true step appears anywhere in the first three guesses. Top-5 asks whether it appears anywhere in the first five guesses.</p>
+          <p>These metrics are friendlier than Top-1 because the model can get credit for ranking the right answer as plausible, even if it was not the first choice.</p>
+          <p>Our Top-5 is <code>1.0000</code>, which means the true next step always appears somewhere in the five guesses locally.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag blue">Task 1</span>
+          <h4>MRR</h4>
+          <p>MRR means Mean Reciprocal Rank. It rewards the true answer appearing higher in the ranked list.</p>
+          <p>If the answer is rank 1, the score for that example is <code>1/1 = 1.0</code>. If it is rank 2, the score is <code>1/2 = 0.5</code>. If it is rank 5, the score is <code>1/5 = 0.2</code>. Then we average across examples.</p>
+          <p>Our MRR is <code>0.8336</code>, which is consistent with many true answers appearing near the top.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Task 2</span>
+          <h4>Exact Match Rate</h4>
+          <p>Exact match is strict. The predicted remainder must equal the true remainder step-for-step, with no missing steps, no extra steps, and no wrong order.</p>
+          <p>This is very hard for long sequences. One early mistake makes the whole suffix non-exact.</p>
+          <p>Our exact match is <code>0.0000</code>, which means Solution 0 never predicts the entire hidden suffix perfectly.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Task 2</span>
+          <h4>Normalized Edit Distance</h4>
+          <p>Edit distance counts how many insertions, deletions, or substitutions are needed to turn the prediction into the true answer.</p>
+          <p>"Normalized" means divided by sequence length so examples of different lengths can be compared. Lower is better.</p>
+          <p>Our value is <code>0.6152</code>, which is not good. It says the predicted suffixes are far from exact.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Task 2</span>
+          <h4>Token Accuracy</h4>
+          <p>Token accuracy compares predicted and true suffixes position by position.</p>
+          <p>If the true step at position 10 is <code>VIA ETCH</code> and the predicted step at position 10 is also <code>VIA ETCH</code>, that position gets credit.</p>
+          <p>Our value is <code>0.2073</code>, so about 20.7% of exact step positions match.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag violet">Task 2</span>
+          <h4>Block-Level Accuracy</h4>
+          <p>Block-level accuracy is a softer version of token accuracy. Instead of asking whether the exact step name matches, it asks whether the coarse process category matches.</p>
+          <p>For example, two different measurement steps may both count as "inspection/measurement" even if the exact names differ.</p>
+          <p>Our value is <code>0.3922</code>, which is better than token accuracy but still weak.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Task 3</span>
+          <h4>Binary Accuracy</h4>
+          <p>Binary accuracy asks whether we got the valid/invalid label right.</p>
+          <p>There are only two labels: valid or invalid. In the CSV, valid is <code>1</code> and invalid is <code>0</code>.</p>
+          <p>Our value is <code>1.0000</code> because the rule oracle directly checks validity.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Task 3</span>
+          <h4>Precision and Recall</h4>
+          <p>Precision asks: "When we predicted valid, how often were we right?" Recall asks: "Of all truly valid sequences, how many did we catch as valid?"</p>
+          <p>These matter when one class is rarer or more costly than the other. For example, falsely accepting an invalid process route could be worse than falsely flagging a valid route for review.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Task 3</span>
+          <h4>F1</h4>
+          <p>F1 combines precision and recall into one number. It is useful when we care about both false alarms and missed detections.</p>
+          <p class="formula">F1 = 2 * precision * recall / (precision + recall)</p>
+          <p>Our F1 is <code>1.0000</code> locally because the oracle makes no valid/invalid mistakes on the generated self-eval anomalies.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Task 3</span>
+          <h4>Confusion Matrix</h4>
+          <p>A confusion matrix is a small table of the four possible valid/invalid outcomes.</p>
+          <p><code>TP</code> means a valid sequence predicted valid. <code>TN</code> means an invalid sequence predicted invalid. <code>FP</code> means invalid accepted as valid. <code>FN</code> means valid rejected as invalid.</p>
+          <p>For this run: <code>TP=300</code>, <code>TN=300</code>, <code>FP=0</code>, <code>FN=0</code>.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Task 3</span>
+          <h4>ROC-AUC</h4>
+          <p>ROC-AUC evaluates the ranking quality of a score, not just a hard valid/invalid label.</p>
+          <p>If every valid sequence receives a higher validity score than every invalid sequence, AUC is <code>1.0</code>. If scores are random, AUC is around <code>0.5</code>.</p>
+          <p>Our AUC is <code>1.0000</code> because the oracle gives valid rows <code>1.0</code> and invalid rows <code>0.0</code>.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag amber">Task 3</span>
+          <h4>Rule Attribution Accuracy</h4>
+          <p>Detecting "invalid" is not the whole job. Rule attribution asks whether we can name the broken rule, such as <code>RULE_SHIP_BEFORE_TEST</code> or <code>RULE_CMP_NO_DEP</code>.</p>
+          <p>This is valuable for a human engineer because "invalid" alone does not say what to fix.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag green">Task 4</span>
+          <h4>OOD Generalization</h4>
+          <p>OOD means out-of-distribution. In this track, the organizers will test on an undisclosed fourth product family after submission.</p>
+          <p>The danger is memorizing MOSFET, IGBT, and IC route patterns without learning reusable process logic. Our local proxy trains on two families and tests on the third.</p>
+        </div>
+        <div class="definition-card">
+          <span class="tag green">Task 4</span>
+          <h4>Performance Drop</h4>
+          <p>Performance drop means the difference between in-distribution performance and OOD performance.</p>
+          <p>If a model gets 95% Top-1 on known families but only 55% on a hidden family, the drop is large. A winning model should keep the drop as small as possible.</p>
+        </div>
+      </div>
+
+      <div class="callout warning" style="margin-top: 20px;">
+        <strong>Junior-engineer takeaway:</strong> do not optimize only the headline number that looks best. Solution 0 looks excellent on Task 1 Top-5 and Task 3 oracle metrics, but Task 2 shows that it does not truly generate long routes well. The final pitch should use multiple metrics to tell an honest story.
+      </div>
+    </div>
+
+    <div class="page-section" id="finish">
+      <div class="section-head">
+        <h2>Connection to "When Will This Lot Finish?"</h2>
+        <p>The reference page made this distinction clear: predicting the next process step and forecasting finish time are related, but they are not the same product.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="panel pad">
+          <span class="tag blue">What Solution 0 can do</span>
+          <h3>Estimate the remaining route shape</h3>
+          <p>
+            Task 2 produces a predicted list of remaining steps. That answers: "what operations might still be ahead after this partial trace?"
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">What it cannot do yet</span>
+          <h3>Predict calendar time</h3>
+          <p>
+            Finish time needs more than step names. We would need step durations, queue state, tool availability, maintenance windows, dispatch rules, WIP, holds, sampling decisions, and maybe rework probability.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag green">How this becomes useful</span>
+          <h3>Route model + scheduling model</h3>
+          <p>
+            A stronger system could first predict or validate the remaining route, then feed those remaining operations into a scheduling/forecasting layer. That is where "when will this lot finish?" becomes a serious operations question.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel pad" style="margin-top: 20px;">
+        <h3>Software-engineering analogy</h3>
+        <p>
+          Imagine a CI/CD pipeline. Knowing that the next stage is <code>integration tests</code> is not enough to know when the release finishes. You also need test duration, runner availability, queue length, flaky-test retries, approval gates, and deploy windows. Semiconductor lots are similar: the route matters, but timing depends on the factory state around the route.
+        </p>
+      </div>
+    </div>
+
+    <div class="page-section" id="limits">
+      <div class="section-head">
+        <h2>Limitations and Lessons</h2>
+        <p>This section is intentionally direct. A baseline is valuable only if it tells us what the next solution must beat.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="panel pad">
+          <span class="tag red">Limitation</span>
+          <h3>Task 2 exposes local-model weakness</h3>
+          <p>
+            The n-gram model can often rank the immediate next step well, but it does not plan globally. Once a greedy rollout chooses a plausible but wrong branch, all later predictions are conditioned on that wrong branch.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag red">Limitation</span>
+          <h3>Task 3 is not learned</h3>
+          <p>
+            Calling <code>validate_sequence()</code> proves we can match the file format and rule IDs, but it does not prove a model learned the forbidden patterns. For the final story, we need surprisal spikes, learned classifiers, or model probes that localize violations.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Lesson</span>
+          <h3>Top-5 can hide important weakness</h3>
+          <p>
+            Task 1 Top-5 is perfect locally, but the full completion score is poor. That means "the right step is somewhere in the candidate list" is not enough. We need better ranking and better sequence-level decoding.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag green">Lesson</span>
+          <h3>The benchmark harness is now useful</h3>
+          <p>
+            Because Solution 0 writes the official-shaped CSVs and local metrics, every future model can be compared against it. That is exactly what we need before training more expensive models.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="next">
+      <div class="section-head">
+        <h2>What Solution 1 Should Do</h2>
+        <p>Solution 0 is the foundation. The winning direction should build on it, not replace the evaluation discipline.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="panel pad">
+          <span class="tag blue">Model</span>
+          <h3>Train a step-level transformer</h3>
+          <p>
+            Use a from-scratch decoder-only model with the repo's step vocabulary. Keep tokens at the process-step level, not word level, because the official tasks care about exact step strings.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Generalization</span>
+          <h3>Optimize leave-one-family-out</h3>
+          <p>
+            Hidden Task 4 is the strategic edge. Every design decision should be checked by training on two families and testing on the held-out third family.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Anomaly</span>
+          <h3>Move beyond the oracle</h3>
+          <p>
+            Use the validator to create labels, but train a model to assign high surprisal or low validity probability to broken rules. Then show whether it rediscovers the 10 forbidden patterns.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag green">Decoding</span>
+          <h3>Improve completion</h3>
+          <p>
+            Try beam search, grammar-constrained decoding, or reranking with the validator. Exact match is strict, so the completion system needs sequence-level discipline.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag blue">Demo</span>
+          <h3>Show baseline vs trained output</h3>
+          <p>
+            The track brief explicitly values side-by-side outputs. Show the n-gram baseline, the trained model, and where the trained model handles process logic better.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Reporting</span>
+          <h3>Add curves and artifacts</h3>
+          <p>
+            The final submission should include checkpoints or at least logs, loss curves, metric curves, and per-family breakdowns. That is where the jury sees engineering maturity.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="files">
+      <div class="section-head">
+        <h2>Files Produced by Solution 0</h2>
+        <p>These are the practical artifacts a teammate should inspect first.</p>
+      </div>
+
+      <div class="file-grid">
+        <a class="file-link" href="solution.py">
+          <strong>solution.py</strong>
+          <span>The complete executable baseline and self-eval generator.</span>
+        </a>
+        <a class="file-link" href="README.md">
+          <strong>README.md</strong>
+          <span>Short run instructions and scope notes for this solution.</span>
+        </a>
+        <a class="file-link" href="how_to_submit_this_solution.html">
+          <strong>how_to_submit_this_solution.html</strong>
+          <span>Manual terminal, GitHub, slides, demo video, and Tally steps for submitting this exact solution.</span>
+        </a>
+        <a class="file-link" href="outputs/nextstep.csv">
+          <strong>outputs/nextstep.csv</strong>
+          <span>Task 1 official-shaped ranked next-step predictions.</span>
+        </a>
+        <a class="file-link" href="outputs/completion.csv">
+          <strong>outputs/completion.csv</strong>
+          <span>Task 2 official-shaped predicted suffixes.</span>
+        </a>
+        <a class="file-link" href="outputs/anomaly.csv">
+          <strong>outputs/anomaly.csv</strong>
+          <span>Task 3 official-shaped validity predictions and rule IDs.</span>
+        </a>
+        <a class="file-link" href="outputs/metrics.md">
+          <strong>outputs/metrics.md</strong>
+          <span>Markdown summary of the local self-eval metrics.</span>
+        </a>
+        <a class="file-link" href="outputs/input_audit.md">
+          <strong>outputs/input_audit.md</strong>
+          <span>Audit of docs, scripts, data sources, and prior artifacts considered.</span>
+        </a>
+        <a class="file-link" href="../solutions_comparison.md">
+          <strong>../solutions_comparison.md</strong>
+          <span>Comparison table for Solution 0 and future solutions using the jury-style criteria.</span>
+        </a>
+      </div>
+
+      <p class="footer-note">
+        Last checked on this branch: <code>dev/bati</code>. This report is a local artifact and does not imply anything has been committed or pushed.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,229 @@
+{
+  "docs_reviewed": [
+    "README.md",
+    "CLAUDE.md",
+    "PLAN.md",
+    "submission/SUBMISSION.md",
+    "submission/REPORT_TEMPLATE.md",
+    "industrial-infineon/README.md",
+    "industrial-infineon/Track_industrial_en.md",
+    "industrial-infineon/Track_industrial.md",
+    "training_data/README.md",
+    "training_data/generation_rules.md"
+  ],
+  "metadata_csvs_reviewed_not_modeled": [],
+  "notes": [
+    "Official eval inputs and eval_metrics.py are not present in reachable repo history.",
+    "Solution 0 uses all available sequence sources for the baseline model.",
+    "For enriched description/parameter CSVs, Solution 0 uses only the ordered STEP column; natural-language descriptions and fab parameters are not used by this baseline.",
+    "CLAUDE.md and PLAN.md recommend the final winning model use step-level tokens and avoid family embeddings for OOD generalization."
+  ],
+  "previous_artifacts_reviewed": {
+    "baseline_plots": [
+      "test_baseline_1/plots/plot_anomaly.png",
+      "test_baseline_1/plots/plot_completion.png",
+      "test_baseline_1/plots/plot_next_step.png",
+      "test_baseline_1/plots/plot_summary.png",
+      "test_baseline_2/results_ngram_comparison/ngram_best_n.png",
+      "test_baseline_2/results_ngram_comparison/ngram_context_comparison.png",
+      "test_baseline_2/wandb/run-20260530_005611-u7e26g3y/files/media/images/plots/best_n_highlight_11_d3cf52b91f122427245e.png",
+      "test_baseline_2/wandb/run-20260530_005611-u7e26g3y/files/media/images/plots/context_comparison_11_f7b20b127babccd0f31d.png"
+    ],
+    "small_transformer_jsonl": [
+      "small_transformer_model/data/dataset_id_val.jsonl",
+      "small_transformer_model/data/dataset_ood_test.jsonl",
+      "small_transformer_model/data/dataset_train.jsonl"
+    ],
+    "small_transformer_vocab": "small_transformer_model/data/vocab.json",
+    "wandb_summaries": [
+      "test_baseline_1/wandb/run-20260530_000713-ijjli4x0/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_000728-sy7zl066/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_000737-kqcxq0q5/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_001929-7zd6vzju/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_001941-dfrw8vyw/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_001951-wkawb3rn/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_002112-qe23nk8v/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_002125-8f1pwvs5/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_002137-hxmdby8e/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_002442-ncteqr8x/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_002455-bid05vrp/files/wandb-summary.json",
+      "test_baseline_1/wandb/run-20260530_002507-l19w7tuj/files/wandb-summary.json",
+      "test_baseline_2/wandb/run-20260530_005611-u7e26g3y/files/wandb-summary.json"
+    ]
+  },
+  "scripts_reviewed": [
+    "data.py",
+    "tokenizer.py",
+    "ngram.py",
+    "run_baseline.py",
+    "ablation_n.py",
+    "training_data/generate_sequences.py",
+    "small_transformer_model/data_generation/generate_more_sequence_data.py",
+    "small_transformer_model/data_generation/prepare_dataset.py",
+    "small_transformer_model/train/train_model.py",
+    "small_transformer_model/train/setup_leonardo.sh",
+    "small_transformer_model/train/job.slurm",
+    "test_baseline_1/baseline_random.py",
+    "test_baseline_1/baseline_ngram.py",
+    "test_baseline_1/baseline_llm_zeroshot.py",
+    "test_baseline_1/run_all_baselines.py",
+    "test_baseline_1/visualize_baselines.py",
+    "test_baseline_2/ngram_context_comparison.py"
+  ],
+  "sequence_sources_used": [
+    {
+      "family": "ic",
+      "file": "training_data/IC_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 109,
+      "mean_len": 109.0,
+      "min_len": 109,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_generated_extra.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 123,
+      "mean_len": 115.076,
+      "min_len": 105,
+      "sequences": 2000,
+      "valid_sequences": 2000
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 109,
+      "mean_len": 109.0,
+      "min_len": 109,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 122,
+      "mean_len": 115.075,
+      "min_len": 107,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 137,
+      "mean_len": 137.0,
+      "min_len": 137,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_generated_extra.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 157,
+      "mean_len": 147.9575,
+      "min_len": 138,
+      "sequences": 2000,
+      "valid_sequences": 2000
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 139,
+      "mean_len": 139.0,
+      "min_len": 139,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 155,
+      "mean_len": 147.959,
+      "min_len": 139,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 134,
+      "mean_len": 125.26,
+      "min_len": 117,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "ic",
+      "file": "training_data/syntheticIC.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 107,
+      "mean_len": 107.0,
+      "min_len": 107,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/syntheticIGBT.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 151,
+      "mean_len": 151.0,
+      "min_len": 151,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/synthetic_mosfet.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    }
+  ]
+}

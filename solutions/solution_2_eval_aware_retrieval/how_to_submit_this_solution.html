@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit Solution 2</title>
+  <style>
+    :root {
+      --ink: #18212f;
+      --muted: #5f6d7c;
+      --line: #d8dee8;
+      --paper: #ffffff;
+      --soft: #f4f7fb;
+      --accent: #0b6b6f;
+      --accent-soft: #dff4f2;
+      --warn: #8a4b00;
+      --warn-soft: #fff2d8;
+      --code: #101827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+    }
+    header {
+      background: var(--paper);
+      border-bottom: 1px solid var(--line);
+      padding: 30px max(24px, calc((100vw - 980px) / 2));
+    }
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 24px 64px;
+    }
+    h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
+    h1 { font-size: 32px; }
+    h2 { margin-top: 32px; font-size: 24px; }
+    h3 { margin-top: 20px; font-size: 18px; }
+    p { margin: 0 0 14px; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #eef2f7;
+      padding: 2px 5px;
+      border-radius: 5px;
+      font-size: 0.92em;
+    }
+    pre {
+      margin: 14px 0;
+      overflow: auto;
+      padding: 16px;
+      border-radius: 8px;
+      background: var(--code);
+      color: #e9eef7;
+      font-size: 14px;
+      line-height: 1.45;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    .panel, .callout {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 18px;
+      margin: 18px 0;
+    }
+    .callout { background: var(--accent-soft); border-color: #a8d7d4; }
+    .warn { background: var(--warn-soft); border-color: #f0d197; }
+    .muted { color: var(--muted); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      margin: 14px 0 20px;
+    }
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+    th { background: #edf3f8; }
+    li { margin-bottom: 7px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>How To Submit Solution 2</h1>
+    <p class="muted">Manual checklist for producing and handing in the CSV files.</p>
+  </header>
+
+  <main>
+    <section class="callout warn">
+      <strong>Before using this as the final submission:</strong>
+      check whether the organizers have provided official
+      <code>eval_input_valid.csv</code> and <code>eval_input_anomaly.csv</code>.
+      The local files in <code>outputs/</code> are self-eval artifacts, not
+      official hidden-eval predictions unless you run the solution against the
+      official inputs.
+    </section>
+
+    <section>
+      <h2>1. Confirm The Branch</h2>
+      <p>Open a terminal in the repository root and run:</p>
+      <pre><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current
+git status --short</code></pre>
+      <p>
+        The branch should be <code>dev/bati</code>. Do not commit or push unless
+        you explicitly decide to do that.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. Run The Local Self-Eval Version</h2>
+      <p>
+        This regenerates the local outputs and metrics that are already in the
+        solution folder.
+      </p>
+      <pre><code>PYTHONDONTWRITEBYTECODE=1 python solutions/solution_2_eval_aware_retrieval/solution.py</code></pre>
+      <p>Expected output folder:</p>
+      <pre><code>solutions/solution_2_eval_aware_retrieval/outputs/</code></pre>
+      <p>Key files to inspect:</p>
+      <ul>
+        <li><code>outputs/metrics.md</code></li>
+        <li><code>outputs/nextstep.csv</code></li>
+        <li><code>outputs/completion.csv</code></li>
+        <li><code>outputs/anomaly.csv</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>3. Official Input Handling</h2>
+      <p>
+        At the moment, the official eval files are not present in this checkout.
+        When the organizers provide them, place them in the repository root or
+        adjust the paths in the command below.
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Official file</th>
+            <th>Used for</th>
+            <th>Rows</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>eval_input_valid.csv</code></td>
+            <td>Task 1 next-step and Task 2 completion</td>
+            <td>600 documented rows</td>
+          </tr>
+          <tr>
+            <td><code>eval_input_anomaly.csv</code></td>
+            <td>Task 3 anomaly detection</td>
+            <td>987 documented rows</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The output columns must match the documented format in
+        <code>training_data/generation_rules.md</code>.
+      </p>
+      <p>Run this command from the repository root:</p>
+      <pre><code>PYTHONDONTWRITEBYTECODE=1 python solutions/solution_2_eval_aware_retrieval/solution.py \
+  --eval-valid eval_input_valid.csv \
+  --eval-anomaly eval_input_anomaly.csv \
+  --out-dir submissions/solution_2_eval_aware_retrieval</code></pre>
+      <p>The command writes:</p>
+      <ul>
+        <li><code>submissions/solution_2_eval_aware_retrieval/task1_nextstep.csv</code></li>
+        <li><code>submissions/solution_2_eval_aware_retrieval/task2_completion.csv</code></li>
+        <li><code>submissions/solution_2_eval_aware_retrieval/task3_anomaly.csv</code></li>
+        <li><code>submissions/solution_2_eval_aware_retrieval/official_run_manifest.json</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>4. Submission CSV Formats</h2>
+      <h3>Task 1: next-step prediction</h3>
+      <pre><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5
+valid_0001,MEASURE THICKNESS,INSPECT WAFER,CLEAN SURFACE,MEASURE GEOMETRY,HF DIP</code></pre>
+
+      <h3>Task 2: sequence completion</h3>
+      <pre><code>EXAMPLE_ID,PREDICTED_SEQUENCE
+valid_0001,MEASURE THICKNESS|CLEAN SURFACE|DEPOSIT GATE OXIDE</code></pre>
+      <p>
+        Submit only the steps after the cut point. Do not repeat the partial
+        sequence from the input.
+      </p>
+
+      <h3>Task 3: anomaly detection</h3>
+      <pre><code>EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE
+valid_0001,1,0.95,
+forbidden_0042,0,0.08,RULE_DEP_NO_CLEAN</code></pre>
+    </section>
+
+    <section>
+      <h2>5. Manual Browser/Tally Steps</h2>
+      <ol>
+        <li>Open the official Tally submission form from the hackathon announcements channel.</li>
+        <li>Enter the team name and required contact details.</li>
+        <li>Upload the Task 1 CSV generated from official <code>eval_input_valid.csv</code>.</li>
+        <li>Upload the Task 2 CSV generated from official <code>eval_input_valid.csv</code>.</li>
+        <li>Upload the Task 3 CSV generated from official <code>eval_input_anomaly.csv</code>.</li>
+        <li>Attach or link the repo branch if the form asks for implementation evidence.</li>
+        <li>Submit before the official deadline. The repo README says the Tally timestamp is the official submission time.</li>
+      </ol>
+    </section>
+
+    <section>
+      <h2>6. What To Say If Asked About The 0.72</h2>
+      <p>
+        Use this wording in the presentation or Q&amp;A:
+      </p>
+      <div class="panel">
+        <p>
+          "Exact Top-1 is capped by randomized aliases in the generator. Our
+          fair exact Top-1 is 0.7317, but exact Top-2 is 0.9950, MRR is 0.8650,
+          and canonical process-step Top-1 is 0.9783. So the model usually knows
+          the correct manufacturing operation; the remaining errors are mostly
+          exact label aliases like STRIP RESIST vs STRIP PHOTORESIST."
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h2>7. Final Pre-Submission Checks</h2>
+      <ul>
+        <li>Open each CSV and confirm the header line exactly matches the expected format.</li>
+        <li>Confirm there are no extra index columns.</li>
+        <li>Confirm Task 2 predictions do not repeat the input partial sequence.</li>
+        <li>Confirm anomaly <code>IS_VALID</code> uses <code>1</code> for valid and <code>0</code> for invalid.</li>
+        <li>Keep a frozen copy of the submitted CSVs once uploaded.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

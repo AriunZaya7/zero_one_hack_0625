@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Solution 3 Explanation</title>
+  <style>
+    body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; color: #172033; background: #f5f7fb; }
+    main, header { max-width: 980px; margin: 0 auto; padding: 28px 24px; }
+    header { background: #fff; border-bottom: 1px solid #d8dee8; max-width: none; }
+    header > div { max-width: 980px; margin: 0 auto; }
+    section { background: #fff; border: 1px solid #d8dee8; border-radius: 8px; padding: 18px; margin: 18px 0; }
+    h1, h2 { line-height: 1.2; }
+    code { background: #edf2f7; padding: 2px 5px; border-radius: 5px; }
+    pre { background: #111827; color: #eef2ff; padding: 14px; border-radius: 8px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #d8dee8; padding: 9px; text-align: left; }
+    th { background: #edf3f8; }
+  </style>
+</head>
+<body>
+  <header><div><h1>Solution 3: Synthetic-Augmented Retrieval</h1></div></header>
+  <main>
+    <section>
+      <h2>What This Solution Tries</h2>
+      <p>
+        Solution 3 uses the public generator in <code>training_data/generate_sequences.py</code>
+        to create more valid MOSFET, IGBT, and IC sequences. It then trains the
+        same hybrid retrieval model from Solution 1 on public data plus these
+        generated examples.
+      </p>
+      <p>
+        The intuition is junior-friendly: if we only have a few examples of a
+        route, retrieval may choose a nearby but imperfect continuation. If we
+        generate many more valid routes from the official grammar, the retriever
+        has more chances to find a close continuation.
+      </p>
+    </section>
+
+    <section>
+      <h2>Key Code Idea</h2>
+      <pre><code>generated = generate_dataset(
+    family,
+    count=count_per_family,
+    seed=seed_base + family_index,
+    validate=True,
+)</code></pre>
+      <p>
+        The generated sequences are kept in memory and are not written as new
+        training CSV files. This avoids cluttering the repo with large generated
+        artifacts.
+      </p>
+    </section>
+
+    <section>
+      <h2>Current Metrics</h2>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Task 1 Top-1</td><td>0.7350</td></tr>
+        <tr><td>Task 1 MRR</td><td>0.8661</td></tr>
+        <tr><td>Canonical Top-1</td><td>0.9783</td></tr>
+        <tr><td>Task 2 token accuracy</td><td>0.4580</td></tr>
+        <tr><td>Task 2 block accuracy</td><td>0.7252</td></tr>
+        <tr><td>Task 3 accuracy</td><td>1.0000</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Interpretation</h2>
+      <p>
+        This is currently the best seed-42 attempt among Solutions 0-5 on
+        exact Top-1, MRR, token accuracy, and block accuracy. It still cannot
+        fully solve randomized alias choices, but it improves grammar coverage.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

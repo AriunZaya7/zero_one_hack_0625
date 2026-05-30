@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Solution 4 Explanation</title>
+  <style>
+    body { font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; color: #172033; background: #f5f7fb; }
+    main, header { max-width: 980px; margin: 0 auto; padding: 28px 24px; }
+    header { background: #fff; border-bottom: 1px solid #d8dee8; max-width: none; }
+    header > div { max-width: 980px; margin: 0 auto; }
+    section { background: #fff; border: 1px solid #d8dee8; border-radius: 8px; padding: 18px; margin: 18px 0; }
+    h1, h2 { line-height: 1.2; }
+    code { background: #edf2f7; padding: 2px 5px; border-radius: 5px; }
+    pre { background: #111827; color: #eef2ff; padding: 14px; border-radius: 8px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #d8dee8; padding: 9px; text-align: left; }
+    th { background: #edf3f8; }
+  </style>
+</head>
+<body>
+  <header><div><h1>Solution 4: Length-Aware Completion</h1></div></header>
+  <main>
+    <section>
+      <h2>What This Solution Tries</h2>
+      <p>
+        Solution 4 keeps Solution 2's next-step model and focuses on Task 2.
+        It estimates how many steps should remain after a 60% or 80% cut, then
+        trims the retrieved suffix to that likely length.
+      </p>
+      <p>
+        This is useful because completion is judged with token accuracy and
+        block accuracy as well as exact match. A suffix that has the right broad
+        length can align better even when exact string match remains unlikely.
+      </p>
+    </section>
+
+    <section>
+      <h2>Key Code Idea</h2>
+      <pre><code>target_length = self.expected_remainder_length(prefix, family, completion_fraction)
+if len(suffix) > target_length:
+    return suffix[:target_length]</code></pre>
+      <p>
+        The model does not use the true hidden remainder length. It learns a
+        likely length from the public training cut statistics.
+      </p>
+    </section>
+
+    <section>
+      <h2>Current Metrics</h2>
+      <table>
+        <tr><th>Metric</th><th>Value</th></tr>
+        <tr><td>Task 1 Top-1</td><td>0.7317</td></tr>
+        <tr><td>Task 1 MRR</td><td>0.8650</td></tr>
+        <tr><td>Canonical Top-1</td><td>0.9783</td></tr>
+        <tr><td>Task 2 token accuracy</td><td>0.4495</td></tr>
+        <tr><td>Task 2 block accuracy</td><td>0.7188</td></tr>
+        <tr><td>Task 2 normalized edit distance</td><td>0.2468</td></tr>
+      </table>
+    </section>
+
+    <section>
+      <h2>Interpretation</h2>
+      <p>
+        This is a metric-tradeoff attempt. It improves block accuracy slightly
+        over Solution 2, but worsens normalized edit distance, so it is not the
+        current best overall candidate.
+      </p>
+    </section>
+  </main>
+</body>
+</html>
