@@ -88,15 +88,20 @@ class HFModel:
                 scores[i] = tot
         return scores
 
-    def next_step_ranking(self, prefix: list[str], k: int = 5) -> list[str]:
+    def next_step_ranking(self, prefix: list[str], k: int = 5,
+                          guide=None) -> list[str]:
         scores = self._score_candidates(prefix)
-        top = torch.topk(scores, min(k, len(self.step_vocab))).indices.tolist()
+        if guide is not None:
+            guide.mask_scores(scores, prefix, self.step_vocab)
+        n_valid = int((scores > float("-inf")).sum())
+        top = torch.topk(scores, min(k, max(n_valid, 1))).indices.tolist()
         return [self.step_vocab[i] for i in top]
 
-    def complete(self, prefix: list[str], max_len: int = 200) -> list[str]:
+    def complete(self, prefix: list[str], max_len: int = 200,
+                 guide=None) -> list[str]:
         seq = list(prefix)
         for _ in range(max_len):
-            nxt = self.next_step_ranking(seq, k=1)[0]
+            nxt = self.next_step_ranking(seq, k=1, guide=guide)[0]
             seq.append(nxt)
             if len(seq) - len(prefix) >= max_len:
                 break

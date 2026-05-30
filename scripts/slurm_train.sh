@@ -27,21 +27,20 @@ MODEL="${1:-gpt:tiny}"
 MODE="${2:---leave-out mosfet}"
 EPOCHS="${3:-3}"
 
-module load python/3.10
+module load python/3.11.7
 module load cuda/12.1
 
 # Activate the venv. The teammate setup uses ~/venv; create yours once with:
 #   python -m venv ~/venv && source ~/venv/bin/activate
 #   pip install torch --index-url https://download.pytorch.org/whl/cu121
-#   pip install transformers scikit-learn matplotlib pandas wandb huggingface_hub
+#   pip install transformers scikit-learn matplotlib pandas huggingface_hub streamlit plotly
 source ~/venv/bin/activate
 
 # Offline mode (compute nodes are air-gapped). Pre-stage weights on the LOGIN node:
-#   export HF_HOME=$WORK/hf_cache ; python scripts/prefetch_models.py
-export HF_HOME="${HF_HOME:-$WORK/hf_cache}"
+#   export HF_HOME=$SCRATCH/hf_cache ; python scripts/prefetch_models.py
+export HF_HOME="${HF_HOME:-$SCRATCH/hf_cache}"
 export HF_HUB_OFFLINE=1
 export TOKENIZERS_PARALLELISM=false
-export WANDB_MODE=offline           # wandb sync from the login node afterwards
 
 mkdir -p outputs/slurm
 

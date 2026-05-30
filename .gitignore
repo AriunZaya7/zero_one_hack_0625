@@ -1,26 +1,48 @@
-# generated artifacts (regenerate on each machine)
+# ── Model checkpoints & weights (too large for git) ───────────────────────────
 outputs/
-plots/
+*.bin
+*.safetensors
+*.pt
+*.pth
+hf_cache/
+
+# ── Generated extra training data (reproducible via generate_sequences.py) ───
+training_data/MOSFET_extra.csv
+training_data/MOSFET_extra2.csv
+training_data/IGBT_generated_extra.csv
+training_data/IGBT_extra2.csv
+training_data/IC_generated_extra.csv
+training_data/IC_extra2.csv
+
+# ── Results / plots / submissions (regenerate with eval_runner.py) ─────────────
 results/
-self_eval/
+plots/
 submissions/*.tmp
 
-# python / env
+# ── Self-eval test files (regenerate with make_selfeval.py) ───────────────────
+self_eval/
+
+# ── SLURM / training logs ──────────────────────────────────────────────────────
+small_transformer_model/train/logs/
+small_transformer_model/train/metrics/
+outputs/slurm/
+
+# ── Python / env ───────────────────────────────────────────────────────────────
 .venv/
 venv/
 __pycache__/
 *.pyc
 *.pyo
+*.egg-info/
 
-# editor / os
+# ── Editor / OS ────────────────────────────────────────────────────────────────
 .DS_Store
 .ipynb_checkpoints/
+*.swp
+*~
 
-# weights / large data caches (never commit)
-*.bin
-*.safetensors
-hf_cache/
+# ── WandB ──────────────────────────────────────────────────────────────────────
 wandb/
 
-# stale single-file results (we use results/ per-run JSON now)
+# ── Stale single-file results ──────────────────────────────────────────────────
 results.csv

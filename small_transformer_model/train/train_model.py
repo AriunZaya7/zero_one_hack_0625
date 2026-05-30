@@ -1,26 +1,29 @@
 """
 train_model.py
 ===============
-Fine-tunes Qwen2-0.5B on process sequences using causal language modeling.
-Supports a --debug mode for fast local testing before submitting to Leonardo.
+Fine-tunes a pretrained LM (Qwen2.5 or GPT-2) on process sequences.
 
-Local debug test (run this FIRST before submitting to cluster):
+Key fixes vs v1:
+  - lr default 1e-5   (2e-4 caused catastrophic OOD forgetting)
+  - Saves best_ood_model/ (primary) and best_id_model/ (secondary)
+  - DataParallel multi-GPU support (set --gpus-per-task in SLURM)
+  - eval_every 50 steps for finer OOD tracking
+
+Debug:
     python train_model.py --debug
-
-Full training (run via SLURM on Leonardo):
-    python train_model.py --data_dir ./data --output_dir ./checkpoints
-
-WandB tracking is included. Make sure to run `wandb login` before training.
+Full:
+    python train_model.py --model_name Qwen/Qwen2.5-0.5B --run_name qwen2.5-0.5b-run2
 """
 
-import os
 import json
-import argparse
-import random
 import math
+import os
+import random
 import time
-import wandb
+import argparse
+
 import torch
+import torch.nn as nn
 from torch.utils.data import Dataset, DataLoader
 from transformers import (
     AutoTokenizer,
@@ -29,420 +32,326 @@ from transformers import (
 )
 
 
-# ── Argument Parsing ───────────────────────────────────────────────────────────
+# ── Metrics Logger ────────────────────────────────────────────────────────────
+
+class MetricsLogger:
+    def __init__(self, run_name: str, metrics_dir: str = "metrics"):
+        os.makedirs(metrics_dir, exist_ok=True)
+        self.path = os.path.join(metrics_dir, f"{run_name}.jsonl")
+        self._fh = open(self.path, "w", buffering=1)
+
+    def log(self, event: str, step: int = 0, **data):
+        self._fh.write(json.dumps({"event": event, "step": step,
+                                    "t": time.time(), **data}) + "\n")
+
+    def close(self):
+        self._fh.close()
+
+
+# ── Helpers ───────────────────────────────────────────────────────────────────
+
+def unwrap(model):
+    """Strip DataParallel wrapper to get the underlying HF model."""
+    return model.module if isinstance(model, nn.DataParallel) else model
+
+
+# ── Args ──────────────────────────────────────────────────────────────────────
 
 def get_args():
-    parser = argparse.ArgumentParser()
+    p = argparse.ArgumentParser()
+    p.add_argument("--data_dir",     default="../data")
+    p.add_argument("--output_dir",   default="../checkpoints")
+    p.add_argument("--model_name",   default="Qwen/Qwen2.5-0.5B")
+    p.add_argument("--epochs",       type=int,   default=10)
+    p.add_argument("--batch_size",   type=int,   default=4)
+    p.add_argument("--grad_accum",   type=int,   default=4)
+    p.add_argument("--lr",           type=float, default=1e-5)   # fixed: was 2e-4
+    p.add_argument("--max_length",   type=int,   default=512)
+    p.add_argument("--warmup_ratio", type=float, default=0.05)
+    p.add_argument("--seed",         type=int,   default=42)
+    p.add_argument("--eval_every",   type=int,   default=50)     # more frequent
+    p.add_argument("--save_every",   type=int,   default=500)
+    p.add_argument("--run_name",     default="run")
+    p.add_argument("--debug",        action="store_true")
+    return p.parse_args()
 
-    # ── Data ──────────────────────────────────────────────────────────────────
-    parser.add_argument("--data_dir",    default="../data")
-    parser.add_argument("--output_dir",  default="../checkpoints")
-
-    # ── Model ─────────────────────────────────────────────────────────────────
-    parser.add_argument("--model_name",  default="Qwen/Qwen2-0.5B",
-                        help="HuggingFace model ID")
-
-    # ── Training ──────────────────────────────────────────────────────────────
-    parser.add_argument("--epochs",      type=int,   default=10)
-    parser.add_argument("--batch_size",  type=int,   default=4)
-    parser.add_argument("--grad_accum",  type=int,   default=4,
-                        help="Gradient accumulation steps (effective batch = batch_size * grad_accum)")
-    parser.add_argument("--lr",          type=float, default=2e-4)
-    parser.add_argument("--max_length",  type=int,   default=512,
-                        help="Max token length per sequence")
-    parser.add_argument("--warmup_ratio",type=float, default=0.05)
-    parser.add_argument("--seed",        type=int,   default=42)
-
-    # ── Eval ──────────────────────────────────────────────────────────────────
-    parser.add_argument("--eval_every",  type=int,   default=100,
-                        help="Evaluate every N optimizer steps")
-    parser.add_argument("--save_every",  type=int,   default=500,
-                        help="Save checkpoint every N optimizer steps")
-
-    # ── WandB ─────────────────────────────────────────────────────────────────
-    parser.add_argument("--wandb_project", default="industrial-ai-hackathon")
-    parser.add_argument("--run_name",      default="qwen2-0.5b-finetune")
-
-    # ── Debug mode ────────────────────────────────────────────────────────────
-    parser.add_argument("--debug", action="store_true",
-                        help="Debug mode: tiny data, 1 epoch, fast run to catch bugs locally")
-
-    return parser.parse_args()
-
-
-# ── Debug Overrides ────────────────────────────────────────────────────────────
 
 def apply_debug_mode(args):
-    """Override args for a fast local debug run."""
     print("\n" + "="*55)
-    print("  DEBUG MODE — fast local test, not a real training run")
+    print("  DEBUG MODE")
     print("="*55)
-    args.model_name   = "Qwen/Qwen2-0.5B"   # same model, just tiny data
-    args.epochs       = 1
-    args.batch_size   = 2
-    args.grad_accum   = 1
-    args.max_length   = 128                  # shorter sequences
-    args.eval_every   = 5
-    args.save_every   = 999999              # don't save in debug
-    args.run_name     = "debug-run"
-    args.n_debug_seqs = 8                   # only 8 sequences total
-    print(f"  epochs={args.epochs}, batch={args.batch_size}, "
-          f"max_len={args.max_length}, n_seqs={args.n_debug_seqs}")
-    print("="*55 + "\n")
+    args.epochs      = 1
+    args.batch_size  = 2
+    args.grad_accum  = 1
+    args.max_length  = 128
+    args.eval_every  = 5
+    args.save_every  = 999999
+    args.run_name    = "debug-run"
+    args.n_debug_seqs = 8
     return args
 
 
-# ── Dataset ────────────────────────────────────────────────────────────────────
+# ── Dataset ───────────────────────────────────────────────────────────────────
 
 class ProcessSequenceDataset(Dataset):
-    """
-    Loads sequences from a JSONL file and tokenizes them.
-    Each record becomes one training example.
-    The model is trained to predict the next token at every position
-    (causal language modeling).
-    """
-
-    def __init__(self, jsonl_path: str, tokenizer, max_length: int,
-                 n_samples: int = None):
+    def __init__(self, jsonl_path, tokenizer, max_length, n_samples=None):
         self.tokenizer  = tokenizer
         self.max_length = max_length
         self.records    = []
-
         with open(jsonl_path, encoding="utf-8") as f:
             for line in f:
                 line = line.strip()
                 if line:
                     self.records.append(json.loads(line))
-
-        # Optionally limit for debug
         if n_samples:
             random.shuffle(self.records)
             self.records = self.records[:n_samples]
-
         print(f"  Loaded {len(self.records)} records from {jsonl_path}")
 
-    def __len__(self):
-        return len(self.records)
+    def __len__(self): return len(self.records)
 
     def __getitem__(self, idx):
-        record = self.records[idx]
-        prompt = record["prompt"]
-
-        # Tokenize — truncate to max_length
-        encoded = self.tokenizer(
-            prompt,
-            truncation=True,
-            max_length=self.max_length,
-            return_tensors="pt",
-        )
-
-        input_ids = encoded["input_ids"].squeeze(0)  # shape: [seq_len]
-
-        # For causal LM: labels = input_ids (model predicts next token)
-        # Shift happens inside the model automatically
-        return {
-            "input_ids":      input_ids,
-            "attention_mask": encoded["attention_mask"].squeeze(0),
-            "labels":         input_ids.clone(),
-            "family":         record.get("family", "UNKNOWN"),
-        }
+        rec = self.records[idx]
+        enc = self.tokenizer(rec["prompt"], truncation=True,
+                              max_length=self.max_length, return_tensors="pt")
+        ids = enc["input_ids"].squeeze(0)
+        return {"input_ids": ids,
+                "attention_mask": enc["attention_mask"].squeeze(0),
+                "labels": ids.clone()}
 
 
-def collate_fn(batch, pad_token_id: int):
-    """Pad sequences in a batch to the same length."""
-    max_len = max(item["input_ids"].shape[0] for item in batch)
-
-    input_ids_list  = []
-    attn_mask_list  = []
-    labels_list     = []
-
-    for item in batch:
-        seq_len = item["input_ids"].shape[0]
-        pad_len = max_len - seq_len
-
-        # Pad input_ids and attention_mask
-        input_ids_list.append(
-            torch.cat([item["input_ids"],
-                       torch.full((pad_len,), pad_token_id, dtype=torch.long)])
-        )
-        attn_mask_list.append(
-            torch.cat([item["attention_mask"],
-                       torch.zeros(pad_len, dtype=torch.long)])
-        )
-        # Labels: pad with -100 so loss ignores padding
-        labels_list.append(
-            torch.cat([item["labels"],
-                       torch.full((pad_len,), -100, dtype=torch.long)])
-        )
-
-    return {
-        "input_ids":      torch.stack(input_ids_list),
-        "attention_mask": torch.stack(attn_mask_list),
-        "labels":         torch.stack(labels_list),
-    }
+def collate_fn(batch, pad_id):
+    max_len = max(x["input_ids"].shape[0] for x in batch)
+    ids, masks, labels = [], [], []
+    for x in batch:
+        pad = max_len - x["input_ids"].shape[0]
+        ids.append(   torch.cat([x["input_ids"],      torch.full((pad,), pad_id,  dtype=torch.long)]))
+        masks.append( torch.cat([x["attention_mask"],  torch.zeros(pad,            dtype=torch.long)]))
+        labels.append(torch.cat([x["labels"],          torch.full((pad,), -100,   dtype=torch.long)]))
+    return {"input_ids": torch.stack(ids),
+            "attention_mask": torch.stack(masks),
+            "labels": torch.stack(labels)}
 
 
-# ── Evaluation ─────────────────────────────────────────────────────────────────
+# ── Forward pass (handles DataParallel) ──────────────────────────────────────
+
+def forward_loss(model, batch, device, use_dp):
+    """Run one forward pass; returns scalar loss regardless of #GPUs."""
+    out = model(
+        input_ids      =batch["input_ids"].to(device),
+        attention_mask =batch["attention_mask"].to(device),
+        labels         =batch["labels"].to(device),
+        return_dict    =not use_dp,  # DP needs tuple output, not HF dataclass
+    )
+    loss = out[0] if use_dp else out.loss
+    # DataParallel may return a 1-D tensor (one value per GPU) — average them
+    return loss.mean() if loss.dim() > 0 else loss
+
+
+# ── Evaluation ────────────────────────────────────────────────────────────────
 
 @torch.no_grad()
-def evaluate(model, dataloader, device, label="val") -> dict:
-    """Compute average loss and perplexity on a dataset."""
+def evaluate(model, dataloader, device, label, use_dp):
     model.eval()
-    total_loss = 0.0
-    total_batches = 0
-
+    total, n = 0.0, 0
     for batch in dataloader:
-        input_ids      = batch["input_ids"].to(device)
-        attention_mask = batch["attention_mask"].to(device)
-        labels         = batch["labels"].to(device)
-
-        outputs = model(
-            input_ids=input_ids,
-            attention_mask=attention_mask,
-            labels=labels,
-        )
-        total_loss    += outputs.loss.item()
-        total_batches += 1
-
-    avg_loss    = total_loss / max(total_batches, 1)
-    perplexity  = math.exp(min(avg_loss, 20))  # cap to avoid overflow
-
+        loss = forward_loss(model, batch, device, use_dp)
+        total += loss.item()
+        n     += 1
+    avg = total / max(n, 1)
     model.train()
-    return {
-        f"{label}/loss":       avg_loss,
-        f"{label}/perplexity": perplexity,
-    }
+    return {f"{label}/loss": avg,
+            f"{label}/perplexity": math.exp(min(avg, 20))}
 
 
-# ── Training Loop ──────────────────────────────────────────────────────────────
+# ── Training ──────────────────────────────────────────────────────────────────
 
 def train(args):
     random.seed(args.seed)
     torch.manual_seed(args.seed)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"\nDevice: {device}")
-    if device.type == "cuda":
-        print(f"GPU: {torch.cuda.get_device_name(0)}")
-        print(f"GPU memory: {torch.cuda.get_device_properties(0).total_memory / 1e9:.1f} GB")
+    n_gpus = torch.cuda.device_count() if device.type == "cuda" else 0
+    use_dp = n_gpus > 1
+    print(f"\nDevice: {device}  |  GPUs visible: {n_gpus}"
+          + (" → DataParallel" if use_dp else ""))
+    if n_gpus >= 1:
+        for i in range(n_gpus):
+            props = torch.cuda.get_device_properties(i)
+            print(f"  GPU {i}: {props.name}  {props.total_memory/1e9:.1f} GB")
 
-    # ── WandB ──────────────────────────────────────────────────────────────────
-    wandb.init(
-        project=args.wandb_project,
-        name=args.run_name,
-        config=vars(args),
-        tags=["qwen2", "finetune", "debug" if args.debug else "full"],
-    )
+    logger = MetricsLogger(args.run_name)
+    logger.log("config", step=0, **vars(args))
 
-    # ── Tokenizer ──────────────────────────────────────────────────────────────
+    # ── Tokenizer ─────────────────────────────────────────────────────────────
     print(f"\nLoading tokenizer: {args.model_name}")
-    tokenizer = AutoTokenizer.from_pretrained(
-        args.model_name,
-        trust_remote_code=True,
-    )
-    # Qwen2 may not have a pad token — add one
+    tokenizer = AutoTokenizer.from_pretrained(args.model_name, trust_remote_code=True)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
     pad_id = tokenizer.pad_token_id
-    print(f"Vocab size: {tokenizer.vocab_size} | Pad token id: {pad_id}")
+    print(f"  Vocab size: {tokenizer.vocab_size}  |  pad_id: {pad_id}")
 
-    # ── Model ──────────────────────────────────────────────────────────────────
+    # ── Model ─────────────────────────────────────────────────────────────────
     print(f"\nLoading model: {args.model_name}")
+    dtype = torch.bfloat16 if device.type == "cuda" else torch.float32
     model = AutoModelForCausalLM.from_pretrained(
-        args.model_name,
-        torch_dtype=torch.float16 if device.type == "cuda" else torch.float32,
-        trust_remote_code=True,
+        args.model_name, torch_dtype=dtype, trust_remote_code=True,
     ).to(device)
 
     n_params = sum(p.numel() for p in model.parameters()) / 1e6
-    print(f"Model parameters: {n_params:.1f}M")
-    wandb.log({"model/parameters_M": n_params})
+    print(f"  Parameters: {n_params:.1f}M  |  dtype: {dtype}")
+    logger.log("model_info", step=0, parameters_M=round(n_params, 2))
 
-    # ── Datasets ───────────────────────────────────────────────────────────────
-    n_debug = getattr(args, "n_debug_seqs", None)
+    if use_dp:
+        model = nn.DataParallel(model)
+        print(f"  Wrapped with DataParallel across {n_gpus} GPUs")
 
-    train_dataset = ProcessSequenceDataset(
-        os.path.join(args.data_dir, "dataset_train.jsonl"),
-        tokenizer, args.max_length,
-        n_samples=n_debug,
-    )
-    id_val_dataset = ProcessSequenceDataset(
-        os.path.join(args.data_dir, "dataset_id_val.jsonl"),
-        tokenizer, args.max_length,
-        n_samples=n_debug,
-    )
-    ood_dataset = ProcessSequenceDataset(
-        os.path.join(args.data_dir, "dataset_ood_test.jsonl"),
-        tokenizer, args.max_length,
-        n_samples=n_debug,
-    )
+    # ── Data ──────────────────────────────────────────────────────────────────
+    n_debug  = getattr(args, "n_debug_seqs", None)
+    collate  = lambda b: collate_fn(b, pad_id)
 
-    collate = lambda b: collate_fn(b, pad_token_id=pad_id)
+    train_ds  = ProcessSequenceDataset(os.path.join(args.data_dir, "dataset_train.jsonl"),
+                                        tokenizer, args.max_length, n_debug)
+    id_val_ds = ProcessSequenceDataset(os.path.join(args.data_dir, "dataset_id_val.jsonl"),
+                                        tokenizer, args.max_length, n_debug)
+    ood_ds    = ProcessSequenceDataset(os.path.join(args.data_dir, "dataset_ood_test.jsonl"),
+                                        tokenizer, args.max_length, n_debug)
 
-    train_loader = DataLoader(
-        train_dataset, batch_size=args.batch_size,
-        shuffle=True, collate_fn=collate, num_workers=0,
-    )
-    id_val_loader = DataLoader(
-        id_val_dataset, batch_size=args.batch_size,
-        shuffle=False, collate_fn=collate, num_workers=0,
-    )
-    ood_loader = DataLoader(
-        ood_dataset, batch_size=args.batch_size,
-        shuffle=False, collate_fn=collate, num_workers=0,
-    )
+    train_loader  = DataLoader(train_ds,  batch_size=args.batch_size,
+                                shuffle=True,  collate_fn=collate, num_workers=2)
+    id_val_loader = DataLoader(id_val_ds, batch_size=args.batch_size,
+                                shuffle=False, collate_fn=collate, num_workers=2)
+    ood_loader    = DataLoader(ood_ds,    batch_size=args.batch_size,
+                                shuffle=False, collate_fn=collate, num_workers=2)
 
-    wandb.log({
-        "data/train_sequences": len(train_dataset),
-        "data/id_val_sequences": len(id_val_dataset),
-        "data/ood_sequences": len(ood_dataset),
-    })
+    logger.log("data_info", step=0,
+               train=len(train_ds), id_val=len(id_val_ds), ood=len(ood_ds))
 
-    # ── Optimizer & Scheduler ──────────────────────────────────────────────────
-    optimizer = torch.optim.AdamW(
-        model.parameters(), lr=args.lr, weight_decay=0.01
-    )
+    # ── Optimizer ─────────────────────────────────────────────────────────────
+    optimizer    = torch.optim.AdamW(unwrap(model).parameters(),
+                                      lr=args.lr, weight_decay=0.01)
+    total_steps  = (len(train_loader) // args.grad_accum) * args.epochs
+    warmup_steps = int(total_steps * args.warmup_ratio)
+    scheduler    = get_cosine_schedule_with_warmup(
+        optimizer, num_warmup_steps=warmup_steps, num_training_steps=total_steps)
+    print(f"\n  Total optimizer steps : {total_steps}")
+    print(f"  Warmup steps          : {warmup_steps}")
+    print(f"  LR                    : {args.lr}")
 
-    total_steps   = (len(train_loader) // args.grad_accum) * args.epochs
-    warmup_steps  = int(total_steps * args.warmup_ratio)
-    scheduler     = get_cosine_schedule_with_warmup(
-        optimizer, num_warmup_steps=warmup_steps,
-        num_training_steps=total_steps,
-    )
-    print(f"\nTotal optimizer steps : {total_steps}")
-    print(f"Warmup steps          : {warmup_steps}")
+    # ── Baseline eval ─────────────────────────────────────────────────────────
+    print("\nBaseline eval (untrained)...")
+    pre_id  = evaluate(model, id_val_loader, device, "id_val",   use_dp)
+    pre_ood = evaluate(model, ood_loader,    device, "ood_test", use_dp)
+    print(f"  ID  val : loss {pre_id['id_val/loss']:.4f}  ppl {pre_id['id_val/perplexity']:.2f}")
+    print(f"  OOD test: loss {pre_ood['ood_test/loss']:.4f}  ppl {pre_ood['ood_test/perplexity']:.2f}")
+    logger.log("baseline", step=0, **pre_id, **pre_ood)
 
-    # ── Baseline eval before training ─────────────────────────────────────────
-    print("\nEvaluating baseline (before training)...")
-    pre_id  = evaluate(model, id_val_loader,  device, label="id_val")
-    pre_ood = evaluate(model, ood_loader,     device, label="ood_test")
-    print(f"  Before training — ID val loss:  {pre_id['id_val/loss']:.4f}  "
-          f"perplexity: {pre_id['id_val/perplexity']:.2f}")
-    print(f"  Before training — OOD loss:     {pre_ood['ood_test/loss']:.4f}  "
-          f"perplexity: {pre_ood['ood_test/perplexity']:.2f}")
-    wandb.log({**pre_id, **pre_ood, "step": 0})
-
-    # ── Training ───────────────────────────────────────────────────────────────
+    # ── Training loop ─────────────────────────────────────────────────────────
     os.makedirs(args.output_dir, exist_ok=True)
     model.train()
-    global_step    = 0
+    global_step  = 0
+    best_ood_loss = float("inf")   # PRIMARY: save by OOD loss
+    best_id_loss  = float("inf")   # secondary
+    best_ood_step = 0
     optimizer.zero_grad()
-    best_val_loss  = float("inf")
 
-    print(f"\nStarting training for {args.epochs} epoch(s)...\n")
+    print(f"\nTraining for {args.epochs} epoch(s)...\n")
 
     for epoch in range(args.epochs):
-        epoch_loss    = 0.0
-        epoch_batches = 0
+        ep_loss, ep_batches = 0.0, 0
         t0 = time.time()
 
         for step, batch in enumerate(train_loader):
-            input_ids      = batch["input_ids"].to(device)
-            attention_mask = batch["attention_mask"].to(device)
-            labels         = batch["labels"].to(device)
+            loss = forward_loss(model, batch, device, use_dp)
+            raw_loss = loss.item()
+            (loss / args.grad_accum).backward()
 
-            outputs = model(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                labels=labels,
-            )
+            ep_loss    += raw_loss
+            ep_batches += 1
 
-            loss = outputs.loss / args.grad_accum
-            loss.backward()
-
-            epoch_loss    += outputs.loss.item()
-            epoch_batches += 1
-
-            # Optimizer step after grad_accum batches
             if (step + 1) % args.grad_accum == 0:
-                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                torch.nn.utils.clip_grad_norm_(unwrap(model).parameters(), 1.0)
                 optimizer.step()
                 scheduler.step()
                 optimizer.zero_grad()
                 global_step += 1
 
-                # ── Log training metrics ──────────────────────────────────────
-                current_loss = epoch_loss / epoch_batches
-                wandb.log({
-                    "train/loss":      outputs.loss.item(),
-                    "train/lr":        scheduler.get_last_lr()[0],
-                    "train/epoch":     epoch + step / len(train_loader),
-                    "step":            global_step,
-                })
+                lr_now = scheduler.get_last_lr()[0]
+                logger.log("train_step", step=global_step,
+                           train_loss=raw_loss, lr=lr_now,
+                           epoch=epoch + step / len(train_loader))
 
-                # ── Periodic eval ─────────────────────────────────────────────
                 if global_step % args.eval_every == 0:
-                    id_metrics  = evaluate(model, id_val_loader,  device, "id_val")
-                    ood_metrics = evaluate(model, ood_loader,      device, "ood_test")
-
-                    # Compute OOD drop
-                    drop = ood_metrics["ood_test/loss"] - id_metrics["id_val/loss"]
-                    wandb.log({
-                        **id_metrics, **ood_metrics,
-                        "generalization/ood_loss_drop": drop,
-                        "step": global_step,
-                    })
+                    id_m  = evaluate(model, id_val_loader, device, "id_val",   use_dp)
+                    ood_m = evaluate(model, ood_loader,    device, "ood_test", use_dp)
+                    drop  = ood_m["ood_test/loss"] - id_m["id_val/loss"]
+                    logger.log("eval", step=global_step,
+                               **id_m, **ood_m, ood_loss_drop=drop)
 
                     print(f"  Step {global_step:>5} | "
-                          f"train_loss={outputs.loss.item():.4f} | "
-                          f"id_val_loss={id_metrics['id_val/loss']:.4f} | "
-                          f"ood_loss={ood_metrics['ood_test/loss']:.4f} | "
-                          f"ood_drop={drop:+.4f}")
+                          f"train={raw_loss:.4f} | "
+                          f"id_val={id_m['id_val/loss']:.4f} | "
+                          f"ood={ood_m['ood_test/loss']:.4f} | "
+                          f"drop={drop:+.4f}")
 
-                    # Save best model
-                    if id_metrics["id_val/loss"] < best_val_loss:
-                        best_val_loss = id_metrics["id_val/loss"]
-                        best_path = os.path.join(args.output_dir, "best_model")
-                        model.save_pretrained(best_path)
-                        tokenizer.save_pretrained(best_path)
-                        print(f"  ✓ New best model saved (val_loss={best_val_loss:.4f})")
+                    # ── Save best OOD checkpoint (PRIMARY) ────────────────
+                    if ood_m["ood_test/loss"] < best_ood_loss:
+                        best_ood_loss = ood_m["ood_test/loss"]
+                        best_ood_step = global_step
+                        ood_path = os.path.join(args.output_dir, "best_ood_model")
+                        unwrap(model).save_pretrained(ood_path)
+                        tokenizer.save_pretrained(ood_path)
+                        print(f"  ✓ Best OOD model  (step {global_step}, "
+                              f"ood_loss={best_ood_loss:.4f})")
 
-                # ── Periodic checkpoint ───────────────────────────────────────
+                    # ── Save best ID checkpoint (secondary) ───────────────
+                    if id_m["id_val/loss"] < best_id_loss:
+                        best_id_loss = id_m["id_val/loss"]
+                        id_path = os.path.join(args.output_dir, "best_id_model")
+                        unwrap(model).save_pretrained(id_path)
+                        tokenizer.save_pretrained(id_path)
+
                 if global_step % args.save_every == 0:
-                    ckpt_path = os.path.join(args.output_dir, f"checkpoint_step{global_step}")
-                    model.save_pretrained(ckpt_path)
-                    tokenizer.save_pretrained(ckpt_path)
-                    print(f"  Checkpoint saved: {ckpt_path}")
+                    ckpt = os.path.join(args.output_dir, f"ckpt_step{global_step}")
+                    unwrap(model).save_pretrained(ckpt)
+                    tokenizer.save_pretrained(ckpt)
+                    print(f"  Checkpoint: {ckpt}")
 
-        # ── End of epoch summary ───────────────────────────────────────────────
-        elapsed = time.time() - t0
-        avg_loss = epoch_loss / max(epoch_batches, 1)
-        print(f"\nEpoch {epoch+1}/{args.epochs} done | "
-              f"avg_loss={avg_loss:.4f} | time={elapsed:.0f}s\n")
-        wandb.log({"train/epoch_loss": avg_loss, "epoch": epoch + 1})
+        elapsed  = time.time() - t0
+        avg_loss = ep_loss / max(ep_batches, 1)
+        print(f"\nEpoch {epoch+1}/{args.epochs} | avg_loss={avg_loss:.4f} | {elapsed:.0f}s\n")
+        logger.log("epoch_end", step=global_step,
+                   epoch=epoch+1, epoch_avg_loss=avg_loss, elapsed_s=elapsed)
 
-    # ── Final evaluation ───────────────────────────────────────────────────────
+    # ── Final eval ────────────────────────────────────────────────────────────
     print("\nFinal evaluation...")
-    final_id  = evaluate(model, id_val_loader, device, "id_val")
-    final_ood = evaluate(model, ood_loader,    device, "ood_test")
+    final_id  = evaluate(model, id_val_loader, device, "id_val",   use_dp)
+    final_ood = evaluate(model, ood_loader,    device, "ood_test", use_dp)
     drop      = final_ood["ood_test/loss"] - final_id["id_val/loss"]
 
-    print(f"\n{'='*55}")
-    print(f"  FINAL RESULTS")
-    print(f"{'='*55}")
-    print(f"  ID Val  loss : {final_id['id_val/loss']:.4f}  "
-          f"perplexity: {final_id['id_val/perplexity']:.2f}")
-    print(f"  OOD     loss : {final_ood['ood_test/loss']:.4f}  "
-          f"perplexity: {final_ood['ood_test/perplexity']:.2f}")
-    print(f"  OOD drop     : {drop:+.4f}")
-    print(f"{'='*55}\n")
+    print(f"\n{'='*58}")
+    print(f"  FINAL RESULTS  ({args.run_name})")
+    print(f"{'='*58}")
+    print(f"  ID  val  loss : {final_id['id_val/loss']:.4f}  "
+          f"ppl: {final_id['id_val/perplexity']:.2f}")
+    print(f"  OOD test loss : {final_ood['ood_test/loss']:.4f}  "
+          f"ppl: {final_ood['ood_test/perplexity']:.2f}")
+    print(f"  OOD drop      : {drop:+.4f}")
+    print(f"  Best OOD      : step {best_ood_step}, loss {best_ood_loss:.4f}")
+    print(f"{'='*58}\n")
 
-    wandb.log({
-        **{f"final/{k}": v for k, v in final_id.items()},
-        **{f"final/{k}": v for k, v in final_ood.items()},
-        "final/ood_loss_drop": drop,
-    })
+    logger.log("final", step=global_step,
+               **final_id, **final_ood, ood_loss_drop=drop,
+               best_ood_loss=best_ood_loss, best_ood_step=best_ood_step)
+    logger.close()
 
-    # Save final model
     final_path = os.path.join(args.output_dir, "final_model")
-    model.save_pretrained(final_path)
+    unwrap(model).save_pretrained(final_path)
     tokenizer.save_pretrained(final_path)
-    print(f"Final model saved: {final_path}")
+    print(f"Final model  → {final_path}")
+    print(f"Best OOD     → {os.path.join(args.output_dir, 'best_ood_model')}")
+    print(f"Metrics      → metrics/{args.run_name}.jsonl")
 
-    wandb.finish()
-
-
-# ── Entry Point ────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     args = get_args()

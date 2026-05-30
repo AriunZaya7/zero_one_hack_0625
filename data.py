@@ -10,16 +10,32 @@ from __future__ import annotations
 
 import csv
 import random
+import warnings
 from collections import defaultdict
 from pathlib import Path
 
-FAMILIES = ["mosfet", "igbt", "ic"]
+FAMILIES = ["mosfet", "igbt", "ic", "kremsians"]
 
 # adjust paths if your checkout differs
 VARIANTS = {
-    "mosfet": "training_data/MOSFET_variants.csv",
-    "igbt": "training_data/IGBT_variants.csv",
-    "ic": "training_data/IC_variants.csv",
+    "mosfet": [
+        "training_data/MOSFET_variants.csv",
+        "training_data/MOSFET_extra.csv",         # 5 000 extra
+        "training_data/MOSFET_extra2.csv",        # 4 000 extra  → ~10 K total
+    ],
+    "igbt": [
+        "training_data/IGBT_variants.csv",
+        "training_data/IGBT_generated_extra.csv", # ~2 000 extra
+        "training_data/IGBT_extra2.csv",          # 7 000 extra  → ~10 K total
+    ],
+    "ic": [
+        "training_data/IC_variants.csv",
+        "training_data/IC_generated_extra.csv",   # ~2 000 extra
+        "training_data/IC_extra2.csv",            # 7 000 extra  → ~10 K total
+    ],
+    "kremsians": [
+        "training_data/KREMSIANS_variants.csv",   # 2 000 synthetic 4th-family sequences
+    ],
 }
 
 
@@ -41,7 +57,18 @@ def read_sequences(path: str | Path) -> dict[str, list[str]]:
 
 
 def load_family(family: str) -> dict[str, list[str]]:
-    return read_sequences(VARIANTS[family])
+    paths = VARIANTS[family]
+    if isinstance(paths, str):
+        paths = [paths]
+    out: dict[str, list[str]] = {}
+    for file_idx, p in enumerate(paths):
+        if not Path(p).exists():
+            warnings.warn(f"[data] {p} not found, skipping.")
+            continue
+        for sid, seq in read_sequences(p).items():
+            # prefix with file index so IDs are unique across files
+            out[f"f{file_idx}_{sid}"] = seq
+    return out
 
 
 def load_all(families: list[str] | None = None) -> dict[str, list[str]]:

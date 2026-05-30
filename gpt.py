@@ -68,21 +68,28 @@ class GPTModel:
 
     # -- Task 1 ---------------------------------------------------------------
     @torch.no_grad()
-    def next_step_ranking(self, prefix: list[str], k: int = 5) -> list[str]:
+    def next_step_ranking(self, prefix: list[str], k: int = 5,
+                          guide=None) -> list[str]:
         logits = self._last_logits(prefix).clone()
         for b in self._block_ids:
             logits[b] = float("-inf")
-        top = torch.topk(logits, k).indices.tolist()
+        if guide is not None:
+            guide.mask_logits(logits, prefix, self.tok.id_to_step)
+        n_valid = int((logits > float("-inf")).sum())
+        top = torch.topk(logits, min(k, max(n_valid, 1))).indices.tolist()
         return [self.tok.id_to_step[i] for i in top]
 
     # -- Task 2 ---------------------------------------------------------------
     @torch.no_grad()
-    def complete(self, prefix: list[str], max_len: int = 200) -> list[str]:
+    def complete(self, prefix: list[str], max_len: int = 200,
+                 guide=None) -> list[str]:
         seq = list(prefix)
         for _ in range(max_len):
             logits = self._last_logits(seq).clone()
             for b in self._block_ids:
                 logits[b] = float("-inf")
+            if guide is not None:
+                guide.mask_logits(logits, seq, self.tok.id_to_step)
             nxt = int(torch.argmax(logits))
             if nxt == self.tok.eos_id:
                 break
