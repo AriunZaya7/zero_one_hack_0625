@@ -32,6 +32,7 @@ from solutions.solution_11_ood_guarded_consensus import solution as sol11  # noq
 from solutions.solution_12_mbr_completion import solution as sol12  # noqa: E402
 from solutions.solution_13_transductive_generator_validator import solution as sol13  # noqa: E402
 from solutions.solution_14_synthetic_ml_generator_ensemble import solution as sol14  # noqa: E402
+from solutions.solution_15_route_memory_mbr import solution as sol15  # noqa: E402
 
 
 OFFICIAL_VALID = sol13.OFFICIAL_VALID
@@ -273,6 +274,11 @@ def run_solution_14() -> None:
     print("Wrote solution_14_synthetic_ml_generator_ensemble official_submission")
 
 
+def run_solution_15() -> None:
+    sol15.run_official_prediction()
+    print("Wrote solution_15_route_memory_mbr official_submission")
+
+
 STANDARD_BUILDERS = {
     "solution_0_rule_mock": build_solution_0,
     "solution_1_hybrid_retrieval": build_solution_1,
@@ -299,6 +305,7 @@ def main() -> None:
         run_standard_solution(solution_name, builder)
     run_solution_13()
     run_solution_14()
+    run_solution_15()
 
 
 if __name__ == "__main__":

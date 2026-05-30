@@ -169,7 +169,9 @@ solutions/solution_7_monte_carlo_suffix_ensemble/outputs/metrics.md</code></pre>
   <section>
     <h2>Step 4: Inspect The CSV Shapes</h2>
     <p>
-      The three CSVs should have 600 local rows plus a header row. You can check
+      <code>nextstep.csv</code> and <code>completion.csv</code> should each have
+      600 prediction rows plus a header row. <code>anomaly.csv</code> should have
+      987 prediction rows plus a header row. You can check
       this quickly:
     </p>
     <pre><code>wc -l solutions/solution_7_monte_carlo_suffix_ensemble/outputs/nextstep.csv

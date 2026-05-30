@@ -233,6 +233,19 @@ SOLUTION_META = {
         "honest_status": "Best current submission candidate if the released input coupling is preserved; the generated-data fallback is included for robustness if exact full-route matches disappear.",
         "checkpoint": "No binary checkpoint is needed; generated training data and count tables are rebuilt deterministically from source.",
     },
+    "solution_15_route_memory_mbr": {
+        "title": "Solution 15: Route Memory MBR",
+        "role": "Guarded route-memory strategy with a metric-aware MBR suffix fallback.",
+        "command": "python -B solutions/solution_15_route_memory_mbr/solution.py",
+        "approach": [
+            "Builds a valid-route memory from official validator-valid full routes, public routes, and generated valid routes.",
+            "Uses exact full-route prefix matching when the participant input provides a unique valid route.",
+            "Falls back to route retrieval and Minimum Bayes Risk suffix selection when no exact route is available.",
+            "Reports a fallback stress probe that removes transductive full-route memory so the caveat is visible.",
+        ],
+        "honest_status": "Submit-ready guarded upper-bound variant. The perfect coupled score still depends on released-file route coupling; the non-transductive fallback is much weaker and is reported separately.",
+        "checkpoint": "No binary checkpoint is needed; route memory and generated candidates are rebuilt deterministically from source.",
+    },
 }
 
 

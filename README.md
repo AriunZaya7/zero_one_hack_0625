@@ -72,6 +72,7 @@ python -B solutions/solution_11_ood_guarded_consensus/solution.py
 python -B solutions/solution_12_mbr_completion/solution.py
 python -B solutions/solution_13_transductive_generator_validator/solution.py
 python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
+python -B solutions/solution_15_route_memory_mbr/solution.py
 python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```

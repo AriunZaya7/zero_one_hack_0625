@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of fifteen Industrial AI sequence-modeling solution
+We built a reproducible suite of sixteen Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -28,13 +28,14 @@ and replaces Task 2 with a Minimum Bayes Risk suffix selector that improves
 seed-42 edit distance, token accuracy, block accuracy, and exact match versus
 Solution 11.
 
-After upstream released the participant input files, we added two official-input
+After upstream released the participant input files, we added three official-input
 candidates. `solutions/solution_13_transductive_generator_validator` measures an
 upper-bound path: validator-valid Task 3 full routes exactly complete every
 released Task 1/2 partial row. `solutions/solution_14_synthetic_ml_generator_ensemble`
-keeps that exact gate and adds a generated-data statistical fallback, making it
-the current best submission candidate if the released input coupling is
-preserved.
+keeps that exact gate and adds a generated-data statistical fallback.
+`solutions/solution_15_route_memory_mbr` is the most guarded version: it uses a
+valid-route memory plus an MBR suffix fallback and reports a separate
+non-transductive stress probe.
 
 ## Problem
 
@@ -90,6 +91,9 @@ official-input diagnostics.
 - `solution_14_synthetic_ml_generator_ensemble`: keeps Solution 13's exact
   official-input gate and adds a generated-data prefix/context statistical
   fallback trained from public and generated valid routes.
+- `solution_15_route_memory_mbr`: builds a memory of official valid routes,
+  public routes, and generated valid routes, then uses exact prefix matching or
+  MBR suffix selection over retrieved valid-route candidates.
 
 ## How To Run It
 
@@ -112,6 +116,7 @@ python -B solutions/solution_11_ood_guarded_consensus/solution.py
 python -B solutions/solution_12_mbr_completion/solution.py
 python -B solutions/solution_13_transductive_generator_validator/solution.py
 python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
+python -B solutions/solution_15_route_memory_mbr/solution.py
 python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```
@@ -146,16 +151,17 @@ Headline seed-42 local self-eval:
 | `solution_12_mbr_completion` | `0.7317` | `0.8650` | `0.2242` | `0.7413` | `1.0000` |
 | `solution_13_transductive_generator_validator` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
 | `solution_14_synthetic_ml_generator_ensemble` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
+| `solution_15_route_memory_mbr` | `1.0000` | `1.0000` | `0.0000` | `1.0000` | `1.0000` |
 
 Task 3 is perfect locally on the generated anomaly rows. Earlier solutions use
 the public validator oracle, Solutions 8 through 12 use an explicit semantic
-conformance checker, and Solutions 13/14 use the released participant-input
+conformance checker, and Solutions 13 through 15 use the released participant-input
 structure. Those are useful baselines and sanity checks, but they are not
 evidence of learned anomaly detection.
 
 ## What Worked
 
-- All fifteen solutions emit the required Industrial AI CSV shapes.
+- All sixteen solutions emit the required Industrial AI CSV shapes.
 - Official participant-input CSVs now exist for every solution package with
   600 next-step rows, 600 completion rows, and 987 anomaly rows.
 - The released official inputs have a strong transductive structure: every
@@ -176,6 +182,8 @@ evidence of learned anomaly detection.
   Solution 2/8 leave-one-family-out Task 1 proxy.
 - Solution 12 improves the conservative portfolio's Task 2 edit distance,
   token accuracy, block accuracy, and exact match with an MBR suffix selector.
+- Solution 15 keeps the exact official-input route-memory result while exposing
+  a no-transductive-memory fallback stress probe, so the caveat is measurable.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
   alias misses rather than process-order mistakes. They are diagnostics only;
   the headline Task 1 scores remain exact-string Top-1/Top-3/Top-5/MRR.

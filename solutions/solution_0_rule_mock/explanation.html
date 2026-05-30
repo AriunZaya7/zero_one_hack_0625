@@ -1031,12 +1031,12 @@
     <div class="page-section" id="judging">
       <div class="section-head">
         <h2>How This Work Will Be Judged</h2>
-        <p>The track has both objective metrics and qualitative judging. Solution 0 mirrors the objective metric names, but its scores are local self-eval scores because the official hidden eval files are not present in the repo.</p>
+        <p>The track has both objective metrics and qualitative judging. Solution 0 mirrors the objective metric names, and its official-shaped CSVs are now generated from the public eval input files. The local self-eval scores still use public training-derived labels because the organizers keep final ground-truth answers hidden.</p>
       </div>
 
       <div class="judge-grid">
         <div class="callout danger">
-          <strong>Important caveat:</strong> We checked reachable repo history, including upstream. The official <code>eval_metrics.py</code>, <code>eval_input_valid.csv</code>, <code>eval_input_anomaly.csv</code>, and hidden labels are not available. A prior upstream commit only removed a README mention of <code>eval_metrics.py</code>; it did not expose the file itself.
+          <strong>Important caveat:</strong> The public eval input files and local <code>eval_metrics.py</code> are now available in <code>tracks/industrial-infineon/participant_files/</code>. The final answer labels are still hidden by the organizers, so local scores remain development diagnostics rather than official leaderboard results.
           <br><br>
           So this page does not claim official leaderboard scores. It claims: "our local self-eval uses the same task definitions, output columns, and metric families described by the official docs."
         </div>
