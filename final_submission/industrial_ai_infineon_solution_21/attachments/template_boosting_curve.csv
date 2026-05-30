@@ -1,0 +1,17 @@
+phase,model,seed,train_family_count,train_sequences,train_examples,label_count,validation_rows,truth_label_coverage,family_specific_truth_share,family_specific_truth_label_coverage,task1_top1,task1_top3,task1_top5,task1_mrr,family_specific_task1_top1,family_specific_task1_top3,family_specific_task1_mrr
+single_seed_scaling_curve,raw_xgb_exact,0,2,40,80,23,320,0.884375,0.05625,0.0,0.521875,0.609375,0.65625,0.5697395833333334,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,2,40,80,22,320,0.921875,0.05625,0.6666666666666666,0.5875,0.746875,0.75625,0.6619270833333336,0.6111111111111112,0.6666666666666666,0.6388888888888888
+single_seed_scaling_curve,raw_xgb_exact,0,5,100,200,30,320,0.909375,0.05625,0.0,0.596875,0.69375,0.778125,0.6620833333333332,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,5,100,200,25,320,0.965625,0.05625,1.0,0.71875,0.91875,0.925,0.8135416666666669,1.0,1.0,1.0
+single_seed_scaling_curve,raw_xgb_exact,0,10,200,400,39,320,0.934375,0.05625,0.0,0.565625,0.759375,0.815625,0.6722916666666668,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,10,200,400,27,320,0.990625,0.05625,1.0,0.73125,0.978125,0.984375,0.8502083333333333,1.0,1.0,1.0
+single_seed_scaling_curve,raw_xgb_exact,0,20,400,800,53,320,0.94375,0.05625,0.0,0.571875,0.76875,0.84375,0.6833854166666666,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,20,400,800,29,320,1.0,0.05625,1.0,0.746875,0.99375,0.99375,0.8671875,1.0,1.0,1.0
+single_seed_scaling_curve,raw_xgb_exact,0,40,800,1600,87,320,0.94375,0.05625,0.0,0.56875,0.809375,0.86875,0.6883333333333337,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,40,800,1600,31,320,1.0,0.05625,1.0,0.765625,1.0,1.0,0.8765624999999998,1.0,1.0,1.0
+single_seed_scaling_curve,raw_xgb_exact,0,60,1200,2400,115,320,0.94375,0.05625,0.0,0.571875,0.796875,0.853125,0.6894791666666668,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,60,1200,2400,31,320,1.0,0.05625,1.0,0.7375,1.0,1.0,0.863020833333333,1.0,1.0,1.0
+single_seed_scaling_curve,raw_xgb_exact,0,80,1600,3200,147,320,0.94375,0.05625,0.0,0.56875,0.80625,0.865625,0.6973958333333334,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,80,1600,3200,33,320,1.0,0.05625,1.0,0.734375,1.0,1.0,0.8630208333333333,1.0,1.0,1.0
+single_seed_scaling_curve,raw_xgb_exact,0,100,2000,4000,178,320,0.94375,0.05625,0.0,0.584375,0.81875,0.875,0.7111458333333334,0.0,0.0,0.0
+single_seed_scaling_curve,template_xgb_bridge,0,100,2000,4000,34,320,1.0,0.05625,1.0,0.746875,1.0,1.0,0.8703125,1.0,1.0,1.0

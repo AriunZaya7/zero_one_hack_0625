@@ -14,9 +14,9 @@ Welcome to the central repository for Zero One Hack_01, hosted by [Lumos Consult
 
 ---
 
-## Industrial AI Work In This Branch
+## Industrial AI Work
 
-This branch contains our Industrial AI (Infineon) solution attempts under
+This repository contains our Industrial AI (Infineon) solution attempts under
 [`solutions/`](./solutions/). The current suite is documented in:
 
 - [`OVERALL_SUMMARY.html`](./OVERALL_SUMMARY.html) - standalone end-to-end
@@ -25,6 +25,8 @@ This branch contains our Industrial AI (Infineon) solution attempts under
 - [`FINAL_PITCH_OOD_STRATEGY.html`](./FINAL_PITCH_OOD_STRATEGY.html) - final
   pitch for the OOD-ready strategy around new exact strings and new
   family-specific blocks
+- [`final_submission/industrial_ai_infineon_solution_21/`](./final_submission/industrial_ai_infineon_solution_21/) -
+  final scorer CSVs plus supporting attachments for the hackathon submission
 - [`solutions/ood_fourth_family_probe/`](./solutions/ood_fourth_family_probe/) -
   hypothetical fourth/fifth hidden-family OOD stress test used by the final
   pitch

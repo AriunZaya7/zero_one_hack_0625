@@ -2,7 +2,7 @@
 """Solution 21: template-boosted evidence bridge.
 
 This solution keeps Solution 20 as the submit-ready prediction cascade, then
-adds the trained-model experiment that the Morgan branch made useful:
+adds the trained-model experiment needed for a final hybrid OOD strategy:
 
 1. Train an XGBoost next-step model on raw exact strings.
 2. Train the same XGBoost model after replacing family-specific prefixes with
@@ -891,11 +891,10 @@ def write_explanation_html(metrics: dict[str, object]) -> None:
   <section class="hero">
     <h1>Solution 21: Template-Boosted Evidence Bridge</h1>
     <p>
-      This solution answers the question raised by the Morgan branch comparison:
-      can we combine a real trained model, like XGBoost, with the
-      <code>__FAMILY__</code> template idea that made our OOD strategy stronger?
-      The answer is yes, and the diagnostic below shows why template
-      normalization is the important part.
+      This solution answers the final modeling question: can we combine a real
+      trained model, like XGBoost, with the <code>__FAMILY__</code> template
+      idea that made our OOD strategy stronger? The answer is yes, and the
+      diagnostic below shows why template normalization is the important part.
     </p>
     <p>
       The submit-ready CSVs still come from the strongest evidence cascade from
@@ -921,7 +920,7 @@ def write_explanation_html(metrics: dict[str, object]) -> None:
     </div>
     <div class="flow">
       <div class="step"><strong>1. Evidence cascade</strong><p>Use exact full routes and visible valid-partial relationships first, because those are direct evidence.</p></div>
-      <div class="step"><strong>2. Raw learner</strong><p>Train XGBoost on exact step strings. This is the Morgan-style baseline.</p></div>
+      <div class="step"><strong>2. Raw learner</strong><p>Train XGBoost on exact step strings. This is the plain exact-label baseline.</p></div>
       <div class="step"><strong>3. Template learner</strong><p>Train the same model after replacing family names with <code>__FAMILY__</code>.</p></div>
       <div class="step"><strong>4. OOD check</strong><p>Validate on ten unseen families and compare exact-string recoverability.</p></div>
     </div>

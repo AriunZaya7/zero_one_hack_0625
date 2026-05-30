@@ -2,10 +2,10 @@
 
 ## Question
 
-Morgan's branch had a stronger trained-model story than `dev/bati`: XGBoost,
-CatBoost, and transformer experiments. Our branch had the stronger OOD exact
-string story: route evidence, valid-partial lattice matching, and
-`__FAMILY__` template normalization.
+The learned-model work had a stronger trained-model story: XGBoost, CatBoost,
+and transformer-style experiments. The OOD evidence work had the stronger exact
+string story: route evidence, valid-partial lattice matching, and `__FAMILY__`
+template normalization.
 
 The research question was therefore narrow:
 

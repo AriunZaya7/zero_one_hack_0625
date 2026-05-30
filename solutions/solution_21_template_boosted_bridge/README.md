@@ -1,7 +1,6 @@
 # Solution 21: Template-Boosted Evidence Bridge
 
-This is the final hybrid candidate after comparing `dev/bati` with Morgan's
-trained-model branch.
+This is the final hybrid candidate for the Industrial AI submission.
 
 It keeps the submit-ready Solution 20 prediction cascade:
 
