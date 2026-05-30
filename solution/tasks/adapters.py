@@ -23,8 +23,8 @@ class NGramAdapter:
     def top_k_next(self, context, k=5, family=None):
         return [s for s, _ in self.m.top_k_next(context, k)]
 
-    def complete(self, partial, family=None):
-        return self.m.complete_sequence(partial, max_steps=200)
+    def complete(self, partial, family=None, max_steps=200):
+        return self.m.complete_sequence(partial, max_steps=max_steps)
 
     def seq_log_prob(self, seq, family=None):
         return self.m.sequence_log_prob(seq)
@@ -37,8 +37,11 @@ class LLMAdapter:
     def top_k_next(self, context, k=5, family=None):
         return [s for s, _ in self.m.top_k_next(context, k)]
 
-    def complete(self, partial, family=None):
-        return self.m.complete_sequence(partial)
+    def complete(self, partial, family=None, max_steps=200):
+        try:
+            return self.m.complete_sequence(partial, max_steps=max_steps)
+        except TypeError:
+            return self.m.complete_sequence(partial)
 
     def seq_log_prob(self, seq, family=None):
         return self.m.sequence_log_prob(seq)
@@ -51,8 +54,8 @@ class BoostingAdapter:
     def top_k_next(self, context, k=5, family=None):
         return [s for s, _ in self.m.top_k_next(context, k, family=family)]
 
-    def complete(self, partial, family=None):
-        return self.m.complete_sequence(partial, max_steps=200, family=family)
+    def complete(self, partial, family=None, max_steps=200):
+        return self.m.complete_sequence(partial, max_steps=max_steps, family=family)
 
     def seq_log_prob(self, seq, family=None):
         return self.m.sequence_log_prob(seq, family=family)
@@ -82,9 +85,9 @@ class TransformerAdapter:
                 break
         return out
 
-    def complete(self, partial, family=None):
+    def complete(self, partial, family=None, max_steps=200):
         prompt = self._ids(partial)
-        gen = self.m.generate(prompt, max_new_tokens=200, eos_id=self.v.EOS, greedy=True)
+        gen = self.m.generate(prompt, max_new_tokens=max_steps, eos_id=self.v.EOS, greedy=True)
         new_ids = gen[0, prompt.shape[1]:].tolist()
         return self.v.decode(new_ids, strip_special=True)
 

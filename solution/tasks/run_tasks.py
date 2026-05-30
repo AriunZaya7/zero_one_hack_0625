@@ -35,7 +35,10 @@ def eval_next_step_and_completion(adapter, sequences, cut_fractions=(0.6, 0.8), 
             prefix, gold_next, gold_rest = seq[:cut], seq[cut], seq[cut:]
             next_preds.append(adapter.top_k_next(prefix, k, family=family))
             next_gold.append(gold_next)
-            pred_rest = adapter.complete(prefix, family=family)[:len(gold_rest)]
+            try:
+                pred_rest = adapter.complete(prefix, family=family, max_steps=len(gold_rest))[:len(gold_rest)]
+            except TypeError:
+                pred_rest = adapter.complete(prefix, family=family)[:len(gold_rest)]
             comp_preds.append(pred_rest)
             comp_gold.append(gold_rest)
     return (M.next_step_metrics(next_preds, next_gold),

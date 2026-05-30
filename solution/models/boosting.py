@@ -25,6 +25,46 @@ EOS = "<EOS>"
 UNK_FAMILY = "<UNK_FAMILY>"
 
 
+OP_PREDICATES = [
+    ("clean", R.is_clean),
+    ("deposit", R.is_deposit),
+    ("develop", R.is_develop),
+    ("etch", R.is_etch),
+    ("metal_etch", R.is_metal_etch),
+    ("implant", R.is_implant),
+    ("cmp", R.is_cmp),
+    ("fill", R.is_fill),
+    ("pad_window", R.is_pad_window),
+    ("test", R.is_electrical_test),
+    ("passivation", lambda step: R.is_passivation(step) or R.is_cure(step)),
+    ("backside", lambda step: "BACKSIDE" in step.upper() or R.is_backside_metal(step)),
+    ("oxidation", R.is_oxidation),
+    ("litho", lambda step: R.align_level(step) is not None),
+]
+
+EXTRA_COUNT_PREDICATES = [
+    ("litho", lambda step: R.align_level(step) is not None),
+    ("develop", R.is_develop),
+    ("oxidation", R.is_oxidation),
+    ("fill", R.is_fill),
+    ("metal_etch", R.is_metal_etch),
+    ("pad_window", R.is_pad_window),
+    ("wafer_sort", R.is_wafer_sort),
+    ("ship", R.is_ship),
+]
+
+RECENCY_PREDICATES = [
+    ("clean", R.is_clean),
+    ("deposit", R.is_deposit),
+    ("etch", R.is_etch),
+    ("implant", R.is_implant),
+    ("cmp", R.is_cmp),
+    ("test", R.is_electrical_test),
+    ("passivation", lambda step: R.is_passivation(step) or R.is_cure(step)),
+    ("litho", lambda step: R.align_level(step) is not None),
+]
+
+
 def records_from_families(families: dict[str, list[list[str]]], selected: set[str] | None = None) -> list[dict]:
     out = []
     for family, seqs in families.items():
@@ -39,6 +79,11 @@ class BoostingConfig:
     context_size: int = 12
     max_seq_len: int = 256
     seed: int = 42
+    beam_width: int = 5
+    beam_branching: int = 8
+    beam_length_norm: float = 0.7
+    beam_rule_penalty: float = 4.0
+    feature_version: int = 2
 
 
 class BoostingStepModel:
@@ -55,6 +100,7 @@ class BoostingStepModel:
         self.model_label_ids: list[int] = []
         self.estimator = None
         self.class_priors: dict[int, float] = {}
+        self._predict_cache: dict[tuple[str | None, tuple[str, ...]], dict[str, float]] = {}
 
     @property
     def cat_feature_indices(self) -> list[int]:
@@ -90,7 +136,24 @@ class BoostingStepModel:
         ]
         names += [f"lag_{i}" for i in range(1, self.config.context_size + 1)]
         names += ["last_bigram_id", "last_trigram_id"]
+        if self._feature_version >= 2:
+            names += [
+                "unique_step_count",
+                "unique_step_frac",
+                "repeat_step_frac",
+                "last_litho_level",
+                "litho_level_gap",
+            ]
+            names += [f"{name}_count_v2" for name, _ in EXTRA_COUNT_PREDICATES]
+            names += [f"seen_{name}_v2" for name, _ in EXTRA_COUNT_PREDICATES]
+            names += [f"last_is_{name}" for name, _ in OP_PREDICATES]
+            names += [f"prev_is_{name}" for name, _ in OP_PREDICATES]
+            names += [f"since_last_{name}_norm" for name, _ in RECENCY_PREDICATES]
         return names
+
+    @property
+    def _feature_version(self) -> int:
+        return int(getattr(self.config, "feature_version", 1))
 
     def fit(
         self,
@@ -101,13 +164,24 @@ class BoostingStepModel:
         iterations: int = 1200,
         device: str = "cpu",
         verbose: bool | int = True,
+        sample_strategy: str = "uniform",
+        family_dropout: float = 0.0,
         **params,
     ):
         self._build_metadata(train_records)
-        x_train, y_train = self._build_dataset(train_records, max_examples=max_train_examples)
+        x_train, y_train = self._build_dataset(
+            train_records,
+            max_examples=max_train_examples,
+            sample_strategy=sample_strategy,
+            family_dropout=family_dropout,
+        )
         x_val = y_val = None
         if val_records:
-            x_val, y_val = self._build_dataset(val_records, max_examples=max_val_examples)
+            x_val, y_val = self._build_dataset(
+                val_records,
+                max_examples=max_val_examples,
+                sample_strategy=sample_strategy,
+            )
         x_train, y_train, x_val, y_val = self._remap_for_estimator(x_train, y_train, x_val, y_val)
         self._fit_estimator(x_train, y_train, x_val, y_val, iterations, device, verbose, **params)
         return self
@@ -166,11 +240,11 @@ class BoostingStepModel:
                     continue
                 yield family, seq[:i], self.step_to_label[target]
 
-    def _build_dataset(self, records: list[dict], max_examples: int = 250_000):
-        rng = random.Random(self.config.seed)
+    def _sample_examples(self, examples, max_examples: int, seed_offset: int = 0):
+        rng = random.Random(self.config.seed + seed_offset)
         samples = []
         seen = 0
-        for example in self._supervised_examples(records):
+        for example in examples:
             seen += 1
             if max_examples == 0 or len(samples) < max_examples:
                 samples.append(example)
@@ -178,6 +252,45 @@ class BoostingStepModel:
             j = rng.randrange(seen)
             if j < max_examples:
                 samples[j] = example
+        return samples
+
+    def _build_dataset(
+        self,
+        records: list[dict],
+        max_examples: int = 250_000,
+        sample_strategy: str = "uniform",
+        family_dropout: float = 0.0,
+    ):
+        if sample_strategy == "uniform" or max_examples == 0:
+            samples = self._sample_examples(self._supervised_examples(records), max_examples)
+        elif sample_strategy == "family_balanced":
+            grouped: dict[str, list[dict]] = {}
+            for record in records:
+                grouped.setdefault(record.get("family") or UNK_FAMILY, []).append(record)
+            per_family = max(1, math.ceil(max_examples / max(len(grouped), 1)))
+            samples = []
+            for idx, family in enumerate(sorted(grouped)):
+                samples.extend(
+                    self._sample_examples(
+                        self._supervised_examples(grouped[family]),
+                        per_family,
+                        seed_offset=idx + 1,
+                    )
+                )
+            if len(samples) > max_examples:
+                rng = random.Random(self.config.seed + 10_000)
+                rng.shuffle(samples)
+                samples = samples[:max_examples]
+        else:
+            raise ValueError(f"Unknown sample_strategy={sample_strategy!r}")
+
+        if family_dropout > 0:
+            rng = random.Random(self.config.seed + 20_000)
+            dropout = min(max(float(family_dropout), 0.0), 1.0)
+            samples = [
+                (None if rng.random() < dropout else family, prefix, target)
+                for family, prefix, target in samples
+            ]
 
         x = np.asarray([self.featurize(prefix, family) for family, prefix, _ in samples], dtype=np.float32)
         y = np.asarray([target for _, _, target in samples], dtype=np.int64)
@@ -193,6 +306,45 @@ class BoostingStepModel:
 
     def _family_id(self, family: str | None) -> int:
         return self.family_to_id.get(family or UNK_FAMILY, self.family_to_id[UNK_FAMILY])
+
+    def _count_matching(self, prefix: list[str], predicate) -> int:
+        return sum(1 for step in prefix if predicate(step))
+
+    def _seen_matching(self, prefix: list[str], predicate) -> float:
+        return 1.0 if any(predicate(step) for step in prefix) else 0.0
+
+    def _last_distance_norm(self, prefix: list[str], predicate) -> float:
+        for idx in range(len(prefix) - 1, -1, -1):
+            if predicate(prefix[idx]):
+                return min(len(prefix) - 1 - idx, self.config.max_seq_len) / self.config.max_seq_len
+        return 1.0
+
+    def _op_flags(self, step: str | None) -> list[float]:
+        if not step:
+            return [0.0 for _ in OP_PREDICATES]
+        return [1.0 if predicate(step) else 0.0 for _, predicate in OP_PREDICATES]
+
+    def _extra_features(self, prefix: list[str]) -> list[float]:
+        prefix_len = max(len(prefix), 1)
+        unique_steps = len(set(prefix))
+        litho_levels = [R.align_level(step) for step in prefix]
+        litho_levels = [level for level in litho_levels if level is not None]
+        last_litho = litho_levels[-1] if litho_levels else 0
+        max_litho = max(litho_levels, default=0)
+
+        features = [
+            float(unique_steps),
+            unique_steps / prefix_len,
+            max(len(prefix) - unique_steps, 0) / prefix_len,
+            float(last_litho),
+            float(max_litho - last_litho),
+        ]
+        features.extend(float(self._count_matching(prefix, predicate)) for _, predicate in EXTRA_COUNT_PREDICATES)
+        features.extend(self._seen_matching(prefix, predicate) for _, predicate in EXTRA_COUNT_PREDICATES)
+        features.extend(self._op_flags(prefix[-1] if prefix else None))
+        features.extend(self._op_flags(prefix[-2] if len(prefix) >= 2 else None))
+        features.extend(self._last_distance_norm(prefix, predicate) for _, predicate in RECENCY_PREDICATES)
+        return features
 
     def featurize(self, prefix: list[str], family: str | None = None) -> list[float]:
         ids = [self._step_id(step) for step in prefix]
@@ -240,21 +392,72 @@ class BoostingStepModel:
         features.extend(lag_ids)
         features.append(self.bigram_to_id.get(last2, 0))
         features.append(self.trigram_to_id.get(last3, 0))
+        if self._feature_version >= 2:
+            features.extend(self._extra_features(prefix))
         return features
 
-    def _predict_proba(self, prefix: list[str], family: str | None = None) -> dict[str, float]:
+    def _proba_rows_to_dicts(self, probs, classes) -> list[dict[str, float]]:
+        outputs: list[dict[str, float]] = []
+        for row in probs:
+            out: dict[str, float] = {}
+            for cls, prob in zip(classes, row):
+                model_idx = int(cls)
+                if 0 <= model_idx < len(self.model_label_ids):
+                    label_idx = self.model_label_ids[model_idx]
+                    if 0 <= label_idx < len(self.label_steps):
+                        out[self.label_steps[label_idx]] = float(prob)
+            outputs.append(out)
+        return outputs
+
+    def _predict_proba_many(self, prefixes: list[list[str]], family: str | None = None) -> list[dict[str, float]]:
         if self.estimator is None:
             raise RuntimeError("model is not fitted")
-        x = np.asarray([self.featurize(prefix, family)], dtype=np.float32)
-        probs = self.estimator.predict_proba(x)[0]
-        classes = getattr(self.estimator, "classes_", np.arange(len(probs)))
-        out: dict[str, float] = {}
-        for cls, prob in zip(classes, probs):
-            model_idx = int(cls)
-            if 0 <= model_idx < len(self.model_label_ids):
-                label_idx = self.model_label_ids[model_idx]
-                if 0 <= label_idx < len(self.label_steps):
-                    out[self.label_steps[label_idx]] = float(prob)
+        if not hasattr(self, "_predict_cache"):
+            self._predict_cache = {}
+
+        outputs: list[dict[str, float] | None] = [None] * len(prefixes)
+        missing = []
+        missing_keys = []
+        for idx, prefix in enumerate(prefixes):
+            key = (family, tuple(prefix))
+            cached = self._predict_cache.get(key)
+            if cached is not None:
+                outputs[idx] = cached
+            else:
+                missing.append((idx, prefix))
+                missing_keys.append(key)
+
+        if missing:
+            x = np.asarray([self.featurize(prefix, family) for _, prefix in missing], dtype=np.float32)
+            probs = self.estimator.predict_proba(x)
+            classes = getattr(self.estimator, "classes_", np.arange(probs.shape[1]))
+            for (idx, _), key, out in zip(missing, missing_keys, self._proba_rows_to_dicts(probs, classes)):
+                self._predict_cache[key] = out
+                outputs[idx] = out
+
+        return [out or {} for out in outputs]
+
+    def _predict_proba(self, prefix: list[str], family: str | None = None) -> dict[str, float]:
+        return self._predict_proba_many([prefix], family=family)[0]
+
+    def _predict_label_matrix(self, prefixes: list[list[str]], family: str | None = None):
+        if self.estimator is None:
+            raise RuntimeError("model is not fitted")
+        x = np.asarray([self.featurize(prefix, family) for prefix in prefixes], dtype=np.float32)
+        probs = self.estimator.predict_proba(x)
+        classes = list(getattr(self.estimator, "classes_", range(probs.shape[1])))
+        model_class_to_pos = {int(cls): pos for pos, cls in enumerate(classes)}
+        original_to_model = {label_id: model_idx for model_idx, label_id in enumerate(self.model_label_ids)}
+        return probs, model_class_to_pos, original_to_model
+
+    def _prob_for_targets(self, prefixes: list[list[str]], targets: list[str], family: str | None = None) -> list[float]:
+        probs, model_class_to_pos, original_to_model = self._predict_label_matrix(prefixes, family=family)
+        out = []
+        for row, target in enumerate(targets):
+            original_label = self.step_to_label.get(target)
+            model_label = original_to_model.get(original_label)
+            pos = model_class_to_pos.get(model_label)
+            out.append(float(probs[row, pos]) if pos is not None else 1e-9)
         return out
 
     def top_k_next(self, context: list[str], k: int = 5, family: str | None = None) -> list[tuple[str, float]]:
@@ -263,7 +466,91 @@ class BoostingStepModel:
         out = [(step, prob) for step, prob in ranked if step != EOS]
         return out[:k]
 
+    def _completion_score(self, logp: float, generated_len: int) -> float:
+        length_norm = getattr(self.config, "beam_length_norm", 0.7)
+        denom = max(generated_len, 1) ** length_norm
+        return logp / denom
+
+    def _rank_completion_candidates(self, candidates):
+        rule_penalty = getattr(self.config, "beam_rule_penalty", 4.0)
+
+        def score(item):
+            seq, out, logp, done = item
+            penalty = 0.0
+            if out and not done and R.attribute_anomaly(seq) is not None:
+                penalty += rule_penalty
+            if done and out and out[-1] == "SHIP LOT":
+                penalty -= 0.75
+            return self._completion_score(logp - penalty, len(out))
+
+        return sorted(candidates, key=score, reverse=True)
+
+    def complete_sequence_beam(
+        self,
+        partial: list[str],
+        max_steps: int = 200,
+        family: str | None = None,
+        beam_width: int | None = None,
+        branching: int | None = None,
+    ) -> list[str]:
+        """Beam-search completion over next-step probabilities.
+
+        Greedy decoding commits to one early choice. Beam search keeps several
+        plausible continuations alive, then returns the highest-scoring full
+        candidate by normalized log probability plus light process-rule bias.
+        """
+        beam_width = beam_width or getattr(self.config, "beam_width", 5)
+        branching = branching or getattr(self.config, "beam_branching", 8)
+        if beam_width <= 1:
+            return self.complete_sequence_greedy(partial, max_steps=max_steps, family=family)
+
+        beams = [(list(partial), [], 0.0, False)]  # seq, generated, logp, done
+        completed = []
+
+        for _ in range(max_steps):
+            expanded = []
+            for seq, out, logp, done in beams:
+                if done:
+                    expanded.append((seq, out, logp, done))
+                    completed.append((seq, out, logp, done))
+                    continue
+
+                probs = self._predict_proba(seq, family)
+                ranked = sorted(probs.items(), key=lambda item: item[1], reverse=True)[:branching]
+                if not ranked:
+                    expanded.append((seq, out, logp, True))
+                    continue
+
+                for step, prob in ranked:
+                    p = max(float(prob), 1e-9)
+                    next_logp = logp + math.log(p)
+                    if step == EOS:
+                        expanded.append((seq, out, next_logp, True))
+                        completed.append((seq, out, next_logp, True))
+                        continue
+                    next_seq = seq + [step]
+                    next_out = out + [step]
+                    done_next = step == "SHIP LOT"
+                    expanded.append((next_seq, next_out, next_logp, done_next))
+                    if done_next:
+                        completed.append((next_seq, next_out, next_logp, done_next))
+
+            beams = self._rank_completion_candidates(expanded)[:beam_width]
+            if all(done for _, _, _, done in beams):
+                break
+
+        candidates = completed or beams
+        return self._rank_completion_candidates(candidates)[0][1] if candidates else []
+
     def complete_sequence(
+        self,
+        partial: list[str],
+        max_steps: int = 200,
+        family: str | None = None,
+    ) -> list[str]:
+        return self.complete_sequence_beam(partial, max_steps=max_steps, family=family)
+
+    def complete_sequence_greedy(
         self,
         partial: list[str],
         max_steps: int = 200,
@@ -294,30 +581,52 @@ class BoostingStepModel:
             prefixes.append(seq[:i])
             targets.append(seq[i] if i < len(seq) else EOS)
 
-        x = np.asarray([self.featurize(prefix, family) for prefix in prefixes], dtype=np.float32)
-        probs = self.estimator.predict_proba(x)
-        classes = list(getattr(self.estimator, "classes_", range(probs.shape[1])))
-        model_class_to_pos = {int(cls): pos for pos, cls in enumerate(classes)}
-        original_to_model = {label_id: model_idx for model_idx, label_id in enumerate(self.model_label_ids)}
-
-        logp = 0.0
-        for row, target in enumerate(targets):
-            original_label = self.step_to_label.get(target)
-            model_label = original_to_model.get(original_label)
-            pos = model_class_to_pos.get(model_label)
-            p = float(probs[row, pos]) if pos is not None else 1e-9
-            logp += math.log(max(p, 1e-9))
+        logp = sum(math.log(max(p, 1e-9)) for p in self._prob_for_targets(prefixes, targets, family=family))
         return logp / max(len(targets), 1)
 
     def save(self, path: str):
         os.makedirs(path, exist_ok=True)
+        self._predict_cache = {}
         with open(os.path.join(path, "model.pkl"), "wb") as f:
             pickle.dump(self, f)
+
+    def _expected_feature_count(self) -> int | None:
+        if self.estimator is None:
+            return None
+        if hasattr(self.estimator, "n_features_in_"):
+            try:
+                return int(self.estimator.n_features_in_)
+            except (TypeError, ValueError):
+                pass
+        if hasattr(self.estimator, "get_booster"):
+            try:
+                return int(self.estimator.get_booster().num_features())
+            except Exception:
+                pass
+        return None
+
+    def _align_feature_version_to_estimator(self):
+        expected = self._expected_feature_count()
+        if not expected:
+            return
+        if len(self.featurize([], None)) == expected:
+            return
+        original = getattr(self.config, "feature_version", None)
+        for version in (1, 2):
+            setattr(self.config, "feature_version", version)
+            if len(self.featurize([], None)) == expected:
+                return
+        if original is not None:
+            setattr(self.config, "feature_version", original)
 
     @classmethod
     def load(cls, path: str):
         with open(os.path.join(path, "model.pkl"), "rb") as f:
-            return pickle.load(f)
+            model = pickle.load(f)
+        if hasattr(model, "_align_feature_version_to_estimator"):
+            model._align_feature_version_to_estimator()
+        model._predict_cache = {}
+        return model
 
 
 class XGBoostStepModel(BoostingStepModel):
@@ -345,9 +654,9 @@ class XGBoostStepModel(BoostingStepModel):
         }
         if device == "cuda":
             xgb_params["device"] = "cuda"
+        xgb_params.update(params)
         if x_val is None or y_val is None or not len(y_val):
             xgb_params.pop("early_stopping_rounds", None)
-        xgb_params.update(params)
         self.estimator = XGBClassifier(**xgb_params)
         fit_kwargs = {"verbose": verbose}
         if x_val is not None and y_val is not None and len(y_val):
@@ -400,20 +709,46 @@ class CatBoostStepModel(BoostingStepModel):
             use_best_model=eval_set is not None,
         )
 
-    def _predict_proba(self, prefix: list[str], family: str | None = None) -> dict[str, float]:
+    def _predict_proba_many(self, prefixes: list[list[str]], family: str | None = None) -> list[dict[str, float]]:
         if self.estimator is None:
             raise RuntimeError("model is not fitted")
-        x = np.asarray([self.featurize(prefix, family)], dtype=np.float32)
-        probs = self.estimator.predict_proba(self._catboost_frame(x))[0]
-        classes = getattr(self.estimator, "classes_", np.arange(len(probs)))
-        out: dict[str, float] = {}
-        for cls, prob in zip(classes, probs):
-            model_idx = int(cls)
-            if 0 <= model_idx < len(self.model_label_ids):
-                label_idx = self.model_label_ids[model_idx]
-                if 0 <= label_idx < len(self.label_steps):
-                    out[self.label_steps[label_idx]] = float(prob)
-        return out
+        if not hasattr(self, "_predict_cache"):
+            self._predict_cache = {}
+
+        outputs: list[dict[str, float] | None] = [None] * len(prefixes)
+        missing = []
+        missing_keys = []
+        for idx, prefix in enumerate(prefixes):
+            key = (family, tuple(prefix))
+            cached = self._predict_cache.get(key)
+            if cached is not None:
+                outputs[idx] = cached
+            else:
+                missing.append((idx, prefix))
+                missing_keys.append(key)
+
+        if missing:
+            x = np.asarray([self.featurize(prefix, family) for _, prefix in missing], dtype=np.float32)
+            probs = self.estimator.predict_proba(self._catboost_frame(x))
+            classes = getattr(self.estimator, "classes_", np.arange(probs.shape[1]))
+            for (idx, _), key, out in zip(missing, missing_keys, self._proba_rows_to_dicts(probs, classes)):
+                self._predict_cache[key] = out
+                outputs[idx] = out
+
+        return [out or {} for out in outputs]
+
+    def _predict_proba(self, prefix: list[str], family: str | None = None) -> dict[str, float]:
+        return self._predict_proba_many([prefix], family=family)[0]
+
+    def _predict_label_matrix(self, prefixes: list[list[str]], family: str | None = None):
+        if self.estimator is None:
+            raise RuntimeError("model is not fitted")
+        x = np.asarray([self.featurize(prefix, family) for prefix in prefixes], dtype=np.float32)
+        probs = self.estimator.predict_proba(self._catboost_frame(x))
+        classes = list(getattr(self.estimator, "classes_", range(probs.shape[1])))
+        model_class_to_pos = {int(cls): pos for pos, cls in enumerate(classes)}
+        original_to_model = {label_id: model_idx for model_idx, label_id in enumerate(self.model_label_ids)}
+        return probs, model_class_to_pos, original_to_model
 
     def sequence_log_prob(self, sequence: list[str], family: str | None = None) -> float:
         if self.estimator is None:
@@ -422,17 +757,133 @@ class CatBoostStepModel(BoostingStepModel):
         prefixes = [seq[:i] for i in range(len(seq) + 1)]
         targets = [seq[i] if i < len(seq) else EOS for i in range(len(seq) + 1)]
 
-        x = np.asarray([self.featurize(prefix, family) for prefix in prefixes], dtype=np.float32)
-        probs = self.estimator.predict_proba(self._catboost_frame(x))
-        classes = list(getattr(self.estimator, "classes_", range(probs.shape[1])))
-        model_class_to_pos = {int(cls): pos for pos, cls in enumerate(classes)}
-        original_to_model = {label_id: model_idx for model_idx, label_id in enumerate(self.model_label_ids)}
-
-        logp = 0.0
-        for row, target in enumerate(targets):
-            original_label = self.step_to_label.get(target)
-            model_label = original_to_model.get(original_label)
-            pos = model_class_to_pos.get(model_label)
-            p = float(probs[row, pos]) if pos is not None else 1e-9
-            logp += math.log(max(p, 1e-9))
+        logp = sum(math.log(max(p, 1e-9)) for p in self._prob_for_targets(prefixes, targets, family=family))
         return logp / max(len(targets), 1)
+
+
+class BoostingEnsembleModel(BoostingStepModel):
+    """Probability-average ensemble over saved boosting checkpoints."""
+
+    model_type = "boosting_ensemble"
+
+    def __init__(self, models: list[BoostingStepModel], weights: list[float] | None = None):
+        if not models:
+            raise ValueError("BoostingEnsembleModel requires at least one member model")
+        super().__init__(config=models[0].config)
+        self.models = models
+        raw_weights = weights or [1.0 for _ in models]
+        if len(raw_weights) != len(models):
+            raise ValueError("ensemble weights must match number of models")
+        total = sum(raw_weights) or 1.0
+        self.weights = [float(weight) / total for weight in raw_weights]
+
+    def _predict_proba_many(self, prefixes: list[list[str]], family: str | None = None) -> list[dict[str, float]]:
+        if not hasattr(self, "_predict_cache"):
+            self._predict_cache = {}
+        outputs: list[dict[str, float] | None] = [None] * len(prefixes)
+        missing = []
+        missing_keys = []
+        for idx, prefix in enumerate(prefixes):
+            key = (family, tuple(prefix))
+            cached = self._predict_cache.get(key)
+            if cached is not None:
+                outputs[idx] = cached
+            else:
+                missing.append((idx, prefix))
+                missing_keys.append(key)
+
+        if missing:
+            combined = [dict() for _ in missing]
+            missing_prefixes = [prefix for _, prefix in missing]
+            for model, weight in zip(self.models, self.weights):
+                for row, probs in enumerate(model._predict_proba_many(missing_prefixes, family=family)):
+                    out = combined[row]
+                    for step, prob in probs.items():
+                        out[step] = out.get(step, 0.0) + weight * float(prob)
+
+            for (idx, _), key, out in zip(missing, missing_keys, combined):
+                total = sum(out.values()) or 1.0
+                normalized = {step: prob / total for step, prob in out.items()}
+                self._predict_cache[key] = normalized
+                outputs[idx] = normalized
+
+        return [out or {} for out in outputs]
+
+    def _predict_proba(self, prefix: list[str], family: str | None = None) -> dict[str, float]:
+        return self._predict_proba_many([prefix], family=family)[0]
+
+    def sequence_log_prob(self, sequence: list[str], family: str | None = None) -> float:
+        seq = list(sequence)
+        prefixes = [seq[:i] for i in range(len(seq) + 1)]
+        targets = [seq[i] if i < len(seq) else EOS for i in range(len(seq) + 1)]
+        probs_by_prefix = self._predict_proba_many(prefixes, family=family)
+        logp = 0.0
+        for probs, target in zip(probs_by_prefix, targets):
+            logp += math.log(max(float(probs.get(target, 1e-9)), 1e-9))
+        return logp / max(len(targets), 1)
+
+    @classmethod
+    def load_many(cls, paths: list[str], weights: list[float] | None = None):
+        models = []
+        for path in paths:
+            with open(os.path.join(path, "model.pkl"), "rb") as f:
+                model = pickle.load(f)
+            if hasattr(model, "_align_feature_version_to_estimator"):
+                model._align_feature_version_to_estimator()
+            model._predict_cache = {}
+            models.append(model)
+        return cls(models, weights=weights)
+
+
+class BoostingTaskHybridModel:
+    """Route each task to the strongest boosting member for that task."""
+
+    model_type = "boosting_task_hybrid"
+
+    def __init__(
+        self,
+        next_model: BoostingStepModel,
+        completion_model: BoostingStepModel,
+        anomaly_model: BoostingStepModel,
+    ):
+        self.next_model = next_model
+        self.completion_model = completion_model
+        self.anomaly_model = anomaly_model
+        self.config = getattr(completion_model, "config", getattr(next_model, "config", BoostingConfig()))
+
+    def top_k_next(self, context: list[str], k: int = 5, family: str | None = None) -> list[tuple[str, float]]:
+        return self.next_model.top_k_next(context, k=k, family=family)
+
+    def complete_sequence(self, partial: list[str], max_steps: int = 200, family: str | None = None) -> list[str]:
+        return self.completion_model.complete_sequence(partial, max_steps=max_steps, family=family)
+
+    def sequence_log_prob(self, sequence: list[str], family: str | None = None) -> float:
+        return self.anomaly_model.sequence_log_prob(sequence, family=family)
+
+    @staticmethod
+    def _load_single(path: str):
+        with open(os.path.join(path, "model.pkl"), "rb") as f:
+            model = pickle.load(f)
+        if hasattr(model, "_align_feature_version_to_estimator"):
+            model._align_feature_version_to_estimator()
+        model._predict_cache = {}
+        return model
+
+    @classmethod
+    def load(
+        cls,
+        next_paths: list[str],
+        completion_path: str,
+        anomaly_path: str,
+        next_weights: list[float] | None = None,
+    ):
+        next_model = (
+            BoostingEnsembleModel.load_many(next_paths, weights=next_weights)
+            if len(next_paths) > 1
+            else cls._load_single(next_paths[0])
+        )
+        return cls(
+            next_model=next_model,
+            completion_model=cls._load_single(completion_path),
+            anomaly_model=cls._load_single(anomaly_path),
+        )

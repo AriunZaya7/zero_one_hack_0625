@@ -1,0 +1,8 @@
+{
+  "run_name": "xgb_holdout_mosfet_hybrid_taskbest",
+  "next_checkpoints": [
+    "solution/checkpoints/xgb_holdout_mosfet_v2_dropout_30k_80"
+  ],
+  "completion_checkpoint": "solution/checkpoints/xgb_holdout_mosfet_v2_dropout_30k_80",
+  "anomaly_checkpoint": "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_legacy_features_holdout_mosfet"
+}

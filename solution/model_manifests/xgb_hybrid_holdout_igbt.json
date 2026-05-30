@@ -1,0 +1,8 @@
+{
+  "run_name": "xgb_holdout_igbt_hybrid_robust",
+  "next_checkpoints": [
+    "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_legacy_features_holdout_igbt"
+  ],
+  "completion_checkpoint": "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_regularized_v2_holdout_igbt",
+  "anomaly_checkpoint": "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_legacy_features_holdout_igbt"
+}
