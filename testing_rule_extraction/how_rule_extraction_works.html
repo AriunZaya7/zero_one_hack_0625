@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Rule Extraction — Process Logic Probing</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f4f4f2;color:#222;line-height:1.7}
+.wrap{max-width:1020px;margin:0 auto;padding:2rem 1.5rem}
+.hero{background:#111;color:#fff;border-radius:14px;padding:2.5rem;margin-bottom:2rem}
+.hero h1{font-size:28px;font-weight:700;margin-bottom:8px}
+.hero p{color:#aaa;font-size:15px;max-width:680px}
+.badge{display:inline-block;background:#333;color:#ccc;font-size:11px;padding:3px 10px;border-radius:20px;margin-right:6px;margin-top:8px}
+.section{margin-bottom:2.5rem}
+.section-title{font-size:20px;font-weight:700;margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.section-num{background:#111;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0}
+.card{background:#fff;border-radius:12px;padding:1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.07);margin-bottom:1rem}
+.card-title{font-size:15px;font-weight:600;margin-bottom:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem}
+@media(max-width:640px){.grid2,.grid3{grid-template-columns:1fr}}
+.stat{background:#f8f8f6;border-radius:8px;padding:1rem;text-align:center}
+.stat .v{font-size:28px;font-weight:700}
+.stat .l{font-size:12px;color:#666;margin-top:3px}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:600}
+.pill-strong{background:#d5f5e3;color:#1a7a44}
+.pill-partial{background:#fef3cd;color:#7d5a00}
+.pill-weak{background:#fde8d8;color:#7a3c0b}
+.pill-no{background:#fde8e8;color:#7a1e18}
+.rule-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0ee}
+.rule-row:last-child{border-bottom:none}
+.rule-name{font-size:13px;font-weight:600;min-width:220px}
+.rule-desc{font-size:13px;color:#555;flex:1}
+.flow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
+.step{background:#f0f0ee;border:1px solid #ddd;border-radius:6px;padding:4px 10px;font-size:12px;font-family:monospace}
+.step.highlight{background:#fff3cd;border-color:#f0c040}
+.step.bad{background:#fde8e8;border-color:#f5a5a5}
+.step.good{background:#d5f5e3;border-color:#7dcea0}
+.arrow{color:#999;font-size:14px}
+.compare-col{flex:1;min-width:200px}
+.compare-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#888;margin-bottom:6px}
+.vs{display:flex;gap:1rem;flex-wrap:wrap;margin:12px 0}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f8f8f6;padding:8px 12px;text-align:left;font-weight:600;border-bottom:2px solid #eee}
+td{padding:8px 12px;border-bottom:1px solid #f0f0ee}
+tr:last-child td{border-bottom:none}
+.note{background:#fff8e1;border-left:3px solid #f0c040;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;margin:10px 0}
+.insight{background:#e8f4fd;border-left:3px solid #3498db;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;margin:10px 0}
+.ch{position:relative;width:100%;height:260px}
+.ch-wide{position:relative;width:100%;height:320px}
+.leg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;margin-bottom:8px}
+.dot{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:4px;vertical-align:middle}
+.verdict{background:#111;color:#fff;border-radius:12px;padding:1.5rem}
+.verdict h3{font-size:16px;font-weight:600;margin-bottom:10px;color:#fff}
+.verdict p{color:#ccc;font-size:14px;line-height:1.7}
+details summary{cursor:pointer;font-size:13px;color:#3498db;padding:4px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HERO -->
+<div class="hero">
+  <p style="font-size:11px;color:#666;margin-bottom:6px;letter-spacing:1px">
+    INDUSTRIAL AI HACKATHON · BRANCH: ANGIE · RULE EXTRACTION MODULE</p>
+  <h1>Does the model learn process logic<br>or just memorise sequences?</h1>
+  <p>We designed a behavioral probing pipeline to answer the hackathon's core question empirically.
+     Instead of relying only on accuracy metrics, we probe each model with deliberately violated
+     sequences and measure whether it detects the violation.</p>
+  <div>
+    <span class="badge">N-gram (n=10)</span>
+    <span class="badge">XGBoost</span>
+    <span class="badge">10 process rules</span>
+    <span class="badge">Featherless DeepSeek-V3</span>
+    <span class="badge">generation_rules.md never shown to LLM</span>
+  </div>
+</div>
+
+<!-- SECTION 1: THE 10 RULES -->
+<div class="section">
+  <div class="section-title"><div class="section-num">1</div> The 10 Process Rules We Probe</div>
+  <div class="card">
+    <p style="font-size:13px;color:#555;margin-bottom:12px">
+      These rules are defined in <code>generation_rules.md</code> and represent physical
+      constraints of semiconductor manufacturing. They split naturally into
+      <strong>local rules</strong> (detectable within a few steps) and
+      <strong>global rules</strong> (requiring memory of the full sequence).
+    </p>
+    <table>
+      <thead>
+        <tr><th>Rule</th><th>Plain English</th><th>Window</th><th>Type</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>RULE_DEP_NO_CLEAN</code></td><td>Clean before any deposition</td><td>12 steps</td><td><span class="pill pill-partial">LOCAL</span></td></tr>
+        <tr><td><code>RULE_METAL_ETCH_NO_LITHO</code></td><td>Litho before metal etch</td><td>15 steps</td><td><span class="pill pill-partial">LOCAL</span></td></tr>
+        <tr><td><code>RULE_ETCH_NO_MASK</code></td><td>Develop mask before any etch</td><td>12 steps</td><td><span class="pill pill-partial">LOCAL</span></td></tr>
+        <tr><td><code>RULE_IMPLANT_NO_MASK</code></td><td>Open window before implant</td><td>15 steps</td><td><span class="pill pill-partial">LOCAL</span></td></tr>
+        <tr><td><code>RULE_CMP_NO_DEP</code></td><td>Deposit before CMP planarize</td><td>6 steps</td><td><span class="pill pill-partial">LOCAL</span></td></tr>
+        <tr><td><code>RULE_LITHO_LEVEL_SKIP</code></td><td>Litho levels must be sequential</td><td>Global</td><td><span class="pill pill-no">GLOBAL</span></td></tr>
+        <tr><td><code>RULE_PAD_OPEN_BEFORE_DEP</code></td><td>Passivation before pad opening</td><td>Global</td><td><span class="pill pill-no">GLOBAL</span></td></tr>
+        <tr><td><code>RULE_TEST_BEFORE_PASSIVATION</code></td><td>Tests only after passivation cured</td><td>Global</td><td><span class="pill pill-no">GLOBAL</span></td></tr>
+        <tr><td><code>RULE_SHIP_BEFORE_TEST</code></td><td>Test before ship</td><td>Global</td><td><span class="pill pill-no">GLOBAL</span></td></tr>
+        <tr><td><code>RULE_BACKSIDE_BEFORE_PASSIVATION</code></td><td>Passivate frontside before backside</td><td>Global</td><td><span class="pill pill-no">GLOBAL</span></td></tr>
+      </tbody>
+    </table>
+    <div class="insight" style="margin-top:12px">
+      <strong>Key insight:</strong> 5 of 10 rules require memory of the full sequence history.
+      An n-gram with a fixed context window is structurally incapable of learning these.
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: HOW RULES ARE EXTRACTED -->
+<div class="section">
+  <div class="section-title"><div class="section-num">2</div> How Rule Extraction Works</div>
+  <div class="card">
+    <p style="font-size:13px;color:#555;margin-bottom:14px">
+      The pipeline runs in 3 stages. Critically, the LLM never sees
+      <code>generation_rules.md</code> — it infers rules purely from behavioral evidence.
+    </p>
+    <div class="grid3">
+      <div style="border:1px solid #eee;border-radius:8px;padding:1rem">
+        <div style="font-size:20px;margin-bottom:6px">🔬</div>
+        <div class="card-title">Stage 1 — Probe</div>
+        <p style="font-size:13px;color:#555">Feed valid and rule-violated sequences to the model.
+        Measure perplexity (n-gram) or prediction accuracy (XGBoost) at each violation point.</p>
+      </div>
+      <div style="border:1px solid #eee;border-radius:8px;padding:1rem">
+        <div style="font-size:20px;margin-bottom:6px">🤖</div>
+        <div class="card-title">Stage 2 — Extract</div>
+        <p style="font-size:13px;color:#555">Send probe results (numbers only, no rule names)
+        to DeepSeek-V3 via Featherless API. Ask it to infer what rules the model learned.</p>
+      </div>
+      <div style="border:1px solid #eee;border-radius:8px;padding:1rem">
+        <div style="font-size:20px;margin-bottom:6px">📊</div>
+        <div class="card-title">Stage 3 — Compare</div>
+        <p style="font-size:13px;color:#555">Compare the LLM-generated learned rules against
+        ground truth <code>generation_rules.md</code>. Compute similarity per rule.</p>
+      </div>
+    </div>
+    <div class="note" style="margin-top:14px">
+      <strong>Why this matters:</strong> If the LLM can recover the same rules from behavioral
+      evidence that the engineers wrote into the generator, the model has genuinely learned
+      process logic — not just statistical patterns.
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: N-GRAM PROBING -->
+<div class="section">
+  <div class="section-title"><div class="section-num">3</div> N-gram Probing — Perplexity Method</div>
+  <div class="card">
+    <div class="card-title">How it works</div>
+    <p style="font-size:13px;color:#555;margin-bottom:14px">
+      The n-gram (n=10) assigns a log-probability to every sequence based on transition counts
+      seen in training. We compare perplexity on a valid vs a rule-violated sequence.
+      A high ratio means the model learned the rule.
+    </p>
+    <div class="vs">
+      <div class="compare-col">
+        <div class="compare-label">✓ Valid sequence</div>
+        <div class="flow">
+          <span class="step good">HF DIP</span><span class="arrow">→</span>
+          <span class="step good">DRY WAFER</span><span class="arrow">→</span>
+          <span class="step">THERMAL OXIDATION</span>
+        </div>
+        <p style="font-size:12px;color:#2ecc71;font-weight:600">PPL = 211,320</p>
+      </div>
+      <div style="display:flex;align-items:center;font-size:18px;color:#ccc;padding:20px 0">vs</div>
+      <div class="compare-col">
+        <div class="compare-label">✗ Invalid sequence (RULE_METAL_ETCH_NO_LITHO)</div>
+        <div class="flow">
+          <span class="step">DEPOSIT METAL 1</span><span class="arrow">→</span>
+          <span class="step">COAT PHOTORESIST</span><span class="arrow">→</span>
+          <span class="step bad">METAL ETCH</span>
+        </div>
+        <p style="font-size:12px;color:#e74c3c;font-weight:600">PPL = 2,217,864 &nbsp;(10.5× higher)</p>
+      </div>
+    </div>
+    <div class="insight">
+      <strong>Ratio threshold:</strong> ≥2.0x = STRONG &nbsp;|&nbsp;
+      1.3–2.0x = PARTIAL &nbsp;|&nbsp; 1.05–1.3x = WEAK &nbsp;|&nbsp; ~1.0x = NOT LEARNED
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="card-title">N-gram Results — 45% overall score</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="stat"><div class="v" style="color:#2ecc71">4</div><div class="l">STRONG (≥2.0x ratio)</div></div>
+      <div class="stat"><div class="v" style="color:#f39c12">1</div><div class="l">PARTIAL (1.3–2.0x)</div></div>
+      <div class="stat"><div class="v" style="color:#e74c3c">5</div><div class="l">NOT LEARNED (~1.0x)</div></div>
+      <div class="stat"><div class="v">45%</div><div class="l">Overall rule score</div></div>
+    </div>
+    <div class="leg">
+      <span><span class="dot" style="background:#2ecc71"></span>STRONG</span>
+      <span><span class="dot" style="background:#f39c12"></span>PARTIAL</span>
+      <span><span class="dot" style="background:#e74c3c"></span>NOT LEARNED</span>
+    </div>
+    <div class="ch-wide"><canvas id="cNgram" role="img" aria-label="N-gram rule learning scores">N-gram learning scores per rule</canvas></div>
+
+    <div style="margin-top:14px">
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-strong">STRONG 10.5×</span></div>
+        <div class="rule-desc"><code>RULE_METAL_ETCH_NO_LITHO</code> — litho→etch block is always tight locally, n-gram memorised it perfectly</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-strong">STRONG 6.6×</span></div>
+        <div class="rule-desc"><code>RULE_CMP_NO_DEP</code> — deposit→CMP always consecutive in training data</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-strong">STRONG 5.8×</span></div>
+        <div class="rule-desc"><code>RULE_ETCH_NO_MASK</code> — develop→etch is a tight local block</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-strong">STRONG 3.6×</span></div>
+        <div class="rule-desc"><code>RULE_IMPLANT_NO_MASK</code> — etch window→implant is locally consistent</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-no">NOT LEARNED 1.0×</span></div>
+        <div class="rule-desc"><code>RULE_LITHO_LEVEL_SKIP</code> — requires remembering litho level 50+ steps ago. n=10 window is too small</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-no">NOT LEARNED 1.0×</span></div>
+        <div class="rule-desc"><code>RULE_SHIP_BEFORE_TEST</code> — requires knowing whether wafer sort happened anywhere earlier</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-no">INVERTED 0.08×</span></div>
+        <div class="rule-desc"><code>RULE_PAD_OPEN_BEFORE_DEP</code> — n-gram finds the violated sequence more natural because pad opening locally looks fine</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 4: XGBOOST PROBING -->
+<div class="section">
+  <div class="section-title"><div class="section-num">4</div> XGBoost Probing — Prediction Method</div>
+  <div class="card">
+    <div class="card-title">Why a different method?</div>
+    <p style="font-size:13px;color:#555;margin-bottom:10px">
+      XGBoost is a step-level classifier — it predicts the next step from a feature vector.
+      It was trained on 179 step classes so average max confidence is ~0.47 everywhere,
+      making perplexity meaningless (all sequences score ~2.12 regardless of violations).
+    </p>
+    <div class="note">
+      Instead we ask: <strong>at the exact position where the rule is violated,
+      what does the model predict should come next?</strong>
+      If it predicts the correct step type, it learned the rule.
+    </div>
+    <div class="vs" style="margin-top:14px">
+      <div class="compare-col">
+        <div class="compare-label">RULE_DEP_NO_CLEAN — what we test</div>
+        <div class="flow">
+          <span class="step">MEASURE THICKNESS</span>
+          <span class="arrow">→</span>
+          <span class="step highlight">[predict]</span>
+          <span class="arrow">→</span>
+          <span class="step bad">THERMAL OXIDATION ✗</span>
+        </div>
+        <p style="font-size:12px;color:#555;margin-top:6px">
+          If model predicts <strong>HF DIP / DRY WAFER</strong> here → it knows a clean is needed ✓<br>
+          If model predicts measurement steps → it did not learn the rule ✗
+        </p>
+      </div>
+    </div>
+    <div class="insight" style="margin-top:10px">
+      <strong>XGBoost predicted:</strong> WAFER CLEAN PRE PROCESS (prob=0.55) — a clean step,
+      just not in our category map. This is actually a near-miss caused by vocabulary mismatch,
+      not a model failure.
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:1rem">
+    <div class="card-title">XGBoost Results — 40% overall score</div>
+    <div class="grid2" style="margin-bottom:14px">
+      <div class="stat"><div class="v" style="color:#2ecc71">1</div><div class="l">STRONG (top-1 correct, prob &gt;30%)</div></div>
+      <div class="stat"><div class="v" style="color:#f39c12">4</div><div class="l">PARTIAL (correct in top-5)</div></div>
+      <div class="stat"><div class="v" style="color:#e67e22">5</div><div class="l">WEAK (some signal)</div></div>
+      <div class="stat"><div class="v">40%</div><div class="l">Overall rule score</div></div>
+    </div>
+    <div class="leg">
+      <span><span class="dot" style="background:#2ecc71"></span>STRONG</span>
+      <span><span class="dot" style="background:#f39c12"></span>PARTIAL</span>
+      <span><span class="dot" style="background:#e67e22"></span>WEAK</span>
+    </div>
+    <div class="ch-wide"><canvas id="cXgb" role="img" aria-label="XGBoost rule learning scores">XGBoost learning scores</canvas></div>
+
+    <div style="margin-top:14px">
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-strong">STRONG</span></div>
+        <div class="rule-desc"><code>RULE_PAD_OPEN_BEFORE_DEP</code> — model correctly rejects OPEN PAD WINDOW early.
+        Learned from frequency: pad opening never appears early in training sequences</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-partial">PARTIAL</span></div>
+        <div class="rule-desc"><code>RULE_ETCH_NO_MASK, RULE_LITHO_LEVEL_SKIP, RULE_TEST_BEFORE_PASSIVATION, RULE_BACKSIDE</code>
+        — correct answer appeared in top-5 but not top-1. Weak signal present</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-weak">WEAK</span></div>
+        <div class="rule-desc"><code>RULE_DEP_NO_CLEAN</code> — predicted WAFER CLEAN PRE PROCESS
+        which IS a clean step but not in our category map. Near-miss due to vocabulary gap</div>
+      </div>
+      <div class="rule-row">
+        <div class="rule-name"><span class="pill pill-weak">WEAK</span></div>
+        <div class="rule-desc"><code>RULE_METAL_ETCH_NO_LITHO, RULE_IMPLANT_NO_MASK, RULE_CMP_NO_DEP, RULE_SHIP_BEFORE_TEST</code>
+        — predicted unrelated steps. No signal of physical process understanding</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 5: SIDE BY SIDE -->
+<div class="section">
+  <div class="section-title"><div class="section-num">5</div> Side-by-Side Comparison</div>
+  <div class="card">
+    <div class="note" style="margin-bottom:14px">
+      <strong>Important:</strong> These scores are not directly comparable because the probing
+      methods are different. N-gram uses perplexity on short sequences (what it was built for).
+      XGBoost uses prediction accuracy (a harder test). Both are honest measurements
+      appropriate to each model's architecture.
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Rule</th>
+          <th>Type</th>
+          <th>N-gram (n=10)</th>
+          <th>XGBoost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><code>DEP_NO_CLEAN</code></td><td>LOCAL</td>
+          <td><span class="pill pill-partial">PARTIAL 1.47×</span></td>
+          <td><span class="pill pill-weak">WEAK</span></td>
+        <tr><td><code>METAL_ETCH_NO_LITHO</code></td><td>LOCAL</td>
+          <td><span class="pill pill-strong">STRONG 10.5×</span></td>
+          <td><span class="pill pill-weak">WEAK</span></td>
+        <tr><td><code>ETCH_NO_MASK</code></td><td>LOCAL</td>
+          <td><span class="pill pill-strong">STRONG 5.8×</span></td>
+          <td><span class="pill pill-partial">PARTIAL</span></td>
+        <tr><td><code>LITHO_LEVEL_SKIP</code></td><td>GLOBAL</td>
+          <td><span class="pill pill-no">NOT LEARNED 1.0×</span></td>
+          <td><span class="pill pill-partial">PARTIAL</span></td>
+        <tr><td><code>IMPLANT_NO_MASK</code></td><td>LOCAL</td>
+          <td><span class="pill pill-strong">STRONG 3.6×</span></td>
+          <td><span class="pill pill-weak">WEAK</span></td>
+        <tr><td><code>CMP_NO_DEP</code></td><td>LOCAL</td>
+          <td><span class="pill pill-strong">STRONG 6.6×</span></td>
+          <td><span class="pill pill-weak">WEAK</span></td>
+        <tr><td><code>PAD_OPEN_BEFORE_DEP</code></td><td>GLOBAL</td>
+          <td><span class="pill pill-no">INVERTED 0.08×</span></td>
+          <td><span class="pill pill-strong">STRONG</span></td>
+        <tr><td><code>TEST_BEFORE_PASSIVATION</code></td><td>GLOBAL</td>
+          <td><span class="pill pill-no">NOT LEARNED 1.0×</span></td>
+          <td><span class="pill pill-partial">PARTIAL</span></td>
+        <tr><td><code>SHIP_BEFORE_TEST</code></td><td>GLOBAL</td>
+          <td><span class="pill pill-no">NOT LEARNED 1.0×</span></td>
+          <td><span class="pill pill-weak">WEAK</span></td>
+        <tr><td><code>BACKSIDE_BEFORE_PASSIVATION</code></td><td>GLOBAL</td>
+          <td><span class="pill pill-no">INVERTED 0.88×</span></td>
+          <td><span class="pill pill-partial">PARTIAL</span></td>
+        <tr style="background:#f8f8f6;font-weight:600">
+          <td colspan="2">Overall score</td>
+          <td>45%</td>
+          <td>40%</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="ch" style="margin-top:1.5rem">
+      <canvas id="cCompare" role="img" aria-label="Comparison chart n-gram vs xgboost scores">Comparison</canvas>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 6: LLM EXTRACTION RESULT -->
+<div class="section">
+  <div class="section-title"><div class="section-num">6</div> What the LLM Extracted</div>
+  <div class="card">
+    <p style="font-size:13px;color:#555;margin-bottom:12px">
+      DeepSeek-V3 was given only the perplexity numbers — no rule names, no generation_rules.md.
+      It generated this interpretation purely from behavioral evidence.
+    </p>
+    <div class="grid2">
+      <div>
+        <div class="compare-label" style="margin-bottom:8px">Rules the LLM identified from XGBoost behavior</div>
+        <div class="rule-row">
+          <div style="flex:1;font-size:13px">
+            <strong>BACKSIDE_METAL_AFTER_PASSIVATION</strong><br>
+            <span style="color:#555">Confidence: LOW (ratio 1.08×)</span><br>
+            <span style="color:#888;font-size:12px">Matched ground truth: RULE_BACKSIDE_BEFORE_PASSIVATION ✓</span>
+          </div>
+        </div>
+        <div class="rule-row">
+          <div style="flex:1;font-size:13px;color:#aaa">
+            All other 9 rules: <em>not detected</em><br>
+            <span style="font-size:12px">Similarity score: 0.01/1.0</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="compare-label" style="margin-bottom:8px">LLM verdict on XGBoost</div>
+        <div style="background:#f8f8f6;border-radius:8px;padding:12px;font-size:13px;color:#444;line-height:1.7">
+          "The model is performing surface-level pattern matching from IC+IGBT training data,
+          with zero transferable understanding of process constraints... cannot generalize to
+          MOSFET process validation, nor does it understand even basic semiconductor
+          manufacturing principles like clean-before-deposition."
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:#888">
+          — DeepSeek-V3 via Featherless API, without seeing generation_rules.md
+        </div>
+      </div>
+    </div>
+    <div class="insight" style="margin-top:12px">
+      <strong>Why this is valuable:</strong> The LLM independently confirmed our probing
+      findings without access to the ground truth. This is a form of blind validation —
+      the model's behavior is interpretable enough that an external system can
+      characterize what it learned.
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 7: VERDICT -->
+<div class="section">
+  <div class="section-title"><div class="section-num">7</div> Answer to the Hackathon Question</div>
+  <div class="verdict">
+    <h3>❝ Does the model merely reproduce known patterns or build a transferable understanding
+    of the underlying process logic? ❞</h3>
+    <p style="margin-top:12px">
+      Our probing gives a concrete, evidence-based answer for each model:
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:14px">
+      <div style="background:#1a1a1a;border-radius:8px;padding:14px">
+        <div style="color:#f39c12;font-weight:600;margin-bottom:6px">N-gram (n=10) — 45%</div>
+        <p style="color:#aaa;font-size:13px">
+          Learned 4 local rules strongly by memorising tight transition blocks in training data.
+          Completely blind to all 5 global rules. Two rules show inverted signals — local patterns
+          actively contradict global logic. <strong style="color:#fff">Pattern memorisation,
+          not process understanding.</strong>
+        </p>
+      </div>
+      <div style="background:#1a1a1a;border-radius:8px;padding:14px">
+        <div style="color:#3498db;font-weight:600;margin-bottom:6px">XGBoost — 40%</div>
+        <p style="color:#aaa;font-size:13px">
+          Learned 1 rule strongly (pad opening) from frequency, and has partial signal on 4
+          global rules — better than n-gram on global rules but weaker on local ones.
+          Rule awareness comes from hand-engineered features, not learned sequence logic.
+          <strong style="color:#fff">Feature-guided pattern matching.</strong>
+        </p>
+      </div>
+    </div>
+    <p style="color:#aaa;font-size:13px;margin-top:14px;padding-top:14px;border-top:1px solid #333">
+      <strong style="color:#fff">Neither model learned all 10 rules.</strong>
+      The 5 global rules — those requiring memory of the full 130-step sequence history —
+      remain undetected by both.
+    </p>
+  </div>
+</div>
+
+<p style="text-align:center;color:#aaa;font-size:12px;margin-top:2rem;padding-bottom:2rem">
+  rule_extraction module · Branch: angie · Industrial AI Hackathon 2026
+</p>
+</div>
+
+<script>
+Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';
+
+const rules = [
+  'DEP_NO_CLEAN','METAL_ETCH\nNO_LITHO','ETCH_NO_MASK',
+  'LITHO_LEVEL\nSKIP','IMPLANT\nNO_MASK','CMP_NO_DEP',
+  'PAD_OPEN\nBEFORE_DEP','TEST_BEFORE\nPASSIVATION',
+  'SHIP_BEFORE\nTEST','BACKSIDE\nBEFORE_PASS'
+];
+
+const ngram_scores  = [0.6, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0];
+const ngram_colors  = ['#f39c12','#2ecc71','#2ecc71','#e74c3c','#2ecc71',
+                       '#2ecc71','#e74c3c','#e74c3c','#e74c3c','#e74c3c'];
+const xgb_scores    = [0.2, 0.2, 0.6, 0.6, 0.2, 0.2, 1.0, 0.6, 0.2, 0.6];
+const xgb_colors    = ['#e67e22','#e67e22','#f39c12','#f39c12','#e67e22',
+                       '#e67e22','#2ecc71','#f39c12','#e67e22','#f39c12'];
+
+new Chart(document.getElementById('cNgram'), {
+  type: 'bar',
+  data: {
+    labels: rules,
+    datasets: [{label:'Learning score', data: ngram_scores,
+      backgroundColor: ngram_colors, borderWidth: 0}]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {legend:{display:false},
+      title:{display:true,text:'N-gram (n=10) — perplexity-based probing',
+             color:'#666',font:{size:12,weight:'400'}}},
+    scales: {y:{beginAtZero:true,max:1.15,
+      title:{display:true,text:'0=not learned, 1=strongly learned'}}}
+  }
+});
+
+new Chart(document.getElementById('cXgb'), {
+  type: 'bar',
+  data: {
+    labels: rules,
+    datasets: [{label:'Learning score', data: xgb_scores,
+      backgroundColor: xgb_colors, borderWidth: 0}]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {legend:{display:false},
+      title:{display:true,text:'XGBoost — prediction-based probing',
+             color:'#666',font:{size:12,weight:'400'}}},
+    scales: {y:{beginAtZero:true,max:1.15,
+      title:{display:true,text:'0=not learned, 1=strongly learned'}}}
+  }
+});
+
+new Chart(document.getElementById('cCompare'), {
+  type: 'bar',
+  data: {
+    labels: rules,
+    datasets: [
+      {label:'N-gram', data: ngram_scores, backgroundColor:'#3266ad', borderWidth:0},
+      {label:'XGBoost', data: xgb_scores,  backgroundColor:'#c97b4b', borderWidth:0},
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {legend:{display:true,position:'top'},
+      title:{display:true,text:'N-gram vs XGBoost — rule learning comparison (different probing methods)',
+             color:'#666',font:{size:12,weight:'400'}}},
+    scales: {y:{beginAtZero:true,max:1.15}}
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,387 @@
+{
+  "model_name": "XGBoost IC+IGBT -> MOSFET OOD",
+  "model_info": {
+    "model_type": "xgboost",
+    "n_features": 91,
+    "n_classes": 179,
+    "trained_on": "IC + IGBT",
+    "ood_family": "MOSFET"
+  },
+  "probe_method": "prediction-based",
+  "probe_results": [
+    {
+      "rule": "RULE_DEP_NO_CLEAN",
+      "description": "Deposition must always be preceded by a cleaning step",
+      "violation": "THERMAL OXIDATION follows MEASURE THICKNESS with no clean",
+      "explanation": "Model should predict a CLEAN step before deposition",
+      "context": [
+        "RECEIVE WAFER LOT",
+        "LOT IDENTIFICATION",
+        "PRE CLEAN INSPECTION",
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PLANARITY"
+      ],
+      "actual_next": "THERMAL OXIDATION",
+      "expected_cats": [
+        "CLEAN"
+      ],
+      "top1_prediction": "WAFER CLEAN PRE PROCESS",
+      "top1_category": "OTHER",
+      "top1_probability": 0.5507,
+      "top5_predictions": [
+        "WAFER CLEAN PRE PROCESS",
+        "PRE CLEAN WAFER",
+        "MEASURE INITIAL GEOMETRY",
+        "WET CLEAN RCA1",
+        "FRONTSIDE CLEAN"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": false,
+      "actual_step_rank": 99,
+      "specific_in_top5": null,
+      "learned": "WEAK"
+    },
+    {
+      "rule": "RULE_METAL_ETCH_NO_LITHO",
+      "description": "Lithography must precede metal etching",
+      "violation": "METAL ETCH follows SOFT BAKE without EXPOSE + DEVELOP",
+      "explanation": "Model should predict EXPOSE LITHO before METAL ETCH",
+      "context": [
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT METAL 1",
+        "COAT PHOTORESIST",
+        "SOFT BAKE"
+      ],
+      "actual_next": "METAL ETCH",
+      "expected_cats": [
+        "LITHO_EXPOSE"
+      ],
+      "top1_prediction": "FRONTSIDE CLEAN",
+      "top1_category": "OTHER",
+      "top1_probability": 0.344,
+      "top5_predictions": [
+        "FRONTSIDE CLEAN",
+        "ALIGN MASK LEVEL 1",
+        "WET CLEAN RCA2",
+        "SPIN COAT PHOTORESIST",
+        "WET CLEAN RCA1"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": false,
+      "actual_step_rank": 99,
+      "specific_in_top5": null,
+      "learned": "WEAK"
+    },
+    {
+      "rule": "RULE_ETCH_NO_MASK",
+      "description": "A developed mask must exist before any etch",
+      "violation": "OXIDE ETCH follows EXPOSE LITHO without DEVELOP first",
+      "explanation": "Model should predict DEVELOP PHOTORESIST before OXIDE ETCH",
+      "context": [
+        "COAT PHOTORESIST",
+        "SOFT BAKE",
+        "EXPOSE LITHO LEVEL 1"
+      ],
+      "actual_next": "OXIDE ETCH",
+      "expected_cats": [
+        "LITHO_DEVELOP"
+      ],
+      "top1_prediction": "MEASURE INITIAL THICKNESS",
+      "top1_category": "OTHER",
+      "top1_probability": 0.7097,
+      "top5_predictions": [
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PARTICLES",
+        "DEVELOP PHOTORESIST",
+        "MEASURE INITIAL GEOMETRY",
+        "MEASURE SURFACE DEFECTS"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "LITHO_DEVELOP",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": true,
+      "actual_step_rank": 99,
+      "specific_in_top5": null,
+      "learned": "PARTIAL"
+    },
+    {
+      "rule": "RULE_LITHO_LEVEL_SKIP",
+      "description": "Lithography levels must increment sequentially",
+      "violation": "EXPOSE LITHO LEVEL 3 follows LEVEL 1 skipping LEVEL 2",
+      "explanation": "Model should predict EXPOSE LITHO LEVEL 2 not LEVEL 3",
+      "context": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST",
+        "OXIDE ETCH",
+        "STRIP RESIST",
+        "CLEAN AFTER ETCH",
+        "COAT PHOTORESIST"
+      ],
+      "actual_next": "EXPOSE LITHO LEVEL 3",
+      "expected_cats": [
+        "LITHO_EXPOSE"
+      ],
+      "top1_prediction": "WET CLEAN RCA1",
+      "top1_category": "OTHER",
+      "top1_probability": 0.1964,
+      "top5_predictions": [
+        "WET CLEAN RCA1",
+        "EXPOSE LITHO LEVEL 1",
+        "RCA CLEAN 1",
+        "FRONTSIDE CLEAN",
+        "WAFER CLEAN PRE-GRIND"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "LITHO_EXPOSE",
+        "CLEAN",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": true,
+      "actual_step_rank": 2,
+      "specific_in_top5": false,
+      "learned": "PARTIAL"
+    },
+    {
+      "rule": "RULE_IMPLANT_NO_MASK",
+      "description": "An implant window must be opened before ion implantation",
+      "violation": "IMPLANT P BODY follows DEVELOP PHOTORESIST without OXIDE ETCH",
+      "explanation": "Model should predict OXIDE ETCH to open window before implant",
+      "context": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST"
+      ],
+      "actual_next": "IMPLANT P BODY",
+      "expected_cats": [
+        "ETCH"
+      ],
+      "top1_prediction": "INSPECT PATTERN LEVEL 1",
+      "top1_category": "OTHER",
+      "top1_probability": 0.6238,
+      "top5_predictions": [
+        "INSPECT PATTERN LEVEL 1",
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PARTICLES",
+        "VIA INSPECTION",
+        "METAL PATTERN INSPECTION"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": false,
+      "actual_step_rank": 99,
+      "specific_in_top5": null,
+      "learned": "WEAK"
+    },
+    {
+      "rule": "RULE_CMP_NO_DEP",
+      "description": "CMP planarization requires a prior deposition step",
+      "violation": "CMP DIELECTRIC follows MEASURE steps with no deposition",
+      "explanation": "Model should predict a DEPOSIT step before CMP",
+      "context": [
+        "MEASURE SURFACE PLANARITY",
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE THICKNESS"
+      ],
+      "actual_next": "CMP DIELECTRIC",
+      "expected_cats": [
+        "DEPOSIT"
+      ],
+      "top1_prediction": "MEASURE INITIAL THICKNESS",
+      "top1_category": "OTHER",
+      "top1_probability": 0.7402,
+      "top5_predictions": [
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PARTICLES",
+        "MEASURE SURFACE DEFECTS",
+        "WAFER CLEAN PRE PROCESS",
+        "MEASURE INITIAL GEOMETRY"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": false,
+      "actual_step_rank": 99,
+      "specific_in_top5": null,
+      "learned": "WEAK"
+    },
+    {
+      "rule": "RULE_PAD_OPEN_BEFORE_DEP",
+      "description": "Bond pad window only after passivation deposited and cured",
+      "violation": "OPEN PAD WINDOW appears before passivation block",
+      "explanation": "Model should NOT predict OPEN PAD WINDOW before passivation",
+      "context": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 4",
+        "DEVELOP PHOTORESIST"
+      ],
+      "actual_next": "OPEN PAD WINDOW",
+      "expected_cats": [
+        "ETCH",
+        "OTHER"
+      ],
+      "top1_prediction": "INSPECT PATTERN LEVEL 1",
+      "top1_category": "OTHER",
+      "top1_probability": 0.7071,
+      "top5_predictions": [
+        "INSPECT PATTERN LEVEL 1",
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PARTICLES",
+        "VIA INSPECTION",
+        "METAL PATTERN INSPECTION"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": true,
+      "actual_step_rank": 1,
+      "specific_in_top5": null,
+      "learned": "STRONG"
+    },
+    {
+      "rule": "RULE_TEST_BEFORE_PASSIVATION",
+      "description": "Electrical tests must come after passivation is cured",
+      "violation": "PARAMETRIC TEST appears before CURE PASSIVATION",
+      "explanation": "Model should predict CURE PASSIVATION not PARAMETRIC TEST",
+      "context": [
+        "DEPOSIT PASSIVATION"
+      ],
+      "actual_next": "PARAMETRIC TEST",
+      "expected_cats": [
+        "PASSIVATION"
+      ],
+      "top1_prediction": "LOT IDENTIFICATION",
+      "top1_category": "OTHER",
+      "top1_probability": 0.5211,
+      "top5_predictions": [
+        "LOT IDENTIFICATION",
+        "CURE PASSIVATION",
+        "POLYSILICON ANNEAL",
+        "INITIAL WAFER INSPECTION",
+        "PRE CLEAN INSPECTION"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "PASSIVATION",
+        "OTHER",
+        "OTHER",
+        "OTHER"
+      ],
+      "expected_in_top5": true,
+      "actual_step_rank": 99,
+      "specific_in_top5": true,
+      "learned": "PARTIAL"
+    },
+    {
+      "rule": "RULE_SHIP_BEFORE_TEST",
+      "description": "Wafer sort test must complete before shipping",
+      "violation": "SHIP LOT appears before WAFER SORT TEST",
+      "explanation": "Model should predict WAFER SORT TEST before SHIP LOT",
+      "context": [
+        "CURE PASSIVATION",
+        "OPEN PAD WINDOW",
+        "FINAL INSPECTION"
+      ],
+      "actual_next": "SHIP LOT",
+      "expected_cats": [
+        "TEST_SORT"
+      ],
+      "top1_prediction": "MEASURE INITIAL THICKNESS",
+      "top1_category": "OTHER",
+      "top1_probability": 0.531,
+      "top5_predictions": [
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PARTICLES",
+        "PASSIVATION ETCH PAD OPENING",
+        "MEASURE PAD OPENING",
+        "EXPOSE LITHO LEVEL 1"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "PASSIVATION",
+        "OTHER",
+        "LITHO_EXPOSE"
+      ],
+      "expected_in_top5": false,
+      "actual_step_rank": 99,
+      "specific_in_top5": false,
+      "learned": "WEAK"
+    },
+    {
+      "rule": "RULE_BACKSIDE_BEFORE_PASSIVATION",
+      "description": "Backside metal only after frontside passivation is cured",
+      "violation": "DEPOSIT BACKSIDE METAL appears before passivation block",
+      "explanation": "Model should not allow backside metal before passivation",
+      "context": [
+        "BACKSIDE GRIND",
+        "BACKSIDE CLEAN"
+      ],
+      "actual_next": "DEPOSIT BACKSIDE METAL",
+      "expected_cats": [
+        "OTHER"
+      ],
+      "top1_prediction": "INITIAL WAFER INSPECTION",
+      "top1_category": "OTHER",
+      "top1_probability": 0.2999,
+      "top5_predictions": [
+        "INITIAL WAFER INSPECTION",
+        "PRE CLEAN INSPECTION",
+        "FRONTSIDE CLEAN",
+        "BACKSIDE CLEAN",
+        "WET CLEAN RCA1"
+      ],
+      "top5_categories": [
+        "OTHER",
+        "OTHER",
+        "OTHER",
+        "BACKSIDE",
+        "OTHER"
+      ],
+      "expected_in_top5": true,
+      "actual_step_rank": 4,
+      "specific_in_top5": null,
+      "learned": "PARTIAL"
+    }
+  ],
+  "summary": {
+    "strong": 1,
+    "partial": 4,
+    "weak": 5,
+    "not_learned": 0,
+    "total": 10,
+    "score_pct": 40.0
+  }
+}

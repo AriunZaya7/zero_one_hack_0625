@@ -1,0 +1,66 @@
+
+Loading data...
+  Loaded  5400 records from dataset_train.jsonl
+  Loaded   600 records from dataset_id_val.jsonl
+  Loaded  1000 records from dataset_ood_test.jsonl
+
+Train: 5400 | ID Val: 600 | OOD: 1000
+
+[WARNING] 103 steps not in category map:
+  'ALIGN MASK LEVEL 5'
+  'ALIGN MASK LEVEL 6'
+  'ANNEAL DIELECTRIC'
+  'ANNEAL METAL'
+  'ANNEAL METAL 1'
+  'ANNEAL OXIDE'
+  'ANNEAL POLYSILICON'
+  'BACKSIDE CLEAN FINAL'
+  'BACKSIDE DRY'
+  'BACKSIDE ETCH CLEAN'
+  Consider adding these to STEP_CATEGORIES for better accuracy
+
+=======================================================
+  Training CRF (max_iter=100)
+=======================================================
+  CRF trained | classes: 27
+
+  Evaluating CRF...
+  CRF ID Val  Top-1: 100.00%
+  CRF OOD     Top-1: 99.20%
+  CRF OOD drop:      0.80%
+
+=======================================================
+  Building XGBoost features...
+=======================================================
+  Building class map from training data...
+  Class map built: 27 classes from training data
+  Train rows: 704,768 | Features: 168
+
+  Training XGBoost (trees=300, depth=6)...
+[0]	validation_0-mlogloss:1.50527
+[50]	validation_0-mlogloss:0.27640
+[100]	validation_0-mlogloss:0.21345
+[150]	validation_0-mlogloss:0.19728
+[200]	validation_0-mlogloss:0.19088
+[250]	validation_0-mlogloss:0.18815
+[299]	validation_0-mlogloss:0.18708
+  XGBoost trained
+
+  Evaluating XGBoost...
+  XGBoost ID Val  Top-1: 89.83%
+  XGBoost ID Val  Top-3: 100.00%
+  XGBoost ID Val  MRR:   94.88%
+  XGBoost OOD     Top-1: 76.33%
+  XGBoost OOD drop:      13.50%
+
+============================================================
+  SIDE-BY-SIDE COMPARISON
+============================================================
+Metric                                     CRF    XGBoost     Winner
+────────────────────────────────────────────────────────────
+ID Val Top-1 Accuracy                  100.00%     89.83%        CRF
+OOD Top-1 Accuracy                      99.20%     76.33%        CRF
+OOD Drop (lower=better)                  0.80%     13.50%        CRF
+────────────────────────────────────────────────────────────
+  N-gram (n=10) baseline:   78.4% Top-1  (your previous best)
+============================================================

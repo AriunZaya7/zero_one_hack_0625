@@ -1,0 +1,63 @@
+_wandb:
+    value:
+        cli_version: 0.27.0
+        e:
+            fspdsk3flshajm7um3wv0wr3um1depjp:
+                codePath: testing_rule_extraction\compare_xgboost_crf.py
+                codePathLocal: compare_xgboost_crf.py
+                cpu_count: 8
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "768014807040"
+                        used: "528093040640"
+                email: angiezaya7@gmail.com
+                executable: D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Scripts\python.exe
+                git:
+                    commit: 6a117989a8a2b741a7895d4819b27c5bba2f83fb
+                    remote: https://github.com/AriunZaya7/zero_one_hack_0625.git
+                host: LAPTOP-UBNDF6IL
+                memory:
+                    total: "16505954304"
+                os: Windows-10-10.0.26200-SP0
+                program: D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction\compare_xgboost_crf.py
+                python: CPython 3.11.3
+                root: D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction
+                startedAt: "2026-05-30T16:06:12.825840Z"
+                writerId: fspdsk3flshajm7um3wv0wr3um1depjp
+        m: []
+        python_version: 3.11.3
+        t:
+            "1":
+                - 5
+                - 6
+                - 53
+            "2":
+                - 5
+                - 6
+                - 53
+            "3":
+                - 2
+                - 13
+                - 15
+                - 16
+            "4": 3.11.3
+            "5": 0.27.0
+            "8":
+                - 3
+            "12": 0.27.0
+            "13": windows-amd64
+branch:
+    value: angie
+crf_max_iter:
+    value: 100
+data_dir:
+    value: ../small_transformer_model/data
+experiment:
+    value: crf_vs_xgboost_comparison
+seed:
+    value: 42
+xgb_depth:
+    value: 6
+xgb_trees:
+    value: 300

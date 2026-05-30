@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>N-gram (n=10) — Rule Learning Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+     background:#f5f5f5;color:#222;line-height:1.6}
+.wrap{max-width:980px;margin:0 auto;padding:2rem 1.5rem}
+.card{background:#fff;border-radius:12px;padding:1.5rem;
+       box-shadow:0 1px 4px rgba(0,0,0,.08);margin-bottom:1.5rem}
+h1{font-size:26px;font-weight:700;margin-bottom:6px}
+h2{font-size:19px;font-weight:600;margin:2rem 0 1rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
+.stat{background:#f0f0f0;border-radius:8px;padding:1rem;text-align:center}
+.stat .v{font-size:22px;font-weight:700}
+.stat .l{font-size:12px;color:#666;margin-top:4px}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:10px;font-size:12px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+.tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:1rem}
+.tab{padding:8px 18px;border-radius:20px;cursor:pointer;font-size:13px;
+      border:1px solid #ddd;background:#fff}
+.tab.on{background:#222;color:#fff;border-color:#222}
+.tc{display:none}.tc.on{display:block}
+.ch{position:relative;width:100%;height:340px}
+.ch2{position:relative;width:100%;height:280px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="card">
+  <p style="font-size:12px;color:#888;margin-bottom:6px">
+    HACKATHON · INDUSTRIAL AI TRACK · BRANCH: ANGIE</p>
+  <h1>N-gram (n=10) — Rule Learning Report</h1>
+  <p style="color:#555;margin-top:6px">
+    Behavioral probing: does this model reproduce known patterns
+    or learn genuine process logic?</p>
+</div>
+
+<h2>Model Information</h2>
+<div class="card">
+  <table style="width:100%;font-size:14px"><tr><td style="color:#666;padding:4px 0">model_type</td><td style="text-align:right;padding:4px 0;font-weight:500">ngram</td></tr><tr><td style="color:#666;padding:4px 0">n</td><td style="text-align:right;padding:4px 0;font-weight:500">10</td></tr><tr><td style="color:#666;padding:4px 0">vocab_size</td><td style="text-align:right;padding:4px 0;font-weight:500">199</td></tr><tr><td style="color:#666;padding:4px 0">unique_contexts</td><td style="text-align:right;padding:4px 0;font-weight:500">16069</td></tr></table>
+</div>
+
+<h2>Overall Rule Learning Score</h2>
+<div class="card">
+  <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <div style="font-size:52px;font-weight:700">45%</div>
+    <div style="flex:1;min-width:200px">
+      <div style="background:#eee;border-radius:8px;height:20px;overflow:hidden">
+        <div style="height:100%;border-radius:8px;width:45.0%;
+             background:linear-gradient(90deg,#e74c3c,#f39c12,#2ecc71)"></div>
+      </div>
+      <p style="font-size:13px;color:#555;margin-top:6px">
+        Strong:4 &nbsp;|&nbsp;
+        Partial:1 &nbsp;|&nbsp;
+        Weak:0 &nbsp;|&nbsp;
+        Not learned:5
+      </p>
+    </div>
+  </div>
+  <div class="legend" style="margin-top:12px">
+    <span><span class="dot" style="background:#2ecc71"></span> Strong (≥2.0x)</span>
+    <span><span class="dot" style="background:#f39c12"></span> Partial (1.3–2.0x)</span>
+    <span><span class="dot" style="background:#e67e22"></span> Weak (1.05–1.3x)</span>
+    <span><span class="dot" style="background:#e74c3c"></span> Not learned (~1.0x)</span>
+  </div>
+</div>
+
+<h2>Charts</h2>
+<div class="card">
+  <div class="tabs">
+    <div class="tab on" onclick="sw('ratios',this)">Perplexity ratios</div>
+    <div class="tab" onclick="sw('ppls',this)">Valid vs invalid PPL</div>
+    <div class="tab" onclick="sw('scores',this)">Learning scores</div>
+  </div>
+  <div id="t-ratios" class="tc on">
+    <p style="font-size:13px;color:#555;margin-bottom:8px">
+      Ratio = invalid / valid perplexity. Higher = model learned the rule.
+      Anything below 1.3x (dashed line) is not detected.</p>
+    <div class="ch">
+      <canvas id="cR" role="img"
+        aria-label="Horizontal bar chart of perplexity ratios">PPL ratios</canvas>
+    </div>
+  </div>
+  <div id="t-ppls" class="tc">
+    <p style="font-size:13px;color:#555;margin-bottom:8px">
+      Blue = valid sequence PPL. Orange = invalid PPL. Larger gap = stronger rule detection.</p>
+    <div class="ch">
+      <canvas id="cP" role="img"
+        aria-label="Grouped bar of valid vs invalid PPL">PPL values</canvas>
+    </div>
+  </div>
+  <div id="t-scores" class="tc">
+    <p style="font-size:13px;color:#555;margin-bottom:8px">
+      Converted to 0–1 learning score.</p>
+    <div class="ch2">
+      <canvas id="cS" role="img"
+        aria-label="Bar chart of learning scores">Learning scores</canvas>
+    </div>
+  </div>
+</div>
+
+<h2>Rule-by-Rule Evidence</h2>
+<div class="card">
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #f39c12">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_DEP_NO_CLEAN</p>
+              <p style="color:#555;margin:0;font-size:13px">Deposition must always be preceded by a cleaning step</p>
+            </div>
+            <span style="background:#f39c12;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">PARTIAL</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> THERMAL OXIDATION (deposition) without prior clean step</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 3168.3323
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 4642.476
+              &nbsp;|&nbsp; <b>Ratio:</b> 1.4653x</p>
+            <p style="margin:0">
+              ✓ Violation detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> RECEIVE WAFER LOT → LOT IDENTIFICATION → PRE CLEAN INSPECTION → MEASURE INITIAL THICKNESS → HF DIP → DRY WAFER → THERMAL OXIDATION → MEASURE OXIDE THICKNESS</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> RECEIVE WAFER LOT → LOT IDENTIFICATION → PRE CLEAN INSPECTION → MEASURE INITIAL THICKNESS → MEASURE SURFACE PLANARITY → THERMAL OXIDATION → MEASURE OXIDE THICKNESS</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #2ecc71">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_METAL_ETCH_NO_LITHO</p>
+              <p style="color:#555;margin:0;font-size:13px">Lithography must precede metal etching</p>
+            </div>
+            <span style="background:#2ecc71;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">STRONG</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> METAL ETCH without EXPOSE + DEVELOP preceding it</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 211320.4101
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 2217864.5069
+              &nbsp;|&nbsp; <b>Ratio:</b> 10.4953x</p>
+            <p style="margin:0">
+              ✓ Violation detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> HF DIP → DRY WAFER → DEPOSIT METAL 1 → COAT PHOTORESIST → SOFT BAKE → EXPOSE LITHO LEVEL 3 → DEVELOP PHOTORESIST → METAL ETCH → STRIP RESIST</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> HF DIP → DRY WAFER → DEPOSIT METAL 1 → COAT PHOTORESIST → SOFT BAKE → METAL ETCH → STRIP RESIST</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #2ecc71">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_ETCH_NO_MASK</p>
+              <p style="color:#555;margin:0;font-size:13px">A developed mask must exist before any etch</p>
+            </div>
+            <span style="background:#2ecc71;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">STRONG</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> OXIDE ETCH without DEVELOP PHOTORESIST first</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 161509.2632
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 938609.7008
+              &nbsp;|&nbsp; <b>Ratio:</b> 5.8115x</p>
+            <p style="margin:0">
+              ✓ Violation detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> COAT PHOTORESIST → SOFT BAKE → EXPOSE LITHO LEVEL 1 → DEVELOP PHOTORESIST → OXIDE ETCH → STRIP RESIST</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> COAT PHOTORESIST → SOFT BAKE → EXPOSE LITHO LEVEL 1 → OXIDE ETCH → STRIP RESIST</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #e74c3c">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_LITHO_LEVEL_SKIP</p>
+              <p style="color:#555;margin:0;font-size:13px">Lithography levels must increment sequentially</p>
+            </div>
+            <span style="background:#e74c3c;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">NOT LEARNED</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> Jumped from LITHO LEVEL 1 directly to LITHO LEVEL 3</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 194361.279
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 194361.279
+              &nbsp;|&nbsp; <b>Ratio:</b> 1.0x</p>
+            <p style="margin:0">
+              ✗ Violation NOT detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> COAT PHOTORESIST → EXPOSE LITHO LEVEL 1 → DEVELOP PHOTORESIST → OXIDE ETCH → STRIP RESIST → CLEAN AFTER ETCH → COAT PHOTORESIST → EXPOSE LITHO LEVEL 2 → DEVELOP PHOTORESIST</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> COAT PHOTORESIST → EXPOSE LITHO LEVEL 1 → DEVELOP PHOTORESIST → OXIDE ETCH → STRIP RESIST → CLEAN AFTER ETCH → COAT PHOTORESIST → EXPOSE LITHO LEVEL 3 → DEVELOP PHOTORESIST</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #2ecc71">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_IMPLANT_NO_MASK</p>
+              <p style="color:#555;margin:0;font-size:13px">An implant window must be opened before ion implantation</p>
+            </div>
+            <span style="background:#2ecc71;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">STRONG</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> IMPLANT P BODY without prior OXIDE ETCH to open window</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 2074677.513
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 7539604.3545
+              &nbsp;|&nbsp; <b>Ratio:</b> 3.6341x</p>
+            <p style="margin:0">
+              ✓ Violation detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> COAT PHOTORESIST → EXPOSE LITHO LEVEL 1 → DEVELOP PHOTORESIST → OXIDE ETCH → IMPLANT P BODY → STRIP RESIST → ANNEAL</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> COAT PHOTORESIST → EXPOSE LITHO LEVEL 1 → DEVELOP PHOTORESIST → IMPLANT P BODY → STRIP RESIST → ANNEAL</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #2ecc71">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_CMP_NO_DEP</p>
+              <p style="color:#555;margin:0;font-size:13px">CMP planarization requires a prior deposition step</p>
+            </div>
+            <span style="background:#2ecc71;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">STRONG</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> CMP DIELECTRIC with no prior deposition step</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 613891071.6748
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 4047938265.7138
+              &nbsp;|&nbsp; <b>Ratio:</b> 6.5939x</p>
+            <p style="margin:0">
+              ✓ Violation detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> HF DIP → DRY WAFER → DEPOSIT INTERLAYER DIELECTRIC → MEASURE ILD THICKNESS → CMP DIELECTRIC → MEASURE POST CMP</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> MEASURE SURFACE PLANARITY → MEASURE INITIAL THICKNESS → CMP DIELECTRIC → MEASURE POST CMP</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #e74c3c">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_PAD_OPEN_BEFORE_DEP</p>
+              <p style="color:#555;margin:0;font-size:13px">Bond pad window only after passivation deposited and cured</p>
+            </div>
+            <span style="background:#e74c3c;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">NOT LEARNED</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> OPEN PAD WINDOW before DEPOSIT PASSIVATION and CURE PASSIVATION</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 219068.7951
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 17165.0396
+              &nbsp;|&nbsp; <b>Ratio:</b> 0.0784x</p>
+            <p style="margin:0">
+              ✗ Violation NOT detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> HF DIP → DRY WAFER → DEPOSIT PASSIVATION → CURE PASSIVATION → COAT PHOTORESIST → EXPOSE LITHO LEVEL 4 → DEVELOP PHOTORESIST → OPEN PAD WINDOW → STRIP RESIST</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> COAT PHOTORESIST → EXPOSE LITHO LEVEL 4 → DEVELOP PHOTORESIST → OPEN PAD WINDOW → STRIP RESIST → HF DIP → DRY WAFER → DEPOSIT PASSIVATION → CURE PASSIVATION</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #e74c3c">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_TEST_BEFORE_PASSIVATION</p>
+              <p style="color:#555;margin:0;font-size:13px">Electrical tests must come after passivation is cured</p>
+            </div>
+            <span style="background:#e74c3c;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">NOT LEARNED</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> PARAMETRIC TEST before CURE PASSIVATION</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 1369540.1906
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 1369540.1906
+              &nbsp;|&nbsp; <b>Ratio:</b> 1.0x</p>
+            <p style="margin:0">
+              ✗ Violation NOT detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> DEPOSIT PASSIVATION → CURE PASSIVATION → OPEN PAD WINDOW → PARAMETRIC TEST → WAFER SORT TEST</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> DEPOSIT PASSIVATION → PARAMETRIC TEST → CURE PASSIVATION → OPEN PAD WINDOW → WAFER SORT TEST</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #e74c3c">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_SHIP_BEFORE_TEST</p>
+              <p style="color:#555;margin:0;font-size:13px">Wafer sort test must complete before shipping</p>
+            </div>
+            <span style="background:#e74c3c;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">NOT LEARNED</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> SHIP LOT appears before WAFER SORT TEST</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 113364046.8449
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 113364046.8449
+              &nbsp;|&nbsp; <b>Ratio:</b> 1.0x</p>
+            <p style="margin:0">
+              ✗ Violation NOT detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> CURE PASSIVATION → OPEN PAD WINDOW → WAFER SORT TEST → FINAL INSPECTION → SHIP LOT</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> CURE PASSIVATION → OPEN PAD WINDOW → FINAL INSPECTION → SHIP LOT → WAFER SORT TEST</p>
+            </div>
+          </details>
+        </div>
+        <div style="border:1px solid #e0e0e0;border-radius:10px;padding:1.2rem;
+                    margin-bottom:1rem;border-left:4px solid #e74c3c">
+          <div style="display:flex;justify-content:space-between;
+                      align-items:flex-start;flex-wrap:wrap;gap:8px">
+            <div>
+              <p style="font-weight:600;margin:0 0 4px">RULE_BACKSIDE_BEFORE_PASSIVATION</p>
+              <p style="color:#555;margin:0;font-size:13px">Backside metal only after frontside passivation is cured</p>
+            </div>
+            <span style="background:#e74c3c;color:#fff;padding:3px 10px;border-radius:12px;font-size:12px;font-weight:600">NOT LEARNED</span>
+          </div>
+          <div style="margin-top:10px;background:#f8f8f8;border-radius:6px;
+                      padding:10px;font-size:13px">
+            <p style="margin:0 0 3px"><b>Violation:</b> DEPOSIT BACKSIDE METAL before DEPOSIT PASSIVATION</p>
+            <p style="margin:0 0 3px"><b>Valid PPL:</b> 108429.0973
+              &nbsp;|&nbsp; <b>Invalid PPL:</b> 95215.3258
+              &nbsp;|&nbsp; <b>Ratio:</b> 0.8781x</p>
+            <p style="margin:0">
+              ✗ Violation NOT detected
+            </p>
+          </div>
+          <details style="margin-top:8px">
+            <summary style="cursor:pointer;font-size:13px;color:#555">
+              Show sequences</summary>
+            <div style="margin-top:8px;font-size:12px;font-family:monospace">
+              <p style="color:#2ecc71;margin:4px 0">
+                <b>Valid:</b> HF DIP → DRY WAFER → DEPOSIT PASSIVATION → CURE PASSIVATION → BACKSIDE GRIND → BACKSIDE CLEAN → DEPOSIT BACKSIDE METAL</p>
+              <p style="color:#e74c3c;margin:4px 0">
+                <b>Invalid:</b> BACKSIDE GRIND → BACKSIDE CLEAN → DEPOSIT BACKSIDE METAL → HF DIP → DRY WAFER → DEPOSIT PASSIVATION → CURE PASSIVATION</p>
+            </div>
+          </details>
+        </div></div>
+
+<h2>Extracted Learned Rules</h2>
+<div class="card" style="font-size:14px;line-height:1.7"><p style="margin:4px 0;font-size:14px;line-height:1.6"># Learned Rules — N-gram (n=10) Behavioral Probing</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">> <b>Model:</b> N-gram (n=10)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">> <b>Method:</b> Perplexity probing on valid vs rule-violated sequences</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">> <b>Note:</b> LLM never saw generation_rules.md — inferred from behavior only</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">---</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">Here's the analysis following your requested template:</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Learned Rule: DEPOSITION_REQUIRES_CLEANING</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Observed behavior:</b> Model assigns 1.47x higher perplexity when deposition occurs without cleaning</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Inferred constraint:</b> THERMAL OXIDATION must be preceded by HF DIP within 2 steps</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Confidence:</b> MEDIUM</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Evidence:</b> valid_ppl=3168.3323, invalid_ppl=4642.476, ratio=1.4653x</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Rule type:</b> LOCAL</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Learned Rule: METAL_ETCH_REQUIRES_LITHO</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Observed behavior:</b> Model assigns 10.5x higher perplexity when metal etch occurs without lithography</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Inferred constraint:</b> METAL ETCH must be preceded by EXPOSE LITHO + DEVELOP PHOTORESIST within 3 steps</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Confidence:</b> HIGH</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Evidence:</b> valid_ppl=211320.4101, invalid_ppl=2217864.5069, ratio=10.4953x</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Rule type:</b> LOCAL</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Learned Rule: ETCH_REQUIRES_DEVELOPED_MASK</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Observed behavior:</b> Model assigns 5.8x higher perplexity when etch occurs without developed resist</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Inferred constraint:</b> OXIDE ETCH must be preceded by DEVELOP PHOTORESIST within 1 step</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Confidence:</b> HIGH</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Evidence:</b> valid_ppl=161509.2632, invalid_ppl=938609.7008, ratio=5.8115x</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Rule type:</b> LOCAL</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Learned Rule: IMPLANT_REQUIRES_WINDOW_OPEN</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Observed behavior:</b> Model assigns 3.6x higher perplexity when implant occurs without oxide etch</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Inferred constraint:</b> IMPLANT P BODY must be preceded by OXIDE ETCH within 1 step</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Confidence:</b> HIGH</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Evidence:</b> valid_ppl=2074677.513, invalid_ppl=7539604.3545, ratio=3.6341x</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Rule type:</b> LOCAL</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Learned Rule: CMP_REQUIRES_DEPOSITION</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Observed behavior:</b> Model assigns 6.6x higher perplexity when CMP occurs without deposition</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Inferred constraint:</b> CMP DIELECTRIC must be preceded by DEPOSIT INTERLAYER DIELECTRIC within 5 steps</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Confidence:</b> HIGH</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Evidence:</b> valid_ppl=613891071.6748, invalid_ppl=4047938265.7138, ratio=6.5939x</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Rule type:</b> LOCAL</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Overall Assessment</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">The model has strongly learned local step dependencies but fails to capture global sequencing rules or level-numbering constraints.</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Rules Learned (list)</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">1. Deposition requires cleaning (medium)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">2. Metal etch requires lithography (high)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">3. Etch requires developed mask (high)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">4. Implant requires window open (high)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">5. CMP requires deposition (high)</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Rules NOT Learned (list with reason)</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">1. Lithography level skip (ratio=1.0x) - Model doesn't track level numbers</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">2. Pad open before deposition (ratio=0.0784x) - Actually prefers invalid sequence</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">3. Test before passivation (ratio=1.0x) - No sequence sensitivity</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">4. Ship before test (ratio=1.0x) - No sequence sensitivity</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">5. Backside before passivation (ratio=0.8781x) - Prefers invalid sequence</p>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">Key Insight: Local vs Global Rules</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">The model excels at local step dependencies (within 2-5 step windows) but fails completely at:</p>
+<li style="margin:3px 0;font-size:14px">Global sequence ordering</li>
+<li style="margin:3px 0;font-size:14px">Numeric progression rules</li>
+<li style="margin:3px 0;font-size:14px">Process flow spanning many steps</li>
+<br>
+<h2 style="margin-top:1.5rem;font-size:17px;border-bottom:1px solid #eee;padding-bottom:6px">What This Tells Us (patterns vs genuine logic?)</h2>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">The model has learned surface-level step dependencies through local co-occurrence patterns rather than genuine process flow understanding. It cannot reason about:</p>
+<li style="margin:3px 0;font-size:14px">Numeric sequences (litho levels)</li>
+<li style="margin:3px 0;font-size:14px">Process phases spanning many steps</li>
+<li style="margin:3px 0;font-size:14px">Final verification requirements</li>
+<li style="margin:3px 0;font-size:14px">Backside vs frontside processing dependencies</li>
+</div>
+
+<h2>Comparison with Ground Truth</h2>
+<div class="card" style="font-size:14px;line-height:1.7"><p style="margin:4px 0;font-size:14px;line-height:1.6"># Comparison: Ground Truth vs N-gram (n=10)</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">---</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">Here's the comprehensive analysis comparing the learned rules with ground truth:</p>
+<br>
+<h3 style="margin-top:1rem;font-size:15px">1. Summary Table</h3>
+<br>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| Rule | Ground Truth | Model Learned | Similarity (0-1) | Match? |</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">|------|--------------|---------------|------------------|--------|</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| DEPOSITION_REQUIRES_CLEANING | Any deposition must be preceded by cleaning | THERMAL OXIDATION must be preceded by HF DIP | 0.7 | Partial |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| METAL_ETCH_REQUIRES_LITHO | Etch requires lithography pattern | METAL ETCH requires lithography | 0.9 | Yes |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| ETCH_REQUIRES_DEVELOPED_MASK | Etch requires developed resist | OXIDE ETCH requires DEVELOP PHOTORESIST | 0.8 | Yes |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| IMPLANT_REQUIRES_WINDOW_OPEN | Implant requires oxide opening | IMPLANT P BODY requires OXIDE ETCH | 0.85 | Yes |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| CMP_REQUIRES_DEPOSITION | CMP requires prior deposition | CMP DIELECTRIC requires ILD deposition | 0.9 | Yes |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| LITHO_LEVEL_SKIP | Strict level numbering | Not learned | 0.0 | No |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| PAD_OPEN_BEFORE_DEPOSITION | Pad must open before metal | Not learned (prefers invalid) | 0.0 | No |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| TEST_BEFORE_PASSIVATION | Final test before passivation | Not learned | 0.0 | No |</p>
+<p style="font-family:monospace;font-size:12px;margin:2px 0">| BACKSIDE_PROCESSING | Backside sequence rules | Not learned (prefers invalid) | 0.0 | No |</p>
+<br>
+<h3 style="margin-top:1rem;font-size:15px">2. Per-Rule Gap Analysis</h3>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>1. DEPOSITION_REQUIRES_CLEANING</b></p>
+<li style="margin:3px 0;font-size:14px">Ground Truth: Any deposition requires any cleaning step</li>
+<li style="margin:3px 0;font-size:14px">Learned: Specific HF DIP before THERMAL OXIDATION</li>
+<li style="margin:3px 0;font-size:14px">Gap: Over-specific (misses other cleaning types) but correct direction</li>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>2. METAL_ETCH_REQUIRES_LITHO</b></p>
+<li style="margin:3px 0;font-size:14px">Perfect match for core requirement</li>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>3. ETCH_REQUIRES_DEVELOPED_MASK</b></p>
+<li style="margin:3px 0;font-size:14px">Perfect match for oxide etch case (ground truth is general)</li>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>4. IMPLANT_REQUIRES_WINDOW_OPEN</b></p>
+<li style="margin:3px 0;font-size:14px">Perfect match for P-body implant case</li>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>5. CMP_REQUIRES_DEPOSITION</b></p>
+<li style="margin:3px 0;font-size:14px">Perfect match for dielectric CMP case</li>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Global Rules (All Failed)</b></p>
+<li style="margin:3px 0;font-size:14px">No learning of level numbering, backside rules, or final inspection sequence</li>
+<br>
+<h3 style="margin-top:1rem;font-size:15px">3. Overall Similarity Score</h3>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Local Step Dependencies: 0.83</b>  </p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">(High accuracy for immediate step requirements)</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Global Process Logic: 0.05</b>  </p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">(No meaningful learning of cross-process rules)</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Numeric Sequencing: 0.0</b>  </p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">(Complete failure on level numbering)</p>
+<br>
+<h3 style="margin-top:1rem;font-size:15px">4. Final Verdict: Patterns or Genuine Logic?</h3>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Pattern Matching, Not Process Understanding</b></p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">The model demonstrates:</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">✅ Strong local co-occurrence learning (immediate step dependencies)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">✅ Correct surface-level process constraints</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">✅ Valid statistical associations between adjacent steps</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">But critically lacks:</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">❌ Any understanding of numeric progression (litho levels)</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">❌ Global process flow awareness</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">❌ Backside/frontside differentiation</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">❌ Final verification logic</p>
+<p style="margin:4px 0;font-size:14px;line-height:1.6">❌ Ability to generalize cleaning rules beyond specific examples</p>
+<br>
+<p style="margin:4px 0;font-size:14px;line-height:1.6"><b>Conclusion:</b> The model has learned statistical patterns of step adjacency rather than genuine semiconductor process logic. It can enforce local constraints but cannot reason about the overall process flow or maintain consistent level numbering. This explains its perfect performance on local rules but complete failure on global ones.</p>
+</div>
+
+<p style="text-align:center;color:#aaa;font-size:12px;
+          margin-top:2rem;padding-bottom:2rem">
+  rule_probe_pipeline.py · Branch: angie · Industrial AI Hackathon
+</p>
+</div>
+
+<script>
+const L=["DEP_NO_CLEAN", "METAL_ETCH_NO_LITHO", "ETCH_NO_MASK", "LITHO_LEVEL_SKIP", "IMPLANT_NO_MASK", "CMP_NO_DEP", "PAD_OPEN_BEFORE_DEP", "TEST_BEFORE_PASSIVATION", "SHIP_BEFORE_TEST", "BACKSIDE_BEFORE_PASSIVATION"],R=[1.4653, 10.4953, 5.8115, 1.0, 3.6341, 6.5939, 0.0784, 1.0, 1.0, 0.8781],C=["#f39c12", "#2ecc71", "#2ecc71", "#e74c3c", "#2ecc71", "#2ecc71", "#e74c3c", "#e74c3c", "#e74c3c", "#e74c3c"],
+      V=[3168.3323, 211320.4101, 161509.2632, 194361.279, 2074677.513, 613891071.6748, 219068.7951, 1369540.1906, 113364046.8449, 108429.0973],I=[4642.476, 2217864.5069, 938609.7008, 194361.279, 7539604.3545, 4047938265.7138, 17165.0396, 1369540.1906, 113364046.8449, 95215.3258],S=[0.6, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0];
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif';
+new Chart(document.getElementById('cR'),{type:'bar',
+  data:{labels:L,datasets:[{label:'PPL ratio',data:R,
+    backgroundColor:C,borderWidth:0}]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{x:{beginAtZero:true,
+      title:{display:true,text:'Perplexity ratio (higher = learned)'}}}
+  }
+});
+new Chart(document.getElementById('cP'),{type:'bar',
+  data:{labels:L,datasets:[
+    {label:'Valid PPL',data:V,backgroundColor:'#3266ad',borderWidth:0},
+    {label:'Invalid PPL',data:I,backgroundColor:'#c97b4b',borderWidth:0}
+  ]},
+  options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top'}}
+  }
+});
+new Chart(document.getElementById('cS'),{type:'bar',
+  data:{labels:L,datasets:[{label:'Score',data:S,
+    backgroundColor:C,borderWidth:0}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{y:{beginAtZero:true,max:1.1}}
+  }
+});
+function sw(n,el){
+  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('t-'+n).classList.add('on');
+  el.classList.add('on');
+}
+</script>
+</body>
+</html>
