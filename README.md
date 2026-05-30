@@ -22,6 +22,9 @@ This branch contains our Industrial AI (Infineon) solution attempts under
 - [`OVERALL_SUMMARY.html`](./OVERALL_SUMMARY.html) - standalone end-to-end
   explanation of what we learned, including the generator/validator upper-bound
   result
+- [`FINAL_PITCH_OOD_STRATEGY.html`](./FINAL_PITCH_OOD_STRATEGY.html) - final
+  pitch for the OOD-ready strategy around new exact strings and new
+  family-specific blocks
 - [`REPORT.md`](./REPORT.md) - root submission report
 - [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
   metrics and solution comparison
