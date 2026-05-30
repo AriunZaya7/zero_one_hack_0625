@@ -27,6 +27,7 @@ are local self-eval outputs unless explicitly noted otherwise.
 | `solution_3_synthetic_augmented_retrieval` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Good in-distribution metrics; weaker IC leave-one-family-out proxy. |
 | `solution_4_length_aware_completion` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Improves block alignment slightly but worsens normalized edit distance. |
 | `solution_5_tuned_rank_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Useful ablation; does not beat Solution 3 in-distribution or Solution 2/4 on LOFO. |
+| `solution_6_alias_calibrated_retrieval` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Preserves Task 1 coverage and slightly improves Task 2 completion metrics, but does not beat Solution 3 in-distribution. |
 
 ## What Counts As Complete Here
 

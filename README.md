@@ -55,6 +55,7 @@ python -B solutions/solution_2_eval_aware_retrieval/solution.py
 python -B solutions/solution_3_synthetic_augmented_retrieval/solution.py
 python -B solutions/solution_4_length_aware_completion/solution.py
 python -B solutions/solution_5_tuned_rank_ensemble/solution.py
+python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 

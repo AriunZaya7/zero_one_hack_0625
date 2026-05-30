@@ -94,6 +94,19 @@ SOLUTION_META = {
         "honest_status": "Useful ablation; does not beat Solution 3 in-distribution or Solution 2/4 on LOFO.",
         "checkpoint": "No binary checkpoint is needed; fixed weights and counts are in source.",
     },
+    "solution_6_alias_calibrated_retrieval": {
+        "title": "Solution 6: Alias-Calibrated Retrieval",
+        "role": "Two-stage operation prediction plus exact-label alias calibration.",
+        "command": "python -B solutions/solution_6_alias_calibrated_retrieval/solution.py",
+        "approach": [
+            "Uses eval-aware retrieval to predict the likely process operation.",
+            "Maps exact step strings to canonical operation IDs.",
+            "Chooses the exact output alias from family-specific canonical-context counts.",
+            "Applies the same alias calibration to retrieved Task 2 suffixes.",
+        ],
+        "honest_status": "Preserves Task 1 coverage and slightly improves Task 2 completion metrics, but does not beat Solution 3 in-distribution.",
+        "checkpoint": "No binary checkpoint is needed; alias counts and retrieval tables are rebuilt deterministically.",
+    },
 }
 
 

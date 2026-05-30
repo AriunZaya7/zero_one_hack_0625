@@ -41,6 +41,8 @@ are clearly marked as local self-eval scores.
   trimming retrieved completions.
 - `solution_5_tuned_rank_ensemble`: combines retrieval votes with 3-, 4-, and
   5-gram rank scores.
+- `solution_6_alias_calibrated_retrieval`: keeps the eval-aware retriever but
+  adds canonical-context exact-label alias calibration.
 
 ## How To Run It
 
@@ -54,6 +56,7 @@ python -B solutions/solution_2_eval_aware_retrieval/solution.py
 python -B solutions/solution_3_synthetic_augmented_retrieval/solution.py
 python -B solutions/solution_4_length_aware_completion/solution.py
 python -B solutions/solution_5_tuned_rank_ensemble/solution.py
+python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -78,6 +81,7 @@ Headline seed-42 local self-eval:
 | `solution_3_synthetic_augmented_retrieval` | `0.7350` | `0.8661` | `0.2395` | `0.7252` | `1.0000` |
 | `solution_4_length_aware_completion` | `0.7317` | `0.8650` | `0.2468` | `0.7188` | `1.0000` |
 | `solution_5_tuned_rank_ensemble` | `0.7300` | `0.8642` | `0.2420` | `0.7167` | `1.0000` |
+| `solution_6_alias_calibrated_retrieval` | `0.7317` | `0.8644` | `0.2405` | `0.7189` | `1.0000` |
 
 Task 3 is perfect locally because the current solution family uses the public
 validator oracle. That is useful as a baseline and sanity check, but it is not
