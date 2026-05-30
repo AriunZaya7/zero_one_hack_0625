@@ -33,6 +33,10 @@ from solutions.solution_2_eval_aware_retrieval import solution as sol2  # noqa: 
 from solutions.solution_3_synthetic_augmented_retrieval import solution as sol3  # noqa: E402
 from solutions.solution_4_length_aware_completion import solution as sol4  # noqa: E402
 from solutions.solution_5_tuned_rank_ensemble import solution as sol5  # noqa: E402
+from solutions.solution_6_alias_calibrated_retrieval import solution as sol6  # noqa: E402
+from solutions.solution_7_monte_carlo_suffix_ensemble import solution as sol7  # noqa: E402
+from solutions.solution_8_semantic_conformance_ensemble import solution as sol8  # noqa: E402
+from training_data.generate_sequences import generate_dataset  # noqa: E402
 
 
 MetricDict = dict[str, float | int | str]
@@ -46,6 +50,9 @@ def set_solution_seed(seed: int) -> None:
     sol3.SEED = seed
     sol4.SEED = seed
     sol5.SEED = seed
+    sol6.SEED = seed
+    sol7.SEED = seed
+    sol8.SEED = seed
 
 
 def add_top2(rows: list[dict[str, object]], examples: list[sol0.ValidExample]) -> float:
@@ -249,6 +256,108 @@ def evaluate_solution_5(seed: int) -> MetricDict:
     )
 
 
+def evaluate_solution_6(seed: int) -> MetricDict:
+    train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    model = sol6.AliasCalibratedRetrievalModel(train)
+    task1_rows = sol6.predict_task1(model, valid_examples)
+    task2_rows = sol6.predict_task2(model, valid_examples)
+    task3_rows = sol1.predict_task3(anomaly_examples)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_6_alias_calibrated_retrieval",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol6.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
+_COMPLETION_GENERATED_CACHE: dict[str, list[str]] | None = None
+_SOLUTION7_PER_SEED_CACHE: dict[int, dict[str, object]] = {}
+
+
+def completion_generated_cache() -> dict[str, list[str]]:
+    """Reuse Solution 7's deterministic generated suffix library across seeds."""
+    global _COMPLETION_GENERATED_CACHE
+    if _COMPLETION_GENERATED_CACHE is None:
+        generated_sequences: dict[str, list[str]] = {}
+        for family_index, family in enumerate(sol0.FAMILIES):
+            generated = generate_dataset(
+                family,
+                count=sol7.COMPLETION_SYNTHETIC_PER_FAMILY,
+                seed=sol7.COMPLETION_SYNTHETIC_SEED_BASE + family_index,
+                validate=True,
+            )
+            for i, sequence in enumerate(generated):
+                generated_sequences[f"{family}:solution7_completion_mc:{i:05d}"] = sequence
+        _COMPLETION_GENERATED_CACHE = generated_sequences
+    return _COMPLETION_GENERATED_CACHE
+
+
+def evaluate_solution_7_like(seed: int) -> dict[str, object]:
+    if seed in _SOLUTION7_PER_SEED_CACHE:
+        return _SOLUTION7_PER_SEED_CACHE[seed]
+
+    train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    next_model = sol2.EvalAwareRetrievalModel(train, train)
+    completion_library = dict(train)
+    completion_library.update(completion_generated_cache())
+    completion_model = sol1.HybridRetrievalModel(completion_library)
+
+    task1_rows = sol2.predict_task1(next_model, valid_examples)
+    task2_rows = sol1.predict_task2(completion_model, valid_examples)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+
+    result = {
+        "train": train,
+        "valid_examples": valid_examples,
+        "anomaly_examples": anomaly_examples,
+        "by_family": by_family,
+        "task1_rows": task1_rows,
+        "task2_rows": task2_rows,
+        "task1": task1,
+        "task2": sol0.evaluate_task2(task2_rows, valid_examples),
+        "canonical": sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+        "ood": sol2.evaluate_ood_proxy(by_family),
+    }
+    _SOLUTION7_PER_SEED_CACHE[seed] = result
+    return result
+
+
+def evaluate_solution_7(seed: int) -> MetricDict:
+    cached = evaluate_solution_7_like(seed)
+    anomaly_examples = cached["anomaly_examples"]
+    task3_rows = sol2.predict_task3(anomaly_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_7_monte_carlo_suffix_ensemble",
+        task1=cached["task1"],
+        task2=cached["task2"],
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=cached["ood"],
+        canonical=cached["canonical"],
+    )
+
+
+def evaluate_solution_8(seed: int) -> MetricDict:
+    cached = evaluate_solution_7_like(seed)
+    anomaly_examples = cached["anomaly_examples"]
+    task3_rows = sol8.predict_task3_semantic(anomaly_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_8_semantic_conformance_ensemble",
+        task1=cached["task1"],
+        task2=cached["task2"],
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=cached["ood"],
+        canonical=cached["canonical"],
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -256,6 +365,9 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_3_synthetic_augmented_retrieval", evaluate_solution_3),
     ("solution_4_length_aware_completion", evaluate_solution_4),
     ("solution_5_tuned_rank_ensemble", evaluate_solution_5),
+    ("solution_6_alias_calibrated_retrieval", evaluate_solution_6),
+    ("solution_7_monte_carlo_suffix_ensemble", evaluate_solution_7),
+    ("solution_8_semantic_conformance_ensemble", evaluate_solution_8),
 )
 
 
@@ -383,7 +495,7 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         if key not in priority
     ]
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -411,8 +523,10 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "",
         "Important interpretation: these solutions do not train stochastic neural weights. "
         "For a fixed local split, each one is deterministic. Here, the seed changes the "
-        "local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 also "
-        "uses deterministic public-generator augmentation inside each run. Metrics marked "
+        "local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses "
+        "deterministic public-generator augmentation inside each run; Solutions 7 and 8 "
+        "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
+        "regenerating the same 30,000 suffix candidates for every split seed. Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",
         "",
         "## Main Judging Metrics",

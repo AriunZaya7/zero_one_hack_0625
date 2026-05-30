@@ -31,6 +31,44 @@ Two official items are still external or unavailable:
 - Official `eval_metrics.py` scores are blocked until organizers provide the
   official eval script and hidden ground truth.
 
+## Standalone Solution Readiness
+
+Each solution folder is intended to stand alone as its own candidate submission.
+That means a reviewer should not need to read an earlier solution first to
+understand or reproduce it. Every row below has the same required local
+submission surface:
+
+- runnable `solution.py`
+- source outputs under `outputs/`
+- local metrics in `outputs/metrics.json` and `outputs/metrics.md`
+- standalone `README.md`
+- standalone `explanation.html`
+- standalone `how_to_submit_this_solution.html`
+- generated `submission_package/README.md`
+- generated `submission_package/REPORT.md`
+- generated `submission_package/extras/results/{nextstep.csv,completion.csv,anomaly.csv}`
+- generated `submission_package/extras/results/{metrics.json,metrics.md,per_family_breakdown.md}`
+- generated `submission_package/extras/training_artifacts/`
+- generated `submission_package/extras/demo/`
+
+| Solution | Reproduce command from repo root | Standalone status | Submission package status | Caveat to say out loud |
+| --- | --- | --- | --- | --- |
+| [`solution_0_rule_mock`](solution_0_rule_mock/explanation.html) | `python -B solutions/solution_0_rule_mock/solution.py` | Complete: baseline README, explanation, submit guide, source, outputs, metrics. | Complete package generated. | Deliberately simple mock baseline; Task 3 uses validator oracle. |
+| [`solution_1_hybrid_retrieval`](solution_1_hybrid_retrieval/explanation.html) | `python -B solutions/solution_1_hybrid_retrieval/solution.py` | Complete: all local docs and outputs are present. | Complete package generated. | Retrieval baseline, not neural training. |
+| [`solution_2_eval_aware_retrieval`](solution_2_eval_aware_retrieval/explanation.html) | `python -B solutions/solution_2_eval_aware_retrieval/solution.py` | Complete: includes fair self-eval, public-overlap diagnostic, and alias diagnostic. | Complete package generated. | Exact Top-1 remains alias-limited; public-overlap diagnostic is not fair validation. |
+| [`solution_3_synthetic_augmented_retrieval`](solution_3_synthetic_augmented_retrieval/explanation.html) | `python -B solutions/solution_3_synthetic_augmented_retrieval/solution.py` | Complete: generator-augmentation docs, outputs, metrics, and submit guide. | Complete package generated. | Uses public grammar augmentation; not a learned transformer. |
+| [`solution_4_length_aware_completion`](solution_4_length_aware_completion/explanation.html) | `python -B solutions/solution_4_length_aware_completion/solution.py` | Complete: length-aware completion explanation and outputs are present. | Complete package generated. | Task 2 tradeoff attempt; improves some completion structure but worsens edit distance. |
+| [`solution_5_tuned_rank_ensemble`](solution_5_tuned_rank_ensemble/explanation.html) | `python -B solutions/solution_5_tuned_rank_ensemble/solution.py` | Complete: tuned rank-ensemble docs, outputs, metrics, and submit guide. | Complete package generated. | Useful ablation; does not beat the best retrieval variants. |
+| [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | `python -B solutions/solution_6_alias_calibrated_retrieval/solution.py` | Complete: alias-calibration docs, outputs, metrics, and submit guide. | Complete package generated. | Helps diagnose alias choice; does not solve exact Top-1. |
+| [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | `python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py` | Complete: Monte Carlo suffix-library docs, outputs, metrics, and submit guide. | Complete package generated. | Strong deterministic Task 2 completion; still not neural or learned anomaly detection. |
+| [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | `python -B solutions/solution_8_semantic_conformance_ensemble/solution.py` | Complete: semantic conformance docs, outputs, metrics, and submit guide. | Complete package generated. | Better anomaly explanation path, but still symbolic rather than neural. |
+
+To refresh all package folders after rerunning solution scripts:
+
+```bash
+python -B solutions/prepare_submission_packages.py
+```
+
 ## Exact Meaning Of The Local Evaluations
 
 ### Local self-eval
@@ -196,28 +234,41 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 Full results are in `solutions/seed_evaluation_outputs/seed_evaluation_report.md`.
 The seeds are `0` through `9`.
 
-This saved 10-seed report currently covers Solutions 0-2. The harness has been
-expanded to include Solutions 3-5, but the full rerun for all six attempts is
-long because it repeats every OOD proxy and Solution 3's generator augmentation.
-
 Important interpretation: these current solutions do **not** train stochastic
 neural weights. For a fixed local split, each solution is deterministic. The
 seed changes the local train/held-out split, anomaly shuffle, and OOD sampling.
 Metrics marked as constant did not change across those split seeds.
 
+The saved report now covers all implemented solution folders from Solution 0
+through Solution 8. Solutions 7 and 8 reuse the same cached Monte Carlo suffix
+library during the 10-seed run so the reported metrics still match their
+committed method while avoiding redundant generation work.
+
 | Solution | Seed behavior | Task 1 Top-1 mean | best | worst | Task 1 MRR mean | Task 2 block mean | Task 2 edit mean | Task 3 accuracy mean | OOD avg Top-1 mean |
 | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| [`solution_0_rule_mock`](solution_0_rule_mock/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6723` | `0.6983` (seed `1`) | `0.6550` (seed `5`) | `0.8310` | `0.3723` | `0.6045` | `1.0000` constant | `0.6743` |
-| [`solution_1_hybrid_retrieval`](solution_1_hybrid_retrieval/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6918` | `0.7150` (seed `9`) | `0.6650` (seed `6`) | `0.8433` | `0.7150` | `0.2387` | `1.0000` constant | `0.6627` |
-| [`solution_2_eval_aware_retrieval`](solution_2_eval_aware_retrieval/explanation.html) | Split-seed variation only; model deterministic for a fixed split. Public lookup diagnostic is constant at `1.0000`. | `0.6962` | `0.7200` (seed `9`) | `0.6667` (seed `6`) | `0.8455` | `0.7150` | `0.2387` | `1.0000` constant | `0.6787` |
+| [`solution_0_rule_mock`](solution_0_rule_mock/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6740` | `0.6983` (seed `1`) | `0.6550` (seed `5`) | `0.8318` | `0.3723` | `0.6044` | `1.0000` constant | `0.6737` |
+| [`solution_1_hybrid_retrieval`](solution_1_hybrid_retrieval/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6917` | `0.7150` (seed `9`) | `0.6633` (seed `6`) | `0.8432` | `0.7150` | `0.2387` | `1.0000` constant | `0.6627` |
+| [`solution_2_eval_aware_retrieval`](solution_2_eval_aware_retrieval/explanation.html) | Split-seed variation only; model deterministic for a fixed split. Public lookup diagnostic is constant at `1.0000`. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7150` | `0.2387` | `1.0000` constant | `0.6787` |
+| [`solution_3_synthetic_augmented_retrieval`](solution_3_synthetic_augmented_retrieval/explanation.html) | Split-seed variation only; model and generator seeds deterministic for a fixed split. | `0.6970` | `0.7150` (seed `4`) | `0.6767` (seed `0`) | `0.8462` | `0.7263` | `0.2359` | `1.0000` constant | `0.6622` |
+| [`solution_4_length_aware_completion`](solution_4_length_aware_completion/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7172` | `0.2438` | `1.0000` constant | `0.6787` |
+| [`solution_5_tuned_rank_ensemble`](solution_5_tuned_rank_ensemble/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6917` | `0.7117` (seed `9`) | `0.6633` (seed `6`) | `0.8432` | `0.7150` | `0.2387` | `1.0000` constant | `0.6635` |
+| [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | Split-seed variation only; model deterministic for a fixed split. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8455` | `0.7159` | `0.2383` | `1.0000` constant | `0.6787` |
+| [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | Split-seed variation only; Monte Carlo suffix library is deterministic and reused in the report run. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7347` | `0.2334` | `1.0000` constant | `0.6787` |
+| [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | Split-seed variation only; semantic conformance rules are deterministic for a fixed split. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7347` | `0.2334` | `1.0000` constant | `0.6787` |
 
 Alias-normalized canonical process-step diagnostic across the same 10 seeds:
 
 | Solution | Canonical process-step Top-1 mean | best | worst | Canonical process-step Top-2 mean | Same-canonical miss-rate mean |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| [`solution_0_rule_mock`](solution_0_rule_mock/explanation.html) | `0.9450` | `0.9517` (seed `8`) | `0.9400` (seed `4`) | `0.9918` | `0.8319` |
-| [`solution_1_hybrid_retrieval`](solution_1_hybrid_retrieval/explanation.html) | `0.9687` | `0.9733` (seed `0`) | `0.9600` (seed `1`) | `0.9992` | `0.8981` |
+| [`solution_0_rule_mock`](solution_0_rule_mock/explanation.html) | `0.9450` | `0.9517` (seed `8`) | `0.9400` (seed `4`) | `0.9918` | `0.8310` |
+| [`solution_1_hybrid_retrieval`](solution_1_hybrid_retrieval/explanation.html) | `0.9687` | `0.9733` (seed `0`) | `0.9600` (seed `1`) | `0.9992` | `0.8982` |
 | [`solution_2_eval_aware_retrieval`](solution_2_eval_aware_retrieval/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
+| [`solution_3_synthetic_augmented_retrieval`](solution_3_synthetic_augmented_retrieval/explanation.html) | `0.9747` | `0.9817` (seed `0`) | `0.9683` (seed `1`) | `0.9993` | `0.9160` |
+| [`solution_4_length_aware_completion`](solution_4_length_aware_completion/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
+| [`solution_5_tuned_rank_ensemble`](solution_5_tuned_rank_ensemble/explanation.html) | `0.9687` | `0.9733` (seed `0`) | `0.9600` (seed `1`) | `0.9992` | `0.8982` |
+| [`solution_6_alias_calibrated_retrieval`](solution_6_alias_calibrated_retrieval/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9990` | `0.9110` |
+| [`solution_7_monte_carlo_suffix_ensemble`](solution_7_monte_carlo_suffix_ensemble/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
+| [`solution_8_semantic_conformance_ensemble`](solution_8_semantic_conformance_ensemble/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
 
 ## Criteria Notes
 

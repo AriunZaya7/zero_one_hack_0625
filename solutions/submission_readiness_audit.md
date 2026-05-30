@@ -31,6 +31,25 @@ are local self-eval outputs unless explicitly noted otherwise.
 | `solution_7_monte_carlo_suffix_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Best deterministic Task 2 completion attempt so far by normalized edit distance, but still not a neural model and still alias-limited for exact Top-1. |
 | `solution_8_semantic_conformance_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Keeps perfect local Task 3 metrics without direct validator inference, but remains symbolic rather than neural. |
 
+## Standalone Completeness Matrix
+
+Every implemented solution folder has the same standalone contract. A solution
+is considered independently submission-ready when it has a runnable script,
+source outputs, local metrics, standalone explanation, manual submission guide,
+and a generated package with report/results/training/demo artifacts.
+
+| Solution | Runnable script | README | Explanation HTML | How-to-submit HTML | Source output CSVs | Package report | Package result CSVs | Package metrics | Package training/demo notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `solution_0_rule_mock` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_1_hybrid_retrieval` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_2_eval_aware_retrieval` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_3_synthetic_augmented_retrieval` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_4_length_aware_completion` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_5_tuned_rank_ensemble` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_6_alias_calibrated_retrieval` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_7_monte_carlo_suffix_ensemble` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_8_semantic_conformance_ensemble` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+
 ## What Counts As Complete Here
 
 For the current deterministic solutions, a package is complete when it has:
