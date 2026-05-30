@@ -270,7 +270,7 @@
       <h1>Final Pitch: OOD-Ready Industrial AI Strategy</h1>
       <p class="subtitle">
         This page has two main sections: a concise TL;DR and a detailed technical explanation.
-        It incorporates the new hypothetical fourth-family probe for `sic_power`, a plausible hidden OOD family with new exact strings and new family-specific blocks.
+        It incorporates the new hypothetical hidden-family probe for <code>THEFOURTHFAMILY</code> and <code>THEFIFTHFAMILY</code>, two plausible OOD families with new exact strings and new family-specific blocks.
       </p>
       <div class="meta">
         <span class="pill">Branch: <code>dev/bati</code></span>
@@ -310,10 +310,11 @@
         <li><strong>Solutions 2, 11, and 12</strong> supply the practical fallback ideas: retrieval, OOD guarding, and better completion selection.</li>
       </ul>
 
-      <h3>What changed after we tested a fake fourth family</h3>
+      <h3>What changed after we tested two hypothetical hidden families</h3>
       <p>
-        We created a hypothetical fourth family called <code>sic_power</code>.
-        It contains new exact strings such as <code>SIC SUBSTRATE ORIENTATION CHECK</code>, <code>JTE DOSE VERIFICATION</code>, and <code>GATE TRENCH CORNER ROUNDING</code>.
+        We created two hypothetical hidden families named exactly <code>THEFOURTHFAMILY</code> and <code>THEFIFTHFAMILY</code>.
+        They intentionally share the same broad route architecture; the point is to test exact hidden-family names and strings, not to invent two unrelated tasks.
+        They contain new exact strings such as <code>THEFOURTHFAMILY SUBSTRATE ORIENTATION CHECK</code>, <code>THEFIFTHFAMILY JTE DOSE VERIFICATION</code>, and <code>THEFIFTHFAMILY GATE TRENCH CORNER ROUNDING</code>.
         This simulates what organizers could do for hidden OOD: same general semiconductor process logic, but new family-specific words and blocks.
       </p>
 
@@ -340,24 +341,24 @@
           <tr>
             <td><code>decoupled_known_fallback_only</code></td>
             <td>0.0000</td>
-            <td>0.4040</td>
-            <td>0.5906</td>
+            <td>0.4020</td>
+            <td>0.5929</td>
             <td class="metric">1.0000</td>
             <td>If the new family strings are not visible, exact-string prediction becomes very hard.</td>
           </tr>
           <tr>
             <td><code>decoupled_visible_family_routes</code></td>
             <td>0.0000</td>
-            <td class="metric">0.7775</td>
-            <td class="metric">0.1565</td>
+            <td class="metric">0.7625</td>
+            <td class="metric">0.1559</td>
             <td class="metric">1.0000</td>
             <td>If related new-family routes are visible, even without exact matches, harvesting their strings and contexts helps a lot.</td>
           </tr>
           <tr>
-            <td><code>oracle_fourth_family_generator_training</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
             <td>0.0000</td>
-            <td class="metric">0.7760</td>
-            <td class="metric">0.1539</td>
+            <td class="metric">0.7738</td>
+            <td class="metric">0.1537</td>
             <td class="metric">1.0000</td>
             <td>If the hidden-family generator spec were known, generated training data would help a lot, but still would not equal exact route memory.</td>
           </tr>
@@ -374,14 +375,14 @@
 
       <div class="callout warning">
         <strong>Honest caveat:</strong>
-        we can claim 100% on the released coupled structure and on our coupled fourth-family probe.
-        We should not claim guaranteed 100% on a hidden decoupled fourth family.
-        The new probe shows that no-coupling fallback is much lower, while visible related fourth-family routes recover a strong score.
+        we can claim 100% on the released coupled structure and on our coupled hidden-family probe.
+        We should not claim guaranteed 100% on hidden decoupled families.
+        The new two-family probe shows that no-coupling fallback is much lower, while visible related hidden-family routes recover a strong score.
       </div>
 
       <h3>What to say to judges</h3>
       <p>
-        "We built a full benchmark suite, found a structural route-coupling signal in the released inputs, exploited it transparently, and then stress-tested the same strategy on a hypothetical fourth family. The result is a system that is perfect when exact route evidence is visible, strong when related new-family routes are visible, and honest about the remaining information limit when exact strings are completely hidden."
+        "We built a full benchmark suite, found a structural route-coupling signal in the released inputs, exploited it transparently, and then stress-tested the same strategy on two hypothetical hidden families. The result is a system that is perfect when exact route evidence is visible, strong when related new-family routes are visible, and honest about the remaining information limit when exact strings are completely hidden."
       </p>
     </section>
 
@@ -390,7 +391,7 @@
 
       <h3>A. Why OOD is hard</h3>
       <p>
-        OOD means out-of-distribution. In this track, the likely OOD test is a fourth product family that was not part of the MOSFET, IGBT, and IC training families.
+        OOD means out-of-distribution. In this track, the likely OOD test is one or more product families that were not part of the MOSFET, IGBT, and IC training families.
         The hard part is not just a different random seed.
         A new seed changes sampled variants, but a new family can change the vocabulary, the local block order, and the exact step labels.
       </p>
@@ -411,7 +412,7 @@
           </tr>
           <tr>
             <td>New family-specific blocks</td>
-            <td>A fourth family may contain route phases that are not in MOSFET, IGBT, or IC.</td>
+            <td>A hidden family may contain route phases that are not in MOSFET, IGBT, or IC.</td>
             <td>Use process-rule validation, block-level reasoning, and generated-data fallbacks rather than one family template.</td>
           </tr>
           <tr>
@@ -535,21 +536,24 @@
         </p>
       </div>
 
-      <h3>D. The new hypothetical fourth-family probe</h3>
+      <h3>D. The new two-family hidden OOD probe</h3>
       <p>
         To make the OOD story concrete, we added <a href="solutions/ood_fourth_family_probe/README.md">solutions/ood_fourth_family_probe</a>.
-        It generates a plausible hidden family called <code>sic_power</code>.
-        This family has new exact strings and new family-specific power-device blocks, but it still follows the same broad semiconductor process-grammar philosophy.
+        It generates two plausible hidden families called <code>THEFOURTHFAMILY</code> and <code>THEFIFTHFAMILY</code>.
+        These families have new exact strings and new family-specific power-device blocks, but they still follow the same broad semiconductor process-grammar philosophy.
+        They are not official families; they are local stress tests for the strategy.
       </p>
 
       <p>
-        We evaluated four scenarios across seeds <code>0</code> through <code>9</code>.
+        We evaluated four scenarios across seeds <code>0</code> through <code>9</code> for both families.
+        That means the aggregate row below is based on 20 family-seed evaluations.
         The detailed output is in <a href="solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
       </p>
 
       <table>
         <thead>
           <tr>
+            <th>Family</th>
             <th>Scenario</th>
             <th>Exact route coverage</th>
             <th>Task 1 Top-1</th>
@@ -562,6 +566,7 @@
         </thead>
         <tbody>
           <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
             <td><code>coupled_exact_route_memory</code></td>
             <td>1.0000</td>
             <td>1.0000</td>
@@ -572,16 +577,40 @@
             <td>1.0000</td>
           </tr>
           <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
             <td><code>decoupled_known_fallback_only</code></td>
             <td>0.0000</td>
-            <td>0.4040</td>
-            <td>0.4845</td>
+            <td>0.4020</td>
+            <td>0.4835</td>
             <td>0.0000</td>
-            <td>0.5906</td>
-            <td>0.2446</td>
+            <td>0.5929</td>
+            <td>0.2435</td>
             <td>1.0000</td>
           </tr>
           <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
+            <td><code>decoupled_visible_family_routes</code></td>
+            <td>0.0000</td>
+            <td>0.7625</td>
+            <td>1.0000</td>
+            <td>0.0005</td>
+            <td>0.1559</td>
+            <td>0.7309</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
+            <td>0.0000</td>
+            <td>0.7738</td>
+            <td>1.0000</td>
+            <td>0.0013</td>
+            <td>0.1537</td>
+            <td>0.7675</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFOURTHFAMILY</code></td>
             <td><code>decoupled_visible_family_routes</code></td>
             <td>0.0000</td>
             <td>0.7775</td>
@@ -592,13 +621,36 @@
             <td>1.0000</td>
           </tr>
           <tr>
-            <td><code>oracle_fourth_family_generator_training</code></td>
+            <td><code>THEFIFTHFAMILY</code></td>
+            <td><code>decoupled_visible_family_routes</code></td>
+            <td>0.0000</td>
+            <td>0.7475</td>
+            <td>1.0000</td>
+            <td>0.0005</td>
+            <td>0.1552</td>
+            <td>0.7281</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFOURTHFAMILY</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
             <td>0.0000</td>
             <td>0.7760</td>
             <td>1.0000</td>
             <td>0.0010</td>
             <td>0.1539</td>
             <td>0.7728</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFIFTHFAMILY</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
+            <td>0.0000</td>
+            <td>0.7715</td>
+            <td>1.0000</td>
+            <td>0.0015</td>
+            <td>0.1536</td>
+            <td>0.7623</td>
             <td>1.0000</td>
           </tr>
         </tbody>
@@ -613,19 +665,21 @@
       <p>
         The no-coupling known-fallback scenario shows the information limit.
         If the hidden family introduces exact strings that never appear in training or visible inference files, the model cannot reliably output them.
-        This is why Top-1 falls to <code>0.4040</code> and Task 2 edit distance worsens to <code>0.5906</code>.
+        Across both hidden families, this is why Top-1 falls to <code>0.4020</code> and Task 2 edit distance worsens to <code>0.5929</code>.
       </p>
 
       <p>
         The visible-family-routes scenario is the most important middle case.
-        It has no exact route matches, but it does expose related fourth-family routes.
-        Top-1 rises to <code>0.7775</code> and Top-3 reaches <code>1.0000</code>.
+        It has no exact route matches, but it does expose related hidden-family routes.
+        Aggregate Top-1 rises to <code>0.7625</code> and Top-3 reaches <code>1.0000</code>.
+        The per-family Top-1 scores are <code>0.7775</code> for <code>THEFOURTHFAMILY</code> and <code>0.7475</code> for <code>THEFIFTHFAMILY</code>.
         This validates our "harvest visible new-family strings and contexts" strategy.
       </p>
 
       <p>
-        The oracle generator scenario shows what happens if the fourth-family generator architecture is known.
+        The oracle generator scenario shows what happens if the hidden-family generator architecture is known.
         Synthetic family-specific training improves fallback performance, but it still does not equal exact route memory because the exact test suffix is not visible.
+        Across both hidden families, oracle-generator Top-1 is <code>0.7738</code> with Task 2 edit distance <code>0.1537</code>.
       </p>
 
       <h3>F. Final judge-facing claim</h3>
@@ -646,7 +700,7 @@ open solutions/ood_fourth_family_probe/outputs/README.md</code></pre>
         <li><a href="OVERALL_SUMMARY.html">OVERALL_SUMMARY.html</a></li>
         <li><a href="solutions/solutions_comparison.md">solutions/solutions_comparison.md</a></li>
         <li><a href="solutions/seed_evaluation_outputs/seed_evaluation_report.md">10-seed solution evaluation report</a></li>
-        <li><a href="solutions/ood_fourth_family_probe/outputs/README.md">Hypothetical fourth-family probe results</a></li>
+        <li><a href="solutions/ood_fourth_family_probe/outputs/README.md">Hypothetical fourth/fifth hidden-family probe results</a></li>
         <li><a href="systematic_researches/systematic_research_8.md">Systematic Research 8: transductive matching plus generated-data fallback</a></li>
         <li><a href="systematic_researches/systematic_research_11.md">Systematic Research 11: conformal route guard</a></li>
       </ul>

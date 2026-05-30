@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Hypothetical fourth-family OOD probe.
+"""Hypothetical hidden-family OOD probe.
 
-This is not an official benchmark. It creates a plausible hidden fourth family
-(`sic_power`) with new exact strings and SiC/power-device-specific process
-blocks, then tests the final strategy under several information settings.
+This is not an official benchmark. It creates two plausible hidden families
+named `THEFOURTHFAMILY` and `THEFIFTHFAMILY` with new exact strings and
+power-device-specific process blocks, then tests the final strategy under
+several information settings.
 
 Run from repo root:
     python -B solutions/ood_fourth_family_probe/fourth_family_probe.py
@@ -23,7 +24,7 @@ from typing import Iterable
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = Path(__file__).resolve().parent / "outputs"
 SEEDS = tuple(range(10))
-FOURTH_FAMILY = "sic_power"
+HIDDEN_FAMILIES = ("THEFOURTHFAMILY", "THEFIFTHFAMILY")
 TEST_SEQUENCES_PER_SEED = 100
 DECOY_VISIBLE_SEQUENCES = 160
 ORACLE_TRAIN_SEQUENCES = 1200
@@ -62,11 +63,16 @@ def _litho(rng: random.Random, level: int, inspection: str | None = None) -> lis
     return steps
 
 
-def generate_sic_power_sequence(rng: random.Random) -> list[str]:
-    """Generate one valid hypothetical SiC power-device route.
+def hidden_step(family: str, suffix: str) -> str:
+    return f"{family} {suffix}"
+
+
+def generate_hidden_family_sequence(rng: random.Random, family: str) -> list[str]:
+    """Generate one valid hypothetical hidden-family power-device route.
 
     The route intentionally mixes known public-rule steps with new exact strings
-    such as `SIC SUBSTRATE ORIENTATION CHECK` and `JTE DOSE VERIFICATION`.
+    such as `THEFOURTHFAMILY SUBSTRATE ORIENTATION CHECK` and
+    `THEFIFTHFAMILY JTE DOSE VERIFICATION`.
     Known steps keep the public validator meaningful; new strings simulate the
     hidden-family exact-string problem.
     """
@@ -75,8 +81,8 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
         "LOT IDENTIFICATION",
         rng.choice(["INITIAL WAFER INSPECTION", "PRE CLEAN INSPECTION"]),
         rng.choice(["MEASURE THICKNESS", "MEASURE INITIAL THICKNESS"]),
-        "SIC SUBSTRATE ORIENTATION CHECK",
-        "MEASURE SUBSTRATE MICROPIPES",
+        hidden_step(family, "SUBSTRATE ORIENTATION CHECK"),
+        hidden_step(family, "SUBSTRATE DEFECT DENSITY MEASURE"),
         "PRE CLEAN WAFER",
         "BACKSIDE CLEAN",
         "FRONTSIDE CLEAN",
@@ -84,16 +90,16 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
         rng.choice(["RCA CLEAN 2", "WET CLEAN RCA2"]),
         "HF DIP",
         rng.choice(["DRY WAFER", "DRY WAFER BACKSIDE"]),
-        "SIC EPITAXY PREP",
+        hidden_step(family, "EPITAXY PREP"),
         "EPITAXIAL DEPOSITION",
-        "MEASURE DRIFT LAYER THICKNESS",
+        hidden_step(family, "DRIFT LAYER THICKNESS CHECK"),
         "MEASURE RESISTIVITY",
         "EPITAXY ANNEAL",
         "WAFER SURFACE CLEAN",
         rng.choice(["THERMAL OXIDATION", "GATE OXIDE GROWTH"]),
         rng.choice(["MEASURE GATE OXIDE THICKNESS", "MEASURE OXIDE THICKNESS"]),
-        "NITRIDATION ANNEAL",
-        "JTE LAYOUT CHECK",
+        hidden_step(family, "NITRIDATION ANNEAL"),
+        hidden_step(family, "JTE LAYOUT CHECK"),
     ]
 
     level = 1
@@ -101,47 +107,47 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
     for cycle in range(cycles):
         role = rng.choice(["jte", "well", "source", "trench"])
         if role == "jte":
-            seq += _litho(rng, level, "JTE WINDOW INSPECTION")
+            seq += _litho(rng, level, hidden_step(family, "JTE WINDOW INSPECTION"))
             seq += [
                 rng.choice(["OXIDE ETCH", "OXIDE ETCH DRY"]),
                 "IMPLANT CHANNEL STOP",
-                "JTE DOSE VERIFICATION",
+                hidden_step(family, "JTE DOSE VERIFICATION"),
                 rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
                 "CLEAN AFTER OXIDE ETCH",
                 "RAPID THERMAL ANNEAL",
             ]
         elif role == "well":
-            seq += _litho(rng, level, "P WELL WINDOW INSPECTION")
+            seq += _litho(rng, level, hidden_step(family, "P WELL WINDOW INSPECTION"))
             seq += [
                 rng.choice(["OXIDE ETCH", "OXIDE ETCH DRY"]),
                 rng.choice(["IMPLANT P BODY", "IMPLANT WELL"]),
-                "HIGH TEMPERATURE ACTIVATION ANNEAL",
+                hidden_step(family, "HIGH TEMPERATURE ACTIVATION ANNEAL"),
                 rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
                 "CLEAN AFTER OXIDE ETCH",
                 "RAPID THERMAL ANNEAL",
             ]
         elif role == "source":
-            seq += _litho(rng, level, "SOURCE WINDOW INSPECTION")
+            seq += _litho(rng, level, hidden_step(family, "SOURCE WINDOW INSPECTION"))
             seq += [
                 rng.choice(["OXIDE ETCH", "OXIDE ETCH DRY"]),
                 rng.choice(["IMPLANT SOURCE REGION", "IMPLANT SOURCE DRAIN"]),
-                "SOURCE IMPLANT DOSE CHECK",
+                hidden_step(family, "SOURCE IMPLANT DOSE CHECK"),
                 rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
                 "CLEAN AFTER OXIDE ETCH",
                 rng.choice(["RAPID THERMAL ANNEAL", "LIGHT ANNEAL"]),
             ]
         else:
-            seq += _litho(rng, level, "TRENCH PATTERN INSPECTION")
+            seq += _litho(rng, level, hidden_step(family, "TRENCH PATTERN INSPECTION"))
             seq += [
                 rng.choice(["OXIDE ETCH", "OXIDE ETCH DRY"]),
-                "TRENCH DEPTH MEASUREMENT",
+                hidden_step(family, "TRENCH DEPTH MEASUREMENT"),
                 rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
                 "CLEAN AFTER OXIDE ETCH",
-                "GATE TRENCH CORNER ROUNDING",
+                hidden_step(family, "GATE TRENCH CORNER ROUNDING"),
                 "RAPID THERMAL ANNEAL",
             ]
         level += 1
-        seq += _opt(rng, "CARBON CAP STRIP CHECK", 0.45)
+        seq += _opt(rng, hidden_step(family, "CARBON CAP STRIP CHECK"), 0.45)
 
     seq += [
         "FRONTSIDE CLEAN",
@@ -149,7 +155,7 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
         rng.choice(["POLYSILICON ANNEAL", "ANNEAL POLYSILICON"]),
         "MEASURE POLY THICKNESS",
     ]
-    seq += _litho(rng, level, "POLY GATE PATTERN INSPECTION")
+    seq += _litho(rng, level, hidden_step(family, "POLY GATE PATTERN INSPECTION"))
     seq += [
         rng.choice(["POLYSILICON ETCH", "POLYSILICON ETCH DRY"]),
         rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
@@ -165,7 +171,7 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
         rng.choice(["CMP DIELECTRIC", "CMP INTERLAYER DIELECTRIC"]),
         rng.choice(["MEASURE PLANARITY", "MEASURE SURFACE PLANARITY"]),
     ]
-    seq += _litho(rng, level, "CONTACT VIA INSPECTION")
+    seq += _litho(rng, level, hidden_step(family, "CONTACT VIA INSPECTION"))
     seq += [
         rng.choice(["VIA ETCH", "VIA ETCH THROUGH DIELECTRIC", "DIELECTRIC ETCH VIA"]),
         rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
@@ -183,7 +189,7 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
     ]
     level += 1
 
-    seq += _litho(rng, level, "SOURCE METAL PATTERN INSPECTION")
+    seq += _litho(rng, level, hidden_step(family, "SOURCE METAL PATTERN INSPECTION"))
     seq += [
         rng.choice(["METAL ETCH", "METAL ETCH DRY"]),
         rng.choice(["STRIP PHOTORESIST", "STRIP RESIST"]),
@@ -219,11 +225,11 @@ def generate_sic_power_sequence(rng: random.Random) -> list[str]:
     ]
     violations = validate_sequence(seq)
     if violations:
-        raise RuntimeError(f"Generated invalid sic_power route: {violations[0]}")
+        raise RuntimeError(f"Generated invalid {family} route: {violations[0]}")
     return seq
 
 
-def generate_sic_power_dataset(count: int, seed: int) -> dict[str, list[str]]:
+def generate_hidden_family_dataset(family: str, count: int, seed: int) -> dict[str, list[str]]:
     rng = random.Random(seed)
     sequences: dict[str, list[str]] = {}
     seen: set[tuple[str, ...]] = set()
@@ -231,13 +237,13 @@ def generate_sic_power_dataset(count: int, seed: int) -> dict[str, list[str]]:
     while len(sequences) < count:
         attempts += 1
         if attempts > count * 50:
-            raise RuntimeError("Could not generate enough unique sic_power routes")
-        seq = generate_sic_power_sequence(rng)
+            raise RuntimeError(f"Could not generate enough unique {family} routes")
+        seq = generate_hidden_family_sequence(rng, family)
         key = tuple(seq)
         if key in seen:
             continue
         seen.add(key)
-        sequences[f"{FOURTH_FAMILY}:hypothetical:{seed}:{len(sequences):04d}"] = seq
+        sequences[f"{family}:hypothetical:{seed}:{len(sequences):04d}"] = seq
     return sequences
 
 
@@ -250,7 +256,11 @@ def public_training_sequences() -> dict[str, list[str]]:
     return sequences
 
 
-def build_valid_examples(sequences: dict[str, list[str]], seed: int) -> list[base.ValidExample]:
+def build_valid_examples(
+    family: str,
+    sequences: dict[str, list[str]],
+    seed: int,
+) -> list[base.ValidExample]:
     rows: list[base.ValidExample] = []
     counter = 1
     for _key, seq in sorted(sequences.items()):
@@ -259,7 +269,7 @@ def build_valid_examples(sequences: dict[str, list[str]], seed: int) -> list[bas
             rows.append(
                 base.ValidExample(
                     example_id=f"s{seed}_valid_{counter:04d}",
-                    family=FOURTH_FAMILY,
+                    family=family,
                     completion_fraction=fraction,
                     partial=seq[:cut],
                     truth_next=seq[cut],
@@ -270,14 +280,18 @@ def build_valid_examples(sequences: dict[str, list[str]], seed: int) -> list[bas
     return rows
 
 
-def build_anomaly_examples(sequences: dict[str, list[str]], seed: int) -> list[base.AnomalyExample]:
+def build_anomaly_examples(
+    family: str,
+    sequences: dict[str, list[str]],
+    seed: int,
+) -> list[base.AnomalyExample]:
     rows: list[base.AnomalyExample] = []
     counter = 1
     for i, (_key, seq) in enumerate(sorted(sequences.items())):
         rows.append(
             base.AnomalyExample(
                 example_id=f"s{seed}_anom_{counter:04d}",
-                family=FOURTH_FAMILY,
+                family=family,
                 sequence=seq,
                 is_valid=1,
                 rule="",
@@ -288,7 +302,7 @@ def build_anomaly_examples(sequences: dict[str, list[str]], seed: int) -> list[b
         rows.append(
             base.AnomalyExample(
                 example_id=f"s{seed}_anom_{counter:04d}",
-                family=FOURTH_FAMILY,
+                family=family,
                 sequence=invalid_seq,
                 is_valid=0,
                 rule=rule,
@@ -323,6 +337,7 @@ def to_anomaly_inputs(examples: list[base.AnomalyExample]) -> list[sol13.Anomaly
 
 
 def sequences_to_anomaly_inputs(
+    family: str,
     sequences: dict[str, list[str]],
     seed: int,
     prefix: str,
@@ -330,7 +345,7 @@ def sequences_to_anomaly_inputs(
     return [
         sol13.AnomalyInput(
             example_id=f"{prefix}_{seed}_{i:04d}",
-            family=FOURTH_FAMILY,
+            family=family,
             sequence=seq,
         )
         for i, (_key, seq) in enumerate(sorted(sequences.items()))
@@ -388,6 +403,7 @@ def exact_coverage(
 def evaluate_scenario(
     *,
     seed: int,
+    family: str,
     scenario: str,
     valid_examples: list[base.ValidExample],
     anomaly_examples: list[base.AnomalyExample],
@@ -406,6 +422,7 @@ def evaluate_scenario(
     task3 = base.evaluate_task3(task3_rows, anomaly_examples)
     return {
         "seed": seed,
+        "family": family,
         "scenario": scenario,
         "task1_top1": task1["top1"],
         "task1_top2": task1["top2"],
@@ -443,12 +460,13 @@ def summarize(rows: list[dict[str, object]]) -> list[dict[str, object]]:
         "task3_rule_attribution_accuracy",
         "exact_route_coverage",
     ]
-    by_scenario: dict[str, list[dict[str, object]]] = defaultdict(list)
+    grouped: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
     for row in rows:
-        by_scenario[str(row["scenario"])].append(row)
+        grouped[(str(row["family"]), str(row["scenario"]))].append(row)
+        grouped[("ALL_HIDDEN_FAMILIES", str(row["scenario"]))].append(row)
 
     summary: list[dict[str, object]] = []
-    for scenario, scenario_rows in sorted(by_scenario.items()):
+    for (family, scenario), scenario_rows in sorted(grouped.items()):
         for metric in metrics:
             values = [float(row[metric]) for row in scenario_rows]
             higher = metric != "task2_normalized_edit_distance"
@@ -456,6 +474,7 @@ def summarize(rows: list[dict[str, object]]) -> list[dict[str, object]]:
             worst = min(values) if higher else max(values)
             summary.append(
                 {
+                    "family": family,
                     "scenario": scenario,
                     "metric": metric,
                     "direction": "higher_is_better" if higher else "lower_is_better",
@@ -488,40 +507,49 @@ def write_report(per_seed: list[dict[str, object]], summary: list[dict[str, obje
         "task3_accuracy",
         "exact_route_coverage",
     }
-    by_scenario: dict[str, dict[str, dict[str, object]]] = defaultdict(dict)
+    by_group: dict[tuple[str, str], dict[str, dict[str, object]]] = defaultdict(dict)
     for row in summary:
         if row["metric"] in wanted:
-            by_scenario[str(row["scenario"])][str(row["metric"])] = row
+            by_group[(str(row["family"]), str(row["scenario"]))][str(row["metric"])] = row
 
     lines = [
-        "# Hypothetical Fourth-Family OOD Probe",
+        "# Hypothetical Hidden-Family OOD Probe",
         "",
         "This is a local stress test, not an official benchmark.",
         "",
-        "The probe creates a plausible `sic_power` fourth family with new exact",
-        "strings such as `SIC SUBSTRATE ORIENTATION CHECK`, `JTE DOSE",
-        "VERIFICATION`, and `GATE TRENCH CORNER ROUNDING`. It uses the public",
+        "The probe creates two plausible hidden families, `THEFOURTHFAMILY` and",
+        "`THEFIFTHFAMILY`, with new exact strings such as",
+        "`THEFOURTHFAMILY SUBSTRATE ORIENTATION CHECK`,",
+        "`THEFIFTHFAMILY JTE DOSE VERIFICATION`, and",
+        "`THEFIFTHFAMILY GATE TRENCH CORNER ROUNDING`. It uses the public",
         "validator-compatible process structure so the task is still fair rather",
-        "than random.",
+        "than random. The two families intentionally share the same broad route",
+        "architecture because the purpose is to test exact hidden-family names and",
+        "strings, not to invent two unrelated tasks.",
         "",
         "## Scenarios",
         "",
         "| Scenario | Meaning |",
         "| --- | --- |",
         "| `coupled_exact_route_memory` | Best case: the visible anomaly input contains the exact full valid routes that complete the partial rows. |",
-        "| `decoupled_known_fallback_only` | Hard case: no matching fourth-family full routes are visible; fallback only knows MOSFET/IGBT/IC public routes. |",
-        "| `decoupled_visible_family_routes` | Middle case: full valid fourth-family routes are visible, but they are different routes from the evaluated partial rows. The fallback may harvest new strings and contexts. |",
-        "| `oracle_fourth_family_generator_training` | Upper comparator: the fourth-family generator spec is known and can generate training routes, but exact test routes are still not visible. |",
+        "| `decoupled_known_fallback_only` | Hard case: no matching hidden-family full routes are visible; fallback only knows MOSFET/IGBT/IC public routes. |",
+        "| `decoupled_visible_family_routes` | Middle case: full valid hidden-family routes are visible, but they are different routes from the evaluated partial rows. The fallback may harvest new strings and contexts. |",
+        "| `oracle_hidden_family_generator_training` | Upper comparator: the hidden-family generator spec is known and can generate training routes, but exact test routes are still not visible. |",
         "",
         "## 10-Seed Summary",
         "",
-        "| Scenario | Exact route coverage | Task 1 Top-1 | Task 1 Top-3 | Task 1 MRR | Task 2 exact | Task 2 edit distance | Task 2 block | Task 3 accuracy |",
-        "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Family | Scenario | Exact route coverage | Task 1 Top-1 | Task 1 Top-3 | Task 1 MRR | Task 2 exact | Task 2 edit distance | Task 2 block | Task 3 accuracy |",
+        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
-    for scenario in sorted(by_scenario):
-        item = by_scenario[scenario]
+
+    def group_sort_key(item: tuple[str, str]) -> tuple[int, str, str]:
+        family, scenario = item
+        return (0 if family == "ALL_HIDDEN_FAMILIES" else 1, family, scenario)
+
+    for family, scenario in sorted(by_group, key=group_sort_key):
+        item = by_group[(family, scenario)]
         lines.append(
-            f"| `{scenario}` | "
+            f"| `{family}` | `{scenario}` | "
             f"{float(item['exact_route_coverage']['mean']):.4f} | "
             f"{float(item['task1_top1']['mean']):.4f} | "
             f"{float(item['task1_top3']['mean']):.4f} | "
@@ -541,9 +569,9 @@ def write_report(per_seed: list[dict[str, object]], summary: list[dict[str, obje
         "  them.",
         "- If the hidden family is decoupled and its exact strings are not visible,",
         "  exact-string Task 1 and exact Task 2 completion drop sharply.",
-        "- If related fourth-family full routes are visible but not exact matches,",
+        "- If related hidden-family full routes are visible but not exact matches,",
         "  harvesting those routes helps only when local contexts overlap enough.",
-        "- If the fourth-family generator specification is known, synthetic",
+        "- If the hidden-family generator specification is known, synthetic",
         "  training improves the fallback substantially, but it is still not the",
         "  same as seeing the exact test route.",
         "",
@@ -562,57 +590,78 @@ def main() -> None:
     per_seed: list[dict[str, object]] = []
 
     for seed in SEEDS:
-        print(f"evaluating hypothetical fourth family seed {seed}", flush=True)
-        test_sequences = generate_sic_power_dataset(TEST_SEQUENCES_PER_SEED, 90_000 + seed)
-        decoy_sequences = generate_sic_power_dataset(DECOY_VISIBLE_SEQUENCES, 120_000 + seed)
-        oracle_sequences = generate_sic_power_dataset(ORACLE_TRAIN_SEQUENCES, 150_000 + seed)
-
-        valid_examples = build_valid_examples(test_sequences, seed)
-        anomaly_examples = build_anomaly_examples(test_sequences, seed)
-        invalid_anomaly_inputs = [
-            row for row in to_anomaly_inputs(anomaly_examples)
-            if validate_sequence(row.sequence)
-        ]
-        coupled_anomaly_inputs = to_anomaly_inputs(anomaly_examples)
-        decoy_anomaly_inputs = sequences_to_anomaly_inputs(decoy_sequences, seed, "decoy")
-        visible_train = dict(public_train)
-        visible_train.update(decoy_sequences)
-        oracle_train = dict(public_train)
-        oracle_train.update(oracle_sequences)
-
-        scenarios = [
-            (
-                "coupled_exact_route_memory",
-                coupled_anomaly_inputs,
-                public_train,
-            ),
-            (
-                "decoupled_known_fallback_only",
-                invalid_anomaly_inputs,
-                public_train,
-            ),
-            (
-                "decoupled_visible_family_routes",
-                decoy_anomaly_inputs,
-                visible_train,
-            ),
-            (
-                "oracle_fourth_family_generator_training",
-                invalid_anomaly_inputs,
-                oracle_train,
-            ),
-        ]
-        for scenario, fit_inputs, fallback_train in scenarios:
-            per_seed.append(
-                evaluate_scenario(
-                    seed=seed,
-                    scenario=scenario,
-                    valid_examples=valid_examples,
-                    anomaly_examples=anomaly_examples,
-                    fit_anomaly_inputs=fit_inputs,
-                    fallback_train=fallback_train,
-                )
+        print(f"evaluating hypothetical hidden families seed {seed}", flush=True)
+        for family_index, family in enumerate(HIDDEN_FAMILIES):
+            print(f"  {family}", flush=True)
+            seed_offset = 10_000 * family_index
+            test_sequences = generate_hidden_family_dataset(
+                family,
+                TEST_SEQUENCES_PER_SEED,
+                90_000 + seed_offset + seed,
             )
+            decoy_sequences = generate_hidden_family_dataset(
+                family,
+                DECOY_VISIBLE_SEQUENCES,
+                120_000 + seed_offset + seed,
+            )
+            oracle_sequences = generate_hidden_family_dataset(
+                family,
+                ORACLE_TRAIN_SEQUENCES,
+                150_000 + seed_offset + seed,
+            )
+
+            valid_examples = build_valid_examples(family, test_sequences, seed)
+            anomaly_examples = build_anomaly_examples(family, test_sequences, seed)
+            invalid_anomaly_inputs = [
+                row for row in to_anomaly_inputs(anomaly_examples)
+                if validate_sequence(row.sequence)
+            ]
+            coupled_anomaly_inputs = to_anomaly_inputs(anomaly_examples)
+            decoy_anomaly_inputs = sequences_to_anomaly_inputs(
+                family,
+                decoy_sequences,
+                seed,
+                "decoy",
+            )
+            visible_train = dict(public_train)
+            visible_train.update(decoy_sequences)
+            oracle_train = dict(public_train)
+            oracle_train.update(oracle_sequences)
+
+            scenarios = [
+                (
+                    "coupled_exact_route_memory",
+                    coupled_anomaly_inputs,
+                    public_train,
+                ),
+                (
+                    "decoupled_known_fallback_only",
+                    invalid_anomaly_inputs,
+                    public_train,
+                ),
+                (
+                    "decoupled_visible_family_routes",
+                    decoy_anomaly_inputs,
+                    visible_train,
+                ),
+                (
+                    "oracle_hidden_family_generator_training",
+                    invalid_anomaly_inputs,
+                    oracle_train,
+                ),
+            ]
+            for scenario, fit_inputs, fallback_train in scenarios:
+                per_seed.append(
+                    evaluate_scenario(
+                        seed=seed,
+                        family=family,
+                        scenario=scenario,
+                        valid_examples=valid_examples,
+                        anomaly_examples=anomaly_examples,
+                        fit_anomaly_inputs=fit_inputs,
+                        fallback_train=fallback_train,
+                    )
+                )
 
     summary = summarize(per_seed)
     write_csv(OUT_DIR / "per_seed_metrics.csv", list(per_seed[0].keys()), per_seed)
@@ -626,7 +675,7 @@ def main() -> None:
         encoding="utf-8",
     )
     write_report(per_seed, summary)
-    print(f"wrote fourth-family probe outputs to {OUT_DIR.relative_to(ROOT)}")
+    print(f"wrote hidden-family probe outputs to {OUT_DIR.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
