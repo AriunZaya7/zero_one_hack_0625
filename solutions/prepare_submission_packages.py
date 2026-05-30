@@ -172,6 +172,19 @@ SOLUTION_META = {
         "honest_status": "Stronger hidden-family Task 1 proxy than Solutions 9/10 while keeping Solution 10's Task 2 edit distance, but visible Task 1 Top-1 is slightly lower.",
         "checkpoint": "No binary checkpoint is needed; all selected specialists and the consensus gate rebuild deterministically.",
     },
+    "solution_12_mbr_completion": {
+        "title": "Solution 12: OOD-Guarded MBR Completion",
+        "role": "Edit-distance-oriented completion portfolio using Minimum Bayes Risk suffix selection.",
+        "command": "python -B solutions/solution_12_mbr_completion/solution.py",
+        "approach": [
+            "Uses Solution 2 eval-aware retrieval for Task 1 next-step ranking.",
+            "Retrieves top generated/historical suffix candidates from Solution 7's suffix library.",
+            "Selects the suffix with the lowest weighted expected normalized edit distance to the other candidates.",
+            "Uses Solution 8 semantic conformance checking for Task 3 anomaly detection.",
+        ],
+        "honest_status": "Improves local seed-42 Task 2 edit, token, block, and exact metrics versus Solution 11, but inference is slower because it computes pairwise candidate edit distances.",
+        "checkpoint": "No binary checkpoint is needed; all selected specialists and the MBR candidate-risk decoder rebuild deterministically.",
+    },
 }
 
 

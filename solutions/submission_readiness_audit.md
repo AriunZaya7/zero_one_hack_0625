@@ -33,6 +33,7 @@ are local self-eval outputs unless explicitly noted otherwise.
 | `solution_9_judge_aware_portfolio` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Strong visible-task portfolio with better exact completion match than Solution 10, but weaker than Solution 2/8 on IC leave-one-family-out Task 1. |
 | `solution_10_confidence_gated_consensus` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Improves visible Task 2 edit distance versus Solution 9, but exact completion match is lower and Task 1 keeps the same hidden-family caveat as Solution 9. |
 | `solution_11_ood_guarded_consensus` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Stronger hidden-family Task 1 proxy than Solutions 9/10 while keeping Solution 10's Task 2 edit distance, but visible Task 1 Top-1 is slightly lower. |
+| `solution_12_mbr_completion` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Improves local seed-42 Task 2 edit, token, block, and exact metrics versus Solution 11, but inference is slower because it computes pairwise candidate edit distances. |
 
 ## Standalone Completeness Matrix
 
@@ -55,6 +56,7 @@ and a generated package with report/results/training/demo artifacts.
 | `solution_9_judge_aware_portfolio` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_10_confidence_gated_consensus` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_11_ood_guarded_consensus` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_12_mbr_completion` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 
 ## What Counts As Complete Here
 

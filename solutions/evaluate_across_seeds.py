@@ -38,6 +38,7 @@ from solutions.solution_7_monte_carlo_suffix_ensemble import solution as sol7  #
 from solutions.solution_8_semantic_conformance_ensemble import solution as sol8  # noqa: E402
 from solutions.solution_10_confidence_gated_consensus import solution as sol10  # noqa: E402
 from solutions.solution_11_ood_guarded_consensus import solution as sol11  # noqa: E402
+from solutions.solution_12_mbr_completion import solution as sol12  # noqa: E402
 from training_data.generate_sequences import generate_dataset  # noqa: E402
 
 
@@ -57,6 +58,7 @@ def set_solution_seed(seed: int) -> None:
     sol8.SEED = seed
     sol10.SEED = seed
     sol11.SEED = seed
+    sol12.SEED = seed
 
 
 def add_top2(rows: list[dict[str, object]], examples: list[sol0.ValidExample]) -> float:
@@ -461,6 +463,38 @@ def evaluate_solution_11(seed: int) -> MetricDict:
     )
 
 
+def evaluate_solution_12(seed: int) -> MetricDict:
+    cached_task1 = evaluate_solution_7_like(seed)
+    train = cached_task1["train"]
+    valid_examples = cached_task1["valid_examples"]
+    anomaly_examples = cached_task1["anomaly_examples"]
+
+    model = sol12.OODGuardedMBRCompletionPortfolio.__new__(
+        sol12.OODGuardedMBRCompletionPortfolio
+    )
+    model.task1_model = sol2.EvalAwareRetrievalModel(train, train)
+    model.task2_model = CachedCompletionTask2Model(train)
+    model.mbr_used = 0
+    model.fallback_used = 0
+    model.candidate_count_sum = 0
+    model.selected_risk_sum = 0.0
+
+    task1_rows = sol2.predict_task1(model.task1_model, valid_examples)
+    task2_rows = model.predict_task2(valid_examples)
+    task3_rows = sol8.predict_task3_semantic(anomaly_examples)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_12_mbr_completion",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=cached_task1["ood"],
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -474,6 +508,7 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_9_judge_aware_portfolio", evaluate_solution_9),
     ("solution_10_confidence_gated_consensus", evaluate_solution_10),
     ("solution_11_ood_guarded_consensus", evaluate_solution_11),
+    ("solution_12_mbr_completion", evaluate_solution_12),
 )
 
 
@@ -631,7 +666,7 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "For a fixed local split, each one is deterministic. Here, the seed changes the "
         "local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses "
         "deterministic public-generator augmentation inside each run; Solutions 9 and 10 use "
-        "the same augmentation for Task 1. Solutions 7, 8, 9, 10, and 11 "
+        "the same augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 "
         "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
         "regenerating the same 30,000 suffix candidates for every split seed. Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",

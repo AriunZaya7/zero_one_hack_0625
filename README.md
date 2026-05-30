@@ -61,6 +61,7 @@ python -B solutions/solution_8_semantic_conformance_ensemble/solution.py
 python -B solutions/solution_9_judge_aware_portfolio/solution.py
 python -B solutions/solution_10_confidence_gated_consensus/solution.py
 python -B solutions/solution_11_ood_guarded_consensus/solution.py
+python -B solutions/solution_12_mbr_completion/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 

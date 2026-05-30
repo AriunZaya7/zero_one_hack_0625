@@ -65,6 +65,7 @@ submission surface:
 | [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | `python -B solutions/solution_9_judge_aware_portfolio/solution.py` | Complete: judge-aware portfolio docs, outputs, metrics, and submit guide. | Complete package generated. | Strong visible-task bundle with better exact completion than Solution 10, but weaker hidden-family LOFO than the Solution 2/8 family. |
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | `python -B solutions/solution_10_confidence_gated_consensus/solution.py` | Complete: confidence-gated consensus docs, outputs, metrics, and submit guide. | Complete package generated. | Better Task 2 edit distance than Solution 9, but lower exact completion match and same hidden-family LOFO caveat. |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | `python -B solutions/solution_11_ood_guarded_consensus/solution.py` | Complete: OOD-guarded consensus docs, outputs, metrics, and submit guide. | Complete package generated. | Better hidden-family LOFO than Solutions 9/10 while keeping their Task 2 edit-distance gain, but lower visible Task 1 than Solution 10. |
+| [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | `python -B solutions/solution_12_mbr_completion/solution.py` | Complete: OOD-guarded MBR completion docs, outputs, metrics, and submit guide. | Complete package generated. | Best seed-42 Task 2 edit distance so far, but slower and 10-seed block/token averages are not better than Solution 11. |
 
 To refresh all package folders after rerunning solution scripts:
 
@@ -197,6 +198,10 @@ Solution-specific LOFO details:
   eval-aware retrieval specialist for Task 1 LOFO, while keeping the
   confidence-gated Task 2 consensus decoder. Its LOFO Task 1 numbers therefore
   match the conservative Solution 8 family.
+- [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html): uses the Solution 2/8
+  eval-aware retrieval specialist for Task 1 LOFO, while replacing Task 2 with
+  MBR suffix selection. Task 2 changes do not affect this Task 1 proxy, so its
+  LOFO Task 1 numbers match the conservative Solution 8 family.
 
 What LOFO does **not** mean:
 
@@ -229,6 +234,7 @@ engineering, but it is **not** a fair validation score.
 | [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7350`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8661`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0067`, normalized edit distance `0.2333`, token accuracy `0.4737`, block accuracy `0.7367`. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7450`, IGBT `0.7050`, IC `0.5700`. Task 1 LOFO uses the Solution 3 specialist, which is weaker on IC than Solution 2/8. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic task-level selector over completed specialists; no third-party dependencies. | Good: explicitly states the visible-task strength and hidden-family tradeoff. | Strong visible-task portfolio: best current Task 1 specialist, strong Task 2 exact match, and best Task 3 specialist are selected per CSV. | Better open-stack fit: transparent model selection over reproducible public-generator and conformance methods. | Good: standalone docs, research note, 10-seed report, and package generated. | It is a portfolio rather than a unified learned model; Solution 10 slightly improves edit distance while Solution 9 keeps higher exact completion match. |
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7350`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8661`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0033`, normalized edit distance `0.2319`, token accuracy `0.4752`, block accuracy `0.7374`. Consensus used on `117` of `600` rows. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7450`, IGBT `0.7050`, IC `0.5700`. Task 1 LOFO uses the Solution 3 specialist, which is weaker on IC than Solution 2/8. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic confidence gate, fixed top-N consensus, no third-party dependencies. | Good: explicitly states that edit distance improves but exact completion match gets worse. | Stronger Task 2 decoder: risk/consensus-inspired suffix aggregation when candidate agreement is high. | Better open-stack fit: reproducible generated suffix library plus transparent deterministic decoder. | Good: standalone docs, research note, 10-seed report, and package generated. | It is tuned to local edit distance; if official exact completion match is heavily weighted, Solution 9 may be safer. |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0033`, normalized edit distance `0.2319`, token accuracy `0.4752`, block accuracy `0.7374`. Consensus used on `117` of `600` rows. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Task 1 LOFO uses the conservative Solution 2/8 specialist. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic OOD-aware selector, fixed consensus gate, no third-party dependencies. | Good: explicitly states the visible Task 1 loss and hidden-family gain. | Stronger hidden-family portfolio: keeps the current best Task 2 edit-distance decoder while restoring better LOFO Task 1 evidence. | Better open-stack fit: transparent risk-aware model selection over reproducible deterministic specialists. | Good: standalone docs, research note, 10-seed report, and package generated. | Lower visible Task 1 Top-1 than Solutions 9/10 and lower exact completion match than Solution 9. |
+| [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | Implemented and run | Local self-eval: Top-1 `0.7317`, Top-3 `1.0000`, Top-5 `1.0000`, MRR `0.8650`; canonical process-step Top-1 `0.9783`. | Local self-eval: exact match `0.0067`, normalized edit distance `0.2242`, token accuracy `0.4830`, block accuracy `0.7413`. MBR used on all `600` rows with mean candidate count `14.82`. | Local self-eval: accuracy/rule attribution both `1.0000`; uses Solution 8's semantic conformance checker rather than direct validator inference. | LOFO Top-1: MOSFET `0.7800`, IGBT `0.7200`, IC `0.6400`. Task 1 LOFO uses the conservative Solution 2/8 specialist. | Yes: emits all three submission-shaped CSVs plus metrics, README, explanation HTML, submission guide, and package. | Good: deterministic MBR decoder, fixed top-N candidates, no third-party dependencies. | Good: explicitly states the runtime cost and that the 10-seed gain is strongest on edit distance, not block/token averages. | Stronger seed-42 Task 2 edit decoder: selects the candidate suffix with lowest weighted expected normalized edit distance. | Better open-stack fit: reproducible generated suffix library plus metric-aware deterministic decoding. | Good: standalone docs, research note, 10-seed report, and package generated. | Slower than Solution 11 and average 10-seed block/token accuracy is lower despite better edit distance. |
 
 ## Local LOFO Task 1 Proxy Results
 
@@ -250,6 +256,7 @@ held-out known family: `100` sampled held-out-family sequences, each cut at
 | [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | `0.7450` / `0.8717` | `0.7050` / `0.8325` | `0.5700` / `0.7675` | Use Solution 3's synthetic-augmented retrieval specialist for Task 1 LOFO; Task 2 and Task 3 specialists do not affect this Task 1 proxy. |
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | `0.7450` / `0.8717` | `0.7050` / `0.8325` | `0.5700` / `0.7675` | Use Solution 3's synthetic-augmented retrieval specialist for Task 1 LOFO; confidence-gated consensus changes Task 2 only. |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use Solution 2's eval-aware retrieval specialist for Task 1 LOFO; confidence-gated consensus changes Task 2 only. |
+| [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | `0.7800` / `0.8900` | `0.7200` / `0.8392` | `0.6400` / `0.8137` | Use Solution 2's eval-aware retrieval specialist for Task 1 LOFO; MBR completion changes Task 2 only. |
 
 ## 10-Seed Stability Summary
 
@@ -262,8 +269,8 @@ seed changes the local train/held-out split, anomaly shuffle, and OOD sampling.
 Metrics marked as constant did not change across those split seeds.
 
 The saved report now covers all implemented solution folders from Solution 0
-through Solution 11. Solutions 9 and 10 use Solution 3-style deterministic
-generator augmentation for Task 1. Solutions 7, 8, 9, 10, and 11 reuse the same
+through Solution 12. Solutions 9 and 10 use Solution 3-style deterministic
+generator augmentation for Task 1. Solutions 7, 8, 9, 10, 11, and 12 reuse the same
 cached Monte Carlo suffix library during the 10-seed run so the reported
 metrics still match their committed method while avoiding redundant generation
 work.
@@ -282,6 +289,7 @@ work.
 | [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | Split-seed variation only; portfolio rule and component methods are deterministic for a fixed split. | `0.6970` | `0.7150` (seed `4`) | `0.6767` (seed `0`) | `0.8462` | `0.7347` | `0.2334` | `1.0000` constant | `0.6622` |
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | Split-seed variation only; consensus gate and component methods are deterministic for a fixed split. | `0.6970` | `0.7150` (seed `4`) | `0.6767` (seed `0`) | `0.8462` | `0.7348` | `0.2327` | `1.0000` constant | `0.6622` |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | Split-seed variation only; OOD-guarded selector and component methods are deterministic for a fixed split. | `0.6962` | `0.7200` (seed `9`) | `0.6667` (seed `6`) | `0.8455` | `0.7348` | `0.2327` | `1.0000` constant | `0.6787` |
+| [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | Split-seed variation only; MBR selector and component methods are deterministic for a fixed split. | `0.6960` | `0.7200` (seed `9`) | `0.6650` (seed `6`) | `0.8454` | `0.7248` | `0.2260` | `1.0000` constant | `0.6787` |
 
 Alias-normalized canonical process-step diagnostic across the same 10 seeds:
 
@@ -299,6 +307,7 @@ Alias-normalized canonical process-step diagnostic across the same 10 seeds:
 | [`solution_9_judge_aware_portfolio`](solution_9_judge_aware_portfolio/explanation.html) | `0.9747` | `0.9817` (seed `0`) | `0.9683` (seed `1`) | `0.9993` | `0.9160` |
 | [`solution_10_confidence_gated_consensus`](solution_10_confidence_gated_consensus/explanation.html) | `0.9747` | `0.9817` (seed `0`) | `0.9683` (seed `1`) | `0.9993` | `0.9160` |
 | [`solution_11_ood_guarded_consensus`](solution_11_ood_guarded_consensus/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
+| [`solution_12_mbr_completion`](solution_12_mbr_completion/explanation.html) | `0.9730` | `0.9783` (seed `9`) | `0.9683` (seed `1`) | `0.9992` | `0.9110` |
 
 ## Criteria Notes
 
