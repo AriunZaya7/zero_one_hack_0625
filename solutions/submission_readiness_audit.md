@@ -29,6 +29,7 @@ are local self-eval outputs unless explicitly noted otherwise.
 | `solution_5_tuned_rank_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Useful ablation; does not beat Solution 3 in-distribution or Solution 2/4 on LOFO. |
 | `solution_6_alias_calibrated_retrieval` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Preserves Task 1 coverage and slightly improves Task 2 completion metrics, but does not beat Solution 3 in-distribution. |
 | `solution_7_monte_carlo_suffix_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Best deterministic Task 2 completion attempt so far by normalized edit distance, but still not a neural model and still alias-limited for exact Top-1. |
+| `solution_8_semantic_conformance_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Keeps perfect local Task 3 metrics without direct validator inference, but remains symbolic rather than neural. |
 
 ## What Counts As Complete Here
 

@@ -120,6 +120,19 @@ SOLUTION_META = {
         "honest_status": "Best deterministic Task 2 completion attempt so far by normalized edit distance, but still not a neural model and still alias-limited for exact Top-1.",
         "checkpoint": "No binary checkpoint is needed; generated suffix library and retrieval tables are rebuilt deterministically.",
     },
+    "solution_8_semantic_conformance_ensemble": {
+        "title": "Solution 8: Semantic Conformance Ensemble",
+        "role": "Solution 7 plus an independent explainable Task 3 conformance checker.",
+        "command": "python -B solutions/solution_8_semantic_conformance_ensemble/solution.py",
+        "approach": [
+            "Reuses Solution 7's task-specialized next-step and completion ensemble.",
+            "Detects anomaly rules with an independent semantic conformance checker.",
+            "Avoids calling validate_sequence() in the Task 3 prediction path.",
+            "Reports rule-level explanations through explicit process-order features.",
+        ],
+        "honest_status": "Keeps perfect local Task 3 metrics without direct validator inference, but remains symbolic rather than neural.",
+        "checkpoint": "No binary checkpoint is needed; conformance rules and retrieval tables are rebuilt deterministically.",
+    },
 }
 
 

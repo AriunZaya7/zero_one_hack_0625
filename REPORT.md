@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of seven Industrial AI sequence-modeling solution
+We built a reproducible suite of eight Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -46,6 +46,9 @@ are clearly marked as local self-eval scores.
   adds canonical-context exact-label alias calibration.
 - `solution_7_monte_carlo_suffix_ensemble`: keeps Solution 2 for Task 1 but
   uses a larger generated Monte Carlo suffix library for Task 2 completion.
+- `solution_8_semantic_conformance_ensemble`: keeps Solution 7's Task 1 and
+  Task 2 specialists, but replaces direct validator inference with a semantic
+  conformance checker for Task 3.
 
 ## How To Run It
 
@@ -61,6 +64,7 @@ python -B solutions/solution_4_length_aware_completion/solution.py
 python -B solutions/solution_5_tuned_rank_ensemble/solution.py
 python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
 python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
+python -B solutions/solution_8_semantic_conformance_ensemble/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -87,6 +91,7 @@ Headline seed-42 local self-eval:
 | `solution_5_tuned_rank_ensemble` | `0.7300` | `0.8642` | `0.2420` | `0.7167` | `1.0000` |
 | `solution_6_alias_calibrated_retrieval` | `0.7317` | `0.8644` | `0.2405` | `0.7189` | `1.0000` |
 | `solution_7_monte_carlo_suffix_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
+| `solution_8_semantic_conformance_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 
 Task 3 is perfect locally because the current solution family uses the public
 validator oracle. That is useful as a baseline and sanity check, but it is not
@@ -94,11 +99,13 @@ evidence of learned anomaly detection.
 
 ## What Worked
 
-- All seven solutions emit the required Industrial AI CSV shapes.
+- All eight solutions emit the required Industrial AI CSV shapes.
 - Retrieval strongly improves Task 2 completion over the simple n-gram baseline.
 - The larger Monte Carlo suffix library in Solution 7 improves local Task 2
   edit distance, token accuracy, and block accuracy over the earlier
   deterministic attempts.
+- Solution 8 keeps the perfect local anomaly score while removing the direct
+  `validate_sequence()` call from the Task 3 prediction path.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
   alias misses rather than process-order mistakes.
 - Each solution now has a submission package matching the repo checklist.

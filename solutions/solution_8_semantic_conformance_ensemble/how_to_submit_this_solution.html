@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit Solution 8</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c2530; background: #fff; line-height: 1.58; }
+    main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 72px; }
+    header { border-bottom: 1px solid #d9e0e8; margin-bottom: 28px; padding-bottom: 20px; }
+    h1 { margin: 0 0 10px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-top: 10px; border-top: 1px solid #d9e0e8; font-size: 1.28rem; letter-spacing: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #13202d; background: #eef2f6; border: 1px solid #dbe3ec; border-radius: 4px; padding: 1px 4px; font-size: 0.93em; }
+    pre { overflow-x: auto; background: #0f1b26; color: #edf4fb; border-radius: 6px; padding: 14px 16px; line-height: 1.45; font-size: 0.91rem; }
+    pre code { background: transparent; color: inherit; border: 0; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0 20px; }
+    th, td { border: 1px solid #d9e0e8; padding: 9px 10px; vertical-align: top; }
+    th { background: #eef3f7; text-align: left; }
+    .warning { background: #fff8eb; border-left: 4px solid #875c13; padding: 12px 14px; margin: 14px 0; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>How To Submit Solution 8</h1>
+    <p>
+      This page gives the manual steps for regenerating and packaging
+      <code>solution_8_semantic_conformance_ensemble</code>.
+    </p>
+  </header>
+
+  <section>
+    <h2>Step 1: Confirm Branch</h2>
+    <pre><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current</code></pre>
+    <p>The branch should be <code>dev/bati</code>.</p>
+  </section>
+
+  <section>
+    <h2>Step 2: Run Solution 8</h2>
+    <pre><code>python -B solutions/solution_8_semantic_conformance_ensemble/solution.py</code></pre>
+    <p>
+      This writes local outputs to:
+    </p>
+    <pre><code>solutions/solution_8_semantic_conformance_ensemble/outputs/nextstep.csv
+solutions/solution_8_semantic_conformance_ensemble/outputs/completion.csv
+solutions/solution_8_semantic_conformance_ensemble/outputs/anomaly.csv
+solutions/solution_8_semantic_conformance_ensemble/outputs/metrics.json
+solutions/solution_8_semantic_conformance_ensemble/outputs/metrics.md</code></pre>
+  </section>
+
+  <section>
+    <h2>Step 3: Regenerate Package</h2>
+    <pre><code>python -B solutions/prepare_submission_packages.py</code></pre>
+    <p>
+      The generated package will be:
+    </p>
+    <pre><code>solutions/solution_8_semantic_conformance_ensemble/submission_package/</code></pre>
+  </section>
+
+  <section>
+    <h2>Step 4: Check CSV Headers And Row Counts</h2>
+    <pre><code>wc -l solutions/solution_8_semantic_conformance_ensemble/outputs/nextstep.csv
+wc -l solutions/solution_8_semantic_conformance_ensemble/outputs/completion.csv
+wc -l solutions/solution_8_semantic_conformance_ensemble/outputs/anomaly.csv</code></pre>
+    <p>Each file should have <code>601</code> lines: one header plus 600 local rows.</p>
+    <pre><code>head -1 solutions/solution_8_semantic_conformance_ensemble/outputs/nextstep.csv
+head -1 solutions/solution_8_semantic_conformance_ensemble/outputs/completion.csv
+head -1 solutions/solution_8_semantic_conformance_ensemble/outputs/anomaly.csv</code></pre>
+    <p>Expected headers:</p>
+    <pre><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5
+EXAMPLE_ID,PREDICTED_SEQUENCE
+EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE</code></pre>
+  </section>
+
+  <section>
+    <h2>Step 5: Submission Mapping</h2>
+    <div class="warning">
+      <p>
+        The committed CSVs are local self-eval outputs. If organizers provide
+        official eval input files, adapt the runner to read those official rows
+        and emit the same output column formats.
+      </p>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Organizer item</th>
+          <th>Use this package artifact</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 CSV</td>
+          <td><code>submission_package/extras/results/nextstep.csv</code></td>
+        </tr>
+        <tr>
+          <td>Task 2 CSV</td>
+          <td><code>submission_package/extras/results/completion.csv</code></td>
+        </tr>
+        <tr>
+          <td>Task 3 CSV</td>
+          <td><code>submission_package/extras/results/anomaly.csv</code></td>
+        </tr>
+        <tr>
+          <td>Report</td>
+          <td><code>submission_package/REPORT.md</code></td>
+        </tr>
+        <tr>
+          <td>Demo material</td>
+          <td><code>submission_package/extras/demo/</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Step 6: Commit And Push Changes</h2>
+    <pre><code>git status --short
+git add README.md REPORT.md solutions/prepare_submission_packages.py solutions/solutions_comparison.md solutions/submission_readiness_audit.md solutions/solution_8_semantic_conformance_ensemble systematic_researches/systematic_research_3.md
+git diff --cached --check
+git commit -m "Add semantic conformance ensemble solution"
+git push</code></pre>
+  </section>
+</main>
+</body>
+</html>
