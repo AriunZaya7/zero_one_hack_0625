@@ -12,15 +12,15 @@
 - Top-3: 1.0000
 - Top-5: 1.0000
 - MRR: 0.8644
-- Canonical Top-1: 0.9783
+- Diagnostic-only canonical Top-1: 0.9783
 - Same-canonical misses: 148 / 161
 
 ## Task 2
 
 - Exact match: 0.0000
-- Normalized edit distance: 0.2405
-- Token accuracy: 0.4496
-- Block accuracy: 0.7189
+- Normalized edit distance: 0.2406
+- Token accuracy: 0.4492
+- Block accuracy: 0.7187
 
 ## Task 3
 

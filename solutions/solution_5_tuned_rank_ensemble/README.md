@@ -29,7 +29,7 @@ solutions/solution_5_tuned_rank_ensemble/outputs/
 | Task 1 Top-3 | 1.0000 |
 | Task 1 Top-5 | 1.0000 |
 | Task 1 MRR | 0.8642 |
-| Canonical Top-1 | 0.9750 |
+| Diagnostic-only canonical Top-1 | 0.9750 |
 | Task 2 normalized edit distance | 0.2420 |
 | Task 2 token accuracy | 0.4485 |
 | Task 2 block accuracy | 0.7167 |

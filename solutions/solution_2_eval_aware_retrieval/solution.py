@@ -90,6 +90,11 @@ class LookupContinuation:
     source_key: str
 
 
+def counter_items_ranked(counter: Counter) -> list[tuple[object, int]]:
+    """Return Counter items with deterministic tie-breaking."""
+    return sorted(counter.items(), key=lambda item: (-item[1], item[0]))
+
+
 class EvalAwareRetrievalModel:
     """Exact cut-prefix lookup in front of Solution 1 retrieval."""
 
@@ -160,7 +165,7 @@ class EvalAwareRetrievalModel:
         hits = self.lookup(prefix, family, completion_fraction)
         if hits:
             counts = Counter(hit.next_step for hit in hits)
-            lookup_ranks = [step for step, _ in counts.most_common()]
+            lookup_ranks = [step for step, _ in counter_items_ranked(counts)]
             fallback_ranks = self.fallback.next_step_ranking(
                 prefix,
                 family=family,
@@ -190,7 +195,7 @@ class EvalAwareRetrievalModel:
         hits = self.lookup(prefix, family, completion_fraction)
         if hits:
             counts = Counter(tuple(hit.suffix) for hit in hits)
-            return list(counts.most_common(1)[0][0])
+            return list(counter_items_ranked(counts)[0][0])
 
         return self.fallback.complete(
             prefix,
@@ -216,7 +221,7 @@ def all_public_sequences(
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
@@ -323,7 +328,7 @@ def evaluate_canonical_task1(
                 "truth": truth,
                 "same_canonical": canonical(predicted) == canonical(truth),
             }
-            for (predicted, truth), count in miss_pairs.most_common(20)
+            for (predicted, truth), count in counter_items_ranked(miss_pairs)[:20]
         ],
     }
 
@@ -342,8 +347,8 @@ def evaluate_lookup_coverage(
         covered += 1
         next_counts = Counter(hit.next_step for hit in hits)
         suffix_counts = Counter(tuple(hit.suffix) for hit in hits)
-        exact_next_hits += next_counts.most_common(1)[0][0] == ex.truth_next
-        exact_suffix_hits += list(suffix_counts.most_common(1)[0][0]) == ex.truth_remainder
+        exact_next_hits += counter_items_ranked(next_counts)[0][0] == ex.truth_next
+        exact_suffix_hits += list(counter_items_ranked(suffix_counts)[0][0]) == ex.truth_remainder
 
     n = len(examples)
     return {
@@ -443,7 +448,7 @@ def write_asset_audit(audit: dict[str, object]) -> None:
         "Solution 2 uses exact cut-prefix lookup only when a partial sequence is already present in public provided data.",
         "Fair self-eval disables held-out lookup by indexing only the training side of the local split.",
         "Fallback predictions use Solution 1's hybrid retrieval plus a small family-aware grammar rerank.",
-        "The metrics include canonical/process-step accuracy because exact aliases are often randomized by the generator.",
+        "Canonical/process-step accuracy is reported only as a diagnostic because official Task 1 scoring uses exact strings.",
     ]
     (OUT_DIR / "input_audit.json").write_text(
         json.dumps(audit, indent=2, sort_keys=True) + "\n",
@@ -519,10 +524,14 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- MRR: {task1['mrr']:.4f}",
         f"- Examples: {task1['n_examples']}",
         "",
-        "## Fair Self-Eval: Canonical Process Step",
+        "## Diagnostic Only: Canonical Process Step",
         "",
-        f"- Canonical Top-1: {canonical['canonical_top1']:.4f}",
-        f"- Canonical Top-2: {canonical['canonical_top2']:.4f}",
+        "These alias-normalized values are not official scoring metrics. The official",
+        "Task 1 evaluator scores exact strings in `RANK_1` through `RANK_5`. Use this",
+        "section only to understand where exact-string misses come from.",
+        "",
+        f"- Diagnostic-only canonical Top-1: {canonical['canonical_top1']:.4f}",
+        f"- Diagnostic-only canonical Top-2: {canonical['canonical_top2']:.4f}",
         f"- Same-canonical misses: {canonical['same_canonical_misses']} / {canonical['exact_top1_misses']}",
         "",
         "## Public Lookup Diagnostic",
@@ -562,7 +571,8 @@ def write_metrics(metrics: dict[str, object]) -> None:
         "## Main Interpretation",
         "",
         "- The fair exact Top-1 score barely moves because most remaining misses are randomized aliases.",
-        "- Exact Top-2 and canonical Top-1 are the better indicators of process understanding here.",
+        "- Exact Top-1, Top-3, Top-5, and MRR are the official-shaped Task 1 headline metrics.",
+        "- Diagnostic-only canonical Top-1 is for process-understanding analysis, not a replacement headline score.",
         "- A real submission should still keep the exact public lookup stage because it is harmless when there is no overlap and decisive if there is overlap.",
         "",
     ]
@@ -664,17 +674,17 @@ def run_official_inputs(
 
     out_dir.mkdir(parents=True, exist_ok=True)
     write_csv(
-        out_dir / "task1_nextstep.csv",
+        out_dir / "nextstep.csv",
         ["EXAMPLE_ID", "RANK_1", "RANK_2", "RANK_3", "RANK_4", "RANK_5"],
         nextstep_rows,
     )
     write_csv(
-        out_dir / "task2_completion.csv",
+        out_dir / "completion.csv",
         ["EXAMPLE_ID", "PREDICTED_SEQUENCE"],
         completion_rows,
     )
     write_csv(
-        out_dir / "task3_anomaly.csv",
+        out_dir / "anomaly.csv",
         ["EXAMPLE_ID", "IS_VALID", "SCORE", "PREDICTED_RULE"],
         anomaly_predictions,
     )
@@ -690,9 +700,9 @@ def run_official_inputs(
         "public_cut_prefix_lookup_coverage": lookup_covered / max(len(valid_rows), 1),
         "sequence_inventory": sequence_inventory,
         "outputs": {
-            "task1": str(out_dir / "task1_nextstep.csv"),
-            "task2": str(out_dir / "task2_completion.csv"),
-            "task3": str(out_dir / "task3_anomaly.csv"),
+            "task1": str(out_dir / "nextstep.csv"),
+            "task2": str(out_dir / "completion.csv"),
+            "task3": str(out_dir / "anomaly.csv"),
         },
     }
     (out_dir / "official_run_manifest.json").write_text(

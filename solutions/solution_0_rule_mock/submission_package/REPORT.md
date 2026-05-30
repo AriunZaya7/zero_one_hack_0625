@@ -45,13 +45,14 @@ Headline scores:
 - **Task 1 exact Top-5:** `1.0000`
 - **Task 1 MRR:** `0.8336`
 - **Task 2 exact match:** `0.0000`
-- **Task 2 normalized edit distance:** `0.6152`
-- **Task 2 token accuracy:** `0.2073`
-- **Task 2 block accuracy:** `0.3922`
+- **Task 2 normalized edit distance:** `0.6026`
+- **Task 2 token accuracy:** `0.2101`
+- **Task 2 block accuracy:** `0.3752`
 - **Task 3 accuracy:** `1.0000`
 - **Task 3 F1 valid:** `1.0000`
 - **Task 3 ROC-AUC valid probability:** `1.0000`
 - **Task 3 rule attribution accuracy:** `1.0000`
+
 
 The raw files are in `extras/results/`. The official `eval_metrics.py`
 and hidden ground truth are not in this checkout, so these are local

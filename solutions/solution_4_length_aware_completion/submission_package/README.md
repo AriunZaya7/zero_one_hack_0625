@@ -44,6 +44,11 @@ These are local self-eval scores because the official hidden eval files and
 | Task 3 | F1 valid | `1.0000` |
 | Task 3 | ROC-AUC valid probability | `1.0000` |
 
+If a copied `metrics.md` file also contains canonical/process-step
+numbers, treat those as diagnostics only. The official Task 1
+submission contract scores exact strings in `RANK_1` through
+`RANK_5`.
+
 ## Honesty Note
 
 Improves block alignment slightly but worsens normalized edit distance.

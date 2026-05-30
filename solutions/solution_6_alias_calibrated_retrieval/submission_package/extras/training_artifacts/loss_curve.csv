@@ -1,2 +1,2 @@
 step,phase,loss,task1_top1,task1_mrr,task2_normalized_edit_distance,task2_block_accuracy,task3_accuracy,notes
-0,deterministic_fit,not_applicable,0.7317,0.8644,0.2405,0.7189,1.0000,"No gradient training loss; row records final local metrics."
+0,deterministic_fit,not_applicable,0.7317,0.8644,0.2406,0.7187,1.0000,"No gradient training loss; row records final local metrics."

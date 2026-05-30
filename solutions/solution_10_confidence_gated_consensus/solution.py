@@ -111,7 +111,7 @@ class ConfidenceGatedConsensusPortfolio:
                     votes["<end>"] += 0.5 * weight
 
             total = sum(votes.values())
-            token, score = votes.most_common(1)[0]
+            token, score = sorted(votes.items(), key=lambda item: (-item[1], item[0]))[0]
             token_shares.append(score / max(total, 1e-9))
             if token == "<end>":
                 break
@@ -190,7 +190,7 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- Top-3: {task1['top3']:.4f}",
         f"- Top-5: {task1['top5']:.4f}",
         f"- MRR: {task1['mrr']:.4f}",
-        f"- Canonical Top-1: {canonical['canonical_top1']:.4f}",
+        f"- Diagnostic-only canonical Top-1: {canonical['canonical_top1']:.4f}",
         "",
         "## Task 2",
         "",

@@ -31,7 +31,7 @@ solutions/solution_12_mbr_completion/outputs/
 
 - Task 1 Top-1: `0.7317`
 - Task 1 MRR: `0.8650`
-- Canonical process-step Top-1: `0.9783`
+- Diagnostic-only canonical process-step Top-1: `0.9783`
 - Task 2 exact match: `0.0067`
 - Task 2 normalized edit distance: `0.2242`
 - Task 2 token accuracy: `0.4830`

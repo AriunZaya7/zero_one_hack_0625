@@ -56,7 +56,7 @@ class NGramModel:
     def next_step_ranking(self, prefix, k: int = 5):
         ctx = tuple(["<bos>"] + list(prefix))
         scored = [(t, self._prob(ctx, t)) for t in self.vocab if t != "<bos>"]
-        scored.sort(key=lambda x: x[1], reverse=True)
+        scored.sort(key=lambda x: (-x[1], x[0]))
         return [t for t, _ in scored[:k]]
 
     def complete(self, prefix, max_len: int = 200):

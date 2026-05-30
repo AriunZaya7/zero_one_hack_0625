@@ -19,7 +19,7 @@ self-eval split.
 
 - Uses exact public cut-prefix lookup when an eval partial already exists in public data.
 - Falls back to hybrid retrieval when no exact prefix is found.
-- Reports exact metrics separately from canonical process-step alias diagnostics.
+- Reports exact metrics separately from diagnostic-only canonical process-step alias metrics.
 
 ## How To Run It
 
@@ -44,7 +44,6 @@ Headline scores:
 - **Task 1 exact Top-3:** `1.0000`
 - **Task 1 exact Top-5:** `1.0000`
 - **Task 1 MRR:** `0.8650`
-- **Canonical process-step Top-1:** `0.9783` local diagnostic
 - **Task 2 exact match:** `0.0017`
 - **Task 2 normalized edit distance:** `0.2420`
 - **Task 2 token accuracy:** `0.4485`
@@ -53,6 +52,13 @@ Headline scores:
 - **Task 3 F1 valid:** `1.0000`
 - **Task 3 ROC-AUC valid probability:** `1.0000`
 - **Task 3 rule attribution accuracy:** `1.0000`
+
+
+## Diagnostic Metrics
+
+- **Diagnostic-only canonical process-step Top-1:** `0.9783`
+
+This alias-normalized number is not an official jury metric and is not a replacement headline score. It is included only to diagnose whether exact Task 1 misses are process-order mistakes or exact string alias misses. The official-shaped Task 1 scores above are the exact-string Top-1, Top-3, Top-5, and MRR numbers.
 
 The raw files are in `extras/results/`. The official `eval_metrics.py`
 and hidden ground truth are not in this checkout, so these are local

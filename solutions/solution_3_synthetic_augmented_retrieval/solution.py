@@ -36,7 +36,7 @@ from training_data.generate_sequences import generate_dataset  # noqa: E402
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
@@ -122,7 +122,7 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- Top-3: {task1['top3']:.4f}",
         f"- Top-5: {task1['top5']:.4f}",
         f"- MRR: {task1['mrr']:.4f}",
-        f"- Canonical Top-1: {canonical['canonical_top1']:.4f}",
+        f"- Diagnostic-only canonical Top-1: {canonical['canonical_top1']:.4f}",
         "",
         "## Task 2",
         "",

@@ -22,8 +22,8 @@ python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
 
 - Task 1 Top-1: `0.7317`
 - Task 1 MRR: `0.8644`
-- Task 2 normalized edit distance: `0.2405`
-- Task 2 block accuracy: `0.7189`
+- Task 2 normalized edit distance: `0.2406`
+- Task 2 block accuracy: `0.7187`
 - Task 3 accuracy: `1.0000`
 
 ## Checkpoint Status

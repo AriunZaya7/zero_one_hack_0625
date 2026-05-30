@@ -71,7 +71,7 @@ class CanonicalAliasCalibrator:
                 context = tuple(canonical_prefix[-context_len:]) if context_len else ()
                 counter = self.counts.get((family_key, context_len, context, canonical_next))
                 if counter:
-                    return counter.most_common(1)[0][0]
+                    return sorted(counter.items(), key=lambda item: (-item[1], item[0]))[0][0]
         return fallback
 
 
@@ -216,7 +216,7 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- Top-3: {task1['top3']:.4f}",
         f"- Top-5: {task1['top5']:.4f}",
         f"- MRR: {task1['mrr']:.4f}",
-        f"- Canonical Top-1: {canonical['canonical_top1']:.4f}",
+        f"- Diagnostic-only canonical Top-1: {canonical['canonical_top1']:.4f}",
         f"- Same-canonical misses: {canonical['same_canonical_misses']} / {canonical['exact_top1_misses']}",
         "",
         "## Task 2",

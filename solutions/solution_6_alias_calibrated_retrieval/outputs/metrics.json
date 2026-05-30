@@ -203,15 +203,15 @@
       },
       {
         "count": 13,
-        "predicted": "PASSIVATION ETCH",
-        "same_canonical": true,
-        "truth": "PASSIVATION ETCH PAD OPENING"
-      },
-      {
-        "count": 13,
         "predicted": "MEASURE PASSIVATION THICKNESS",
         "same_canonical": true,
         "truth": "MEASURE PASSIVATION QUALITY"
+      },
+      {
+        "count": 13,
+        "predicted": "PASSIVATION ETCH",
+        "same_canonical": true,
+        "truth": "PASSIVATION ETCH PAD OPENING"
       },
       {
         "count": 11,
@@ -221,27 +221,27 @@
       },
       {
         "count": 8,
-        "predicted": "DEVELOP PAD WINDOW",
-        "same_canonical": true,
-        "truth": "DEVELOP PHOTORESIST"
-      },
-      {
-        "count": 8,
         "predicted": "CMP INTERLAYER DIELECTRIC",
         "same_canonical": true,
         "truth": "CMP DIELECTRIC"
       },
       {
-        "count": 7,
-        "predicted": "MEASURE VIA CD",
-        "same_canonical": false,
-        "truth": "DEPOSIT BARRIER METAL"
+        "count": 8,
+        "predicted": "DEVELOP PAD WINDOW",
+        "same_canonical": true,
+        "truth": "DEVELOP PHOTORESIST"
       },
       {
         "count": 7,
         "predicted": "MEASURE SURFACE PLANARITY",
         "same_canonical": true,
         "truth": "MEASURE PLANARITY"
+      },
+      {
+        "count": 7,
+        "predicted": "MEASURE VIA CD",
+        "same_canonical": false,
+        "truth": "DEPOSIT BARRIER METAL"
       },
       {
         "count": 7,
@@ -287,6 +287,12 @@
       },
       {
         "count": 3,
+        "predicted": "MEASURE FILM THICKNESS",
+        "same_canonical": true,
+        "truth": "MEASURE DIELECTRIC THICKNESS"
+      },
+      {
+        "count": 3,
         "predicted": "MEASURE LINE WIDTH",
         "same_canonical": false,
         "truth": "DEPOSIT PASSIVATION"
@@ -296,12 +302,6 @@
         "predicted": "MEASURE LINE WIDTH",
         "same_canonical": false,
         "truth": "DEPOSIT PASSIVATION LAYER"
-      },
-      {
-        "count": 3,
-        "predicted": "MEASURE FILM THICKNESS",
-        "same_canonical": true,
-        "truth": "MEASURE DIELECTRIC THICKNESS"
       },
       {
         "count": 3,
@@ -319,11 +319,11 @@
     "top5": 1.0
   },
   "task2_completion": {
-    "block_accuracy": 0.7188713174337488,
+    "block_accuracy": 0.7187279316798172,
     "exact_match": 0.0,
     "n_examples": 600,
-    "normalized_edit_distance": 0.24045788588116876,
-    "token_accuracy": 0.4496033055661224
+    "normalized_edit_distance": 0.2405507539321353,
+    "token_accuracy": 0.4492309971821309
   },
   "task3_anomaly": {
     "accuracy": 1.0,

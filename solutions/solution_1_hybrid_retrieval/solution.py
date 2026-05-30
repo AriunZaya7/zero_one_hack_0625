@@ -130,7 +130,7 @@ class HybridRetrievalModel:
             if len(hits) >= min_items:
                 break
 
-        hits.sort(key=lambda hit: hit.score, reverse=True)
+        hits.sort(key=lambda hit: (-hit.score, hit.key, hit.position))
         return hits
 
     def next_step_ranking(
@@ -153,7 +153,7 @@ class HybridRetrievalModel:
             scores[step] += 10.0 / (rank + 1)
 
         ranked = [
-            step for step, _ in sorted(scores.items(), key=lambda item: item[1], reverse=True)
+            step for step, _ in sorted(scores.items(), key=lambda item: (-item[1], item[0]))
             if step != "<eos>"
         ]
         return (ranked + [""] * k)[:k]
@@ -199,7 +199,7 @@ class HybridRetrievalModel:
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow(row)

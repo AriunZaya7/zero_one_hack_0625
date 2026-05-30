@@ -38,7 +38,7 @@ from solutions.solution_2_eval_aware_retrieval import solution as sol2  # noqa: 
 def write_csv(path: Path, fieldnames: list[str], rows: Iterable[dict[str, object]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         for row in rows:
             writer.writerow(row)
@@ -71,7 +71,7 @@ class TunedRankEnsembleModel:
                 scores[step] += NGRAM_WEIGHT / (rank + 1) / len(self.ngrams)
 
         ranked = [
-            step for step, _ in sorted(scores.items(), key=lambda item: item[1], reverse=True)
+            step for step, _ in sorted(scores.items(), key=lambda item: (-item[1], item[0]))
             if step != "<eos>"
         ]
         return (ranked + [""] * k)[:k]
@@ -168,7 +168,7 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- Top-3: {task1['top3']:.4f}",
         f"- Top-5: {task1['top5']:.4f}",
         f"- MRR: {task1['mrr']:.4f}",
-        f"- Canonical Top-1: {canonical['canonical_top1']:.4f}",
+        f"- Diagnostic-only canonical Top-1: {canonical['canonical_top1']:.4f}",
         "",
         "## Task 2",
         "",

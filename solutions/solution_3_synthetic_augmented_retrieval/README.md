@@ -29,7 +29,7 @@ solutions/solution_3_synthetic_augmented_retrieval/outputs/
 | Task 1 Top-3 | 1.0000 |
 | Task 1 Top-5 | 1.0000 |
 | Task 1 MRR | 0.8661 |
-| Canonical Top-1 | 0.9783 |
+| Diagnostic-only canonical Top-1 | 0.9783 |
 | Task 2 normalized edit distance | 0.2395 |
 | Task 2 token accuracy | 0.4580 |
 | Task 2 block accuracy | 0.7252 |

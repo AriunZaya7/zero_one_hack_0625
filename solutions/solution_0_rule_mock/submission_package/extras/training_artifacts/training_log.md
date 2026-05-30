@@ -22,8 +22,8 @@ python -B solutions/solution_0_rule_mock/solution.py
 
 - Task 1 Top-1: `0.6800`
 - Task 1 MRR: `0.8336`
-- Task 2 normalized edit distance: `0.6152`
-- Task 2 block accuracy: `0.3922`
+- Task 2 normalized edit distance: `0.6026`
+- Task 2 block accuracy: `0.3752`
 - Task 3 accuracy: `1.0000`
 
 ## Checkpoint Status

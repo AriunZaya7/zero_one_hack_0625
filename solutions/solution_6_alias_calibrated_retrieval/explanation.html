@@ -41,7 +41,7 @@
       </p>
       <p>
         Earlier solutions showed a strange but important pattern: exact Top-1
-        is around the low 0.70s, while canonical process-step Top-1 is around
+        is around the low 0.70s, while diagnostic-only canonical process-step Top-1 is around
         0.97. In plain language, the model often predicts the right operation
         but not the same wording. For example, <code>STRIP PHOTORESIST</code>
         and <code>STRIP RESIST</code> are very similar operations, but an exact
@@ -127,7 +127,7 @@
           <tr><td>Task 1 Top-1</td><td>0.7317</td><td>Exact first string match.</td></tr>
           <tr><td>Task 1 Top-3 / Top-5</td><td>1.0000 / 1.0000</td><td>The exact answer appears somewhere in the first three and first five predictions locally.</td></tr>
           <tr><td>Task 1 MRR</td><td>0.8644</td><td>How high the correct answer appears in the ranked list.</td></tr>
-          <tr><td>Canonical Top-1</td><td>0.9783</td><td>Whether the first answer has the right operation after alias normalization.</td></tr>
+          <tr><td>Diagnostic-only canonical Top-1</td><td>0.9783</td><td>Alias-normalized diagnostic only: whether the first answer has the right operation after alias normalization.</td></tr>
           <tr><td>Task 2 normalized edit distance</td><td>0.2405</td><td>Lower is better for suffix completion.</td></tr>
           <tr><td>Task 2 token / block accuracy</td><td>0.4496 / 0.7189</td><td>How much of the suffix matches exact positions and coarse process blocks.</td></tr>
           <tr><td>Task 3 accuracy</td><td>1.0000</td><td>Validator-oracle anomaly score on local self-eval.</td></tr>

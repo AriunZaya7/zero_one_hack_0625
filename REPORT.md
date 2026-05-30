@@ -113,13 +113,13 @@ Headline seed-42 local self-eval:
 
 | Solution | Task 1 Top-1 | Task 1 MRR | Task 2 edit distance | Task 2 block accuracy | Task 3 accuracy |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `solution_0_rule_mock` | `0.6800` | `0.8336` | `0.6152` | `0.3922` | `1.0000` |
+| `solution_0_rule_mock` | `0.6800` | `0.8336` | `0.6026` | `0.3752` | `1.0000` |
 | `solution_1_hybrid_retrieval` | `0.7283` | `0.8633` | `0.2420` | `0.7167` | `1.0000` |
 | `solution_2_eval_aware_retrieval` | `0.7317` | `0.8650` | `0.2420` | `0.7167` | `1.0000` |
 | `solution_3_synthetic_augmented_retrieval` | `0.7350` | `0.8661` | `0.2395` | `0.7252` | `1.0000` |
 | `solution_4_length_aware_completion` | `0.7317` | `0.8650` | `0.2468` | `0.7188` | `1.0000` |
 | `solution_5_tuned_rank_ensemble` | `0.7300` | `0.8642` | `0.2420` | `0.7167` | `1.0000` |
-| `solution_6_alias_calibrated_retrieval` | `0.7317` | `0.8644` | `0.2405` | `0.7189` | `1.0000` |
+| `solution_6_alias_calibrated_retrieval` | `0.7317` | `0.8644` | `0.2406` | `0.7187` | `1.0000` |
 | `solution_7_monte_carlo_suffix_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_8_semantic_conformance_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_9_judge_aware_portfolio` | `0.7350` | `0.8661` | `0.2333` | `0.7367` | `1.0000` |
@@ -151,7 +151,10 @@ but it is still not evidence of learned anomaly detection.
 - Solution 12 improves the conservative portfolio's Task 2 edit distance,
   token accuracy, block accuracy, and exact match with an MBR suffix selector.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
-  alias misses rather than process-order mistakes.
+  alias misses rather than process-order mistakes. They are diagnostics only;
+  the headline Task 1 scores remain exact-string Top-1/Top-3/Top-5/MRR.
+- The package generator now validates the exact `generation_rules.md` §5 CSV
+  headers for all source and packaged result files.
 - Each solution now has a submission package matching the repo checklist.
 
 ## What Did Not Work
@@ -177,6 +180,8 @@ but it is still not evidence of learned anomaly detection.
 - [x] Eval submission files for each solution:
   `submission_package/extras/results/nextstep.csv`,
   `completion.csv`, and `anomaly.csv`
+- [x] Exact `generation_rules.md` §5 CSV headers verified for every source and
+  packaged result file
 - [x] Scores for all three tasks in each `submission_package/extras/results/`
 - [x] Training-artifact manifests/logs/loss-curve notes for deterministic
   solutions

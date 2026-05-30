@@ -21,6 +21,18 @@ SOLUTIONS_DIR = ROOT / "solutions"
 AUDIT_PATH = SOLUTIONS_DIR / "submission_readiness_audit.md"
 
 
+CSV_CONTRACTS = {
+    "nextstep.csv": ["EXAMPLE_ID", "RANK_1", "RANK_2", "RANK_3", "RANK_4", "RANK_5"],
+    "completion.csv": ["EXAMPLE_ID", "PREDICTED_SEQUENCE"],
+    "anomaly.csv": ["EXAMPLE_ID", "IS_VALID", "SCORE", "PREDICTED_RULE"],
+}
+LOCAL_EXPECTED_ROWS = {
+    "nextstep.csv": 600,
+    "completion.csv": 600,
+    "anomaly.csv": 600,
+}
+
+
 SOLUTION_META = {
     "solution_0_rule_mock": {
         "title": "Solution 0: Rule Mock Baseline",
@@ -53,7 +65,7 @@ SOLUTION_META = {
         "approach": [
             "Uses exact public cut-prefix lookup when an eval partial already exists in public data.",
             "Falls back to hybrid retrieval when no exact prefix is found.",
-            "Reports exact metrics separately from canonical process-step alias diagnostics.",
+            "Reports exact metrics separately from diagnostic-only canonical process-step alias metrics.",
         ],
         "honest_status": "Best explanation of why exact Top-1 is alias-limited; still deterministic.",
         "checkpoint": "No binary checkpoint is needed; lookup tables are rebuilt from source data.",
@@ -224,6 +236,40 @@ def copy_results(solution_dir: Path, package_dir: Path) -> None:
             shutil.copy2(source, destination)
 
 
+def csv_shape(path: Path) -> tuple[list[str], int]:
+    with path.open(newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        try:
+            header = next(reader)
+        except StopIteration as exc:
+            raise ValueError(f"{path} is empty") from exc
+        rows = sum(1 for _row in reader)
+    return header, rows
+
+
+def validate_submission_csvs(solution_dir: Path, package_dir: Path) -> str:
+    """Fail fast if any submitted CSV drifts from generation_rules.md §5."""
+    checked: list[str] = []
+    for name, expected_header in CSV_CONTRACTS.items():
+        for path in (
+            solution_dir / "outputs" / name,
+            package_dir / "extras" / "results" / name,
+        ):
+            header, rows = csv_shape(path)
+            if header != expected_header:
+                raise ValueError(
+                    f"{path} has header {header!r}; expected {expected_header!r}"
+                )
+            expected_rows = LOCAL_EXPECTED_ROWS[name]
+            if rows != expected_rows:
+                raise ValueError(
+                    f"{path} has {rows} data rows; expected local self-eval row count "
+                    f"{expected_rows}"
+                )
+        checked.append(f"{name}: header ok, 600 local rows")
+    return "; ".join(checked)
+
+
 def write_per_family_breakdown(package_dir: Path, metrics: dict) -> None:
     results_dir = package_dir / "extras" / "results"
     ood = fair_metrics(metrics).get("task4_ood_proxy_next_step", {})
@@ -323,6 +369,11 @@ def write_readme(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             | Task 3 | F1 valid | `{fmt(t3["f1_valid"])}` |
             | Task 3 | ROC-AUC valid probability | `{fmt(t3["roc_auc_valid_probability"])}` |
 
+            If a copied `metrics.md` file also contains canonical/process-step
+            numbers, treat those as diagnostics only. The official Task 1
+            submission contract scores exact strings in `RANK_1` through
+            `RANK_5`.
+
             ## Honesty Note
 
             {meta["honest_status"]}
@@ -345,10 +396,6 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
         f"- **Task 1 exact Top-5:** `{fmt(t1['top5'])}`",
         f"- **Task 1 MRR:** `{fmt(t1['mrr'])}`",
     ]
-    if canon:
-        score_lines.append(
-            f"- **Canonical process-step Top-1:** `{fmt(canon['canonical_top1'])}` local diagnostic"
-        )
     score_lines.extend(
         [
             f"- **Task 2 exact match:** `{fmt(t2['exact_match'])}`",
@@ -362,6 +409,18 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
         ]
     )
     scores = "\n".join(score_lines)
+    diagnostics = ""
+    if canon:
+        diagnostics = (
+            "\n\n## Diagnostic Metrics\n\n"
+            f"- **Diagnostic-only canonical process-step Top-1:** "
+            f"`{fmt(canon['canonical_top1'])}`\n\n"
+            "This alias-normalized number is not an official jury metric and is "
+            "not a replacement headline score. It is included only to diagnose "
+            "whether exact Task 1 misses are process-order mistakes or exact "
+            "string alias misses. The official-shaped Task 1 scores above are "
+            "the exact-string Top-1, Top-3, Top-5, and MRR numbers."
+        )
     package_dir.joinpath("REPORT.md").write_text(
         dedent(
             f"""\
@@ -406,6 +465,7 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             Headline scores:
 
             __SCORES__
+            __DIAGNOSTICS__
 
             The raw files are in `extras/results/`. The official `eval_metrics.py`
             and hidden ground truth are not in this checkout, so these are local
@@ -452,7 +512,10 @@ def write_report(solution_dir: Path, package_dir: Path, meta: dict, metrics: dic
             - External APIs: none.
             - AI coding assistants: Codex and earlier generated repo notes were used.
             """
-        ).replace("__APPROACH__", approach).replace("__SCORES__", scores),
+        )
+        .replace("__APPROACH__", approach)
+        .replace("__SCORES__", scores)
+        .replace("__DIAGNOSTICS__", diagnostics),
         encoding="utf-8",
     )
 
@@ -653,6 +716,8 @@ def write_audit(rows: list[dict[str, str]]) -> None:
         "- [x] Root `requirements.txt` is present.",
         "- [x] Root `LICENSE` is present.",
         "- [x] Track-specific CSV outputs exist for every solution package.",
+        "- [x] Track-specific CSV headers exactly match `training_data/generation_rules.md` §5.",
+        "- [x] Source and packaged local self-eval CSVs have 600 data rows per task.",
         "- [x] Each solution package includes a local per-family proxy breakdown.",
         "- [ ] Public repo visibility must be checked in GitHub before final Tally submission.",
         "- [ ] Slides PDF and demo video are external Tally uploads; this repo includes outlines/scripts, not the final uploaded media.",
@@ -660,12 +725,12 @@ def write_audit(rows: list[dict[str, str]]) -> None:
         "",
         "## Per-Solution Checklist",
         "",
-        "| Solution | Eval CSVs in `extras/results` | Scores | Training artifacts | Demo assets | Honest caveat |",
-        "| --- | --- | --- | --- | --- | --- |",
+        "| Solution | Eval CSVs in `extras/results` | Exact §5 CSV headers | Scores | Training artifacts | Demo assets | Honest caveat |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
     ]
     for row in rows:
         lines.append(
-            f"| `{row['solution']}` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | {row['caveat']} |"
+            f"| `{row['solution']}` | yes | {row['csv_contract']} | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | {row['caveat']} |"
         )
     lines.extend(
         [
@@ -724,12 +789,19 @@ def main() -> None:
             raise FileNotFoundError(metrics_path)
         metrics = read_json(metrics_path)
         copy_results(solution_dir, package_dir)
+        csv_contract = validate_submission_csvs(solution_dir, package_dir)
         write_per_family_breakdown(package_dir, metrics)
         write_readme(solution_dir, package_dir, meta, metrics)
         write_report(solution_dir, package_dir, meta, metrics)
         write_training_artifacts(package_dir, meta, metrics)
         write_demo_material(solution_dir, package_dir, meta)
-        audit_rows.append({"solution": name, "caveat": meta["honest_status"]})
+        audit_rows.append(
+            {
+                "solution": name,
+                "caveat": meta["honest_status"],
+                "csv_contract": csv_contract,
+            }
+        )
     write_audit(audit_rows)
 
 

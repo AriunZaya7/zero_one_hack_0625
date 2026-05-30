@@ -59,4 +59,4 @@ This file records the repo assets considered by `solution_2_eval_aware_retrieval
 - Solution 2 uses exact cut-prefix lookup only when a partial sequence is already present in public provided data.
 - Fair self-eval disables held-out lookup by indexing only the training side of the local split.
 - Fallback predictions use Solution 1's hybrid retrieval plus a small family-aware grammar rerank.
-- The metrics include canonical/process-step accuracy because exact aliases are often randomized by the generator.
+- Canonical/process-step accuracy is reported only as a diagnostic because official Task 1 scoring uses exact strings.

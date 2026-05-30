@@ -17,10 +17,14 @@
 - MRR: 0.8650
 - Examples: 600
 
-## Fair Self-Eval: Canonical Process Step
+## Diagnostic Only: Canonical Process Step
 
-- Canonical Top-1: 0.9783
-- Canonical Top-2: 1.0000
+These alias-normalized values are not official scoring metrics. The official
+Task 1 evaluator scores exact strings in `RANK_1` through `RANK_5`. Use this
+section only to understand where exact-string misses come from.
+
+- Diagnostic-only canonical Top-1: 0.9783
+- Diagnostic-only canonical Top-2: 1.0000
 - Same-canonical misses: 148 / 161
 
 ## Public Lookup Diagnostic
@@ -56,5 +60,6 @@ It is an overlap/leakage detector, not a fair model score.
 ## Main Interpretation
 
 - The fair exact Top-1 score barely moves because most remaining misses are randomized aliases.
-- Exact Top-2 and canonical Top-1 are the better indicators of process understanding here.
+- Exact Top-1, Top-3, Top-5, and MRR are the official-shaped Task 1 headline metrics.
+- Diagnostic-only canonical Top-1 is for process-understanding analysis, not a replacement headline score.
 - A real submission should still keep the exact public lookup stage because it is harmless when there is no overlap and decisive if there is overlap.

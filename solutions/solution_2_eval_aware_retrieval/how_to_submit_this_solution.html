@@ -169,9 +169,9 @@ git status --short</code></pre>
   --out-dir submissions/solution_2_eval_aware_retrieval</code></pre>
       <p>The command writes:</p>
       <ul>
-        <li><code>submissions/solution_2_eval_aware_retrieval/task1_nextstep.csv</code></li>
-        <li><code>submissions/solution_2_eval_aware_retrieval/task2_completion.csv</code></li>
-        <li><code>submissions/solution_2_eval_aware_retrieval/task3_anomaly.csv</code></li>
+        <li><code>submissions/solution_2_eval_aware_retrieval/nextstep.csv</code></li>
+        <li><code>submissions/solution_2_eval_aware_retrieval/completion.csv</code></li>
+        <li><code>submissions/solution_2_eval_aware_retrieval/anomaly.csv</code></li>
         <li><code>submissions/solution_2_eval_aware_retrieval/official_run_manifest.json</code></li>
       </ul>
     </section>
@@ -216,11 +216,12 @@ forbidden_0042,0,0.08,RULE_DEP_NO_CLEAN</code></pre>
       </p>
       <div class="panel">
         <p>
-          "Exact Top-1 is capped by randomized aliases in the generator. Our
-          fair exact Top-1 is 0.7317, but exact Top-2 is 0.9950, MRR is 0.8650,
-          and canonical process-step Top-1 is 0.9783. So the model usually knows
-          the correct manufacturing operation; the remaining errors are mostly
-          exact label aliases like STRIP RESIST vs STRIP PHOTORESIST."
+          "The official score uses exact strings, so we lead with exact-string
+          metrics: fair exact Top-1 is 0.7317, exact Top-2 is 0.9950, and MRR is
+          0.8650. We also track diagnostic-only canonical process-step Top-1 at
+          0.9783 to understand misses. That diagnostic suggests the model often
+          knows the correct manufacturing operation, while many remaining errors
+          are exact label aliases like STRIP RESIST vs STRIP PHOTORESIST."
         </p>
       </div>
     </section>

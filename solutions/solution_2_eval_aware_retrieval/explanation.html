@@ -134,6 +134,14 @@
         Top-1 was already about <code>0.9750</code>. "Canonical" means we treat
         alternate labels for the same manufacturing action as one operation.
       </p>
+      <div class="callout warn">
+        <strong>Submission rule:</strong> the official Task 1 score is exact
+        string matching against the submitted <code>RANK_1</code> through
+        <code>RANK_5</code> columns. Canonical process-step numbers are only an
+        internal diagnostic for explaining misses. They are not the headline
+        score and should not be submitted or pitched as if the evaluator uses
+        them.
+      </div>
       <p>
         That means the model usually knows the correct manufacturing operation.
         The remaining exact Top-1 errors mostly come from randomized alternate
@@ -176,7 +184,8 @@
       <div class="callout warn">
         <strong>Important:</strong> This is not the same as the model being
         confused about process logic. The model may know the right operation
-        and still lose exact-string Top-1.
+        and still lose exact-string Top-1. For submission decisions, exact
+        Top-1 and MRR remain the official-shaped Task 1 headline numbers.
       </div>
     </section>
 
@@ -194,9 +203,9 @@
           <span class="muted">The true answer is almost always rank 1 or 2</span>
         </div>
         <div class="metric">
-          <span>Canonical Top-1</span>
+          <span>Diagnostic-only canonical Top-1</span>
           <strong>0.9783</strong>
-          <span class="muted">Correct operation, ignoring alias wording</span>
+          <span class="muted">Diagnostic only; not official scoring</span>
         </div>
         <div class="metric">
           <span>MRR</span>
@@ -225,7 +234,7 @@
             <td>Most exact misses are alternate names for the same operation.</td>
           </tr>
           <tr>
-            <td>Canonical Top-2</td>
+            <td>Diagnostic-only canonical Top-2</td>
             <td>1.0000</td>
             <td>The correct operation is always in the first two canonical guesses.</td>
           </tr>
@@ -413,10 +422,10 @@
         </li>
       </ol>
       <div class="callout good">
-        <strong>Pitch framing:</strong> We should tell the jury that exact
-        Top-1 undercounts process understanding because aliases are generated
-        randomly. Then we show exact Top-2, MRR, canonical Top-1, validator
-        performance, and OOD proxy performance.
+        <strong>Pitch framing:</strong> Lead with the exact-string metrics that
+        the official evaluator scores. Then use diagnostic-only canonical Top-1 as a
+        diagnostic to explain why many exact misses are alias misses rather
+        than process-order mistakes.
       </div>
     </section>
 

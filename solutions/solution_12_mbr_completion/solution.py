@@ -206,7 +206,7 @@ def write_metrics(metrics: dict[str, object]) -> None:
         f"- Top-3: {task1['top3']:.4f}",
         f"- Top-5: {task1['top5']:.4f}",
         f"- MRR: {task1['mrr']:.4f}",
-        f"- Canonical Top-1: {canonical['canonical_top1']:.4f}",
+        f"- Diagnostic-only canonical Top-1: {canonical['canonical_top1']:.4f}",
         "",
         "## Task 2",
         "",

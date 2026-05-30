@@ -177,11 +177,11 @@
     "top5": 1.0
   },
   "task2_completion": {
-    "block_accuracy": 0.39219819620838436,
+    "block_accuracy": 0.37524425247091125,
     "exact_match": 0.0,
     "n_examples": 600,
-    "normalized_edit_distance": 0.6152003603893337,
-    "token_accuracy": 0.20732837444321367
+    "normalized_edit_distance": 0.602640757617706,
+    "token_accuracy": 0.21014578110610074
   },
   "task3_anomaly": {
     "accuracy": 1.0,

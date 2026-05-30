@@ -53,6 +53,7 @@ Headline scores:
 - **Task 3 ROC-AUC valid probability:** `1.0000`
 - **Task 3 rule attribution accuracy:** `1.0000`
 
+
 The raw files are in `extras/results/`. The official `eval_metrics.py`
 and hidden ground truth are not in this checkout, so these are local
 scorer outputs rather than official leaderboard numbers. A local

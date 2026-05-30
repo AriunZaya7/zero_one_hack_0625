@@ -35,6 +35,10 @@ Each solution has:
 - a complete `submission_package/` with `extras/results/`,
   `extras/training_artifacts/`, demo material, and a solution-level `REPORT.md`
 
+`solutions/prepare_submission_packages.py` validates the exact Industrial AI
+`training_data/generation_rules.md` §5 CSV headers before writing the readiness
+audit, so format drift fails fast instead of silently reaching submission.
+
 ### Setup
 
 Use Python 3.10 or newer. The current deterministic solution scripts use only

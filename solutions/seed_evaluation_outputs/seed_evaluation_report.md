@@ -8,28 +8,30 @@ Important interpretation: these solutions do not train stochastic neural weights
 
 | Solution | Task 1 Top-1 mean | best | worst | Task 1 MRR mean | Task 2 block mean | Task 2 edit mean | Task 3 acc mean | OOD avg Top-1 mean | Determinism note |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `solution_0_rule_mock` | 0.6740 | 0.6983 (seed 1) | 0.6550 (seed 5) | 0.8318 | 0.3723 | 0.6044 | 1.0000 | 0.6737 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_1_hybrid_retrieval` | 0.6917 | 0.7150 (seed 9) | 0.6633 (seed 6) | 0.8432 | 0.7150 | 0.2387 | 1.0000 | 0.6627 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_2_eval_aware_retrieval` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7150 | 0.2387 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | 0.6722 | 0.6983 (seed 1) | 0.6550 (seed 5) | 0.8309 | 0.3723 | 0.6045 | 1.0000 | 0.6743 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_1_hybrid_retrieval` | 0.6918 | 0.7150 (seed 9) | 0.6650 (seed 6) | 0.8433 | 0.7150 | 0.2387 | 1.0000 | 0.6627 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_2_eval_aware_retrieval` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7150 | 0.2387 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_3_synthetic_augmented_retrieval` | 0.6970 | 0.7150 (seed 4) | 0.6767 (seed 0) | 0.8462 | 0.7263 | 0.2359 | 1.0000 | 0.6622 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_4_length_aware_completion` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7172 | 0.2438 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_5_tuned_rank_ensemble` | 0.6917 | 0.7117 (seed 9) | 0.6633 (seed 6) | 0.8432 | 0.7150 | 0.2387 | 1.0000 | 0.6635 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_6_alias_calibrated_retrieval` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8455 | 0.7159 | 0.2383 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_7_monte_carlo_suffix_ensemble` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7347 | 0.2334 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_8_semantic_conformance_ensemble` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7347 | 0.2334 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_4_length_aware_completion` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7172 | 0.2438 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_5_tuned_rank_ensemble` | 0.6918 | 0.7117 (seed 9) | 0.6650 (seed 6) | 0.8433 | 0.7150 | 0.2387 | 1.0000 | 0.6635 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8456 | 0.7160 | 0.2385 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_7_monte_carlo_suffix_ensemble` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7347 | 0.2334 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_8_semantic_conformance_ensemble` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7347 | 0.2334 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_9_judge_aware_portfolio` | 0.6970 | 0.7150 (seed 4) | 0.6767 (seed 0) | 0.8462 | 0.7347 | 0.2334 | 1.0000 | 0.6622 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_10_confidence_gated_consensus` | 0.6970 | 0.7150 (seed 4) | 0.6767 (seed 0) | 0.8462 | 0.7348 | 0.2327 | 1.0000 | 0.6622 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_11_ood_guarded_consensus` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7348 | 0.2327 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_12_mbr_completion` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7248 | 0.2260 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_11_ood_guarded_consensus` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7348 | 0.2327 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_12_mbr_completion` | 0.6962 | 0.7200 (seed 9) | 0.6667 (seed 6) | 0.8455 | 0.7248 | 0.2260 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
 
 ## Alias / Canonical Diagnostic
 
-This is not an official judging metric, but it explains why exact Top-1 is much lower than process understanding.
+This is diagnostic-only, not an official judging metric. Official Task 1
+scoring uses exact strings; this section exists only to explain why exact Top-1
+is much lower than process understanding.
 
-| Solution | Canonical Top-1 mean | best | worst | Canonical Top-2 mean | Same-canonical miss-rate mean |
+| Solution | Diagnostic-only canonical Top-1 mean | best | worst | Diagnostic-only canonical Top-2 mean | Same-canonical miss-rate mean |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `solution_0_rule_mock` | 0.9450 | 0.9517 (seed 8) | 0.9400 (seed 4) | 0.9918 | 0.8310 |
-| `solution_1_hybrid_retrieval` | 0.9687 | 0.9733 (seed 0) | 0.9600 (seed 1) | 0.9992 | 0.8982 |
+| `solution_0_rule_mock` | 0.9450 | 0.9517 (seed 8) | 0.9400 (seed 4) | 0.9918 | 0.8320 |
+| `solution_1_hybrid_retrieval` | 0.9687 | 0.9733 (seed 0) | 0.9600 (seed 1) | 0.9992 | 0.8981 |
 | `solution_2_eval_aware_retrieval` | 0.9730 | 0.9783 (seed 9) | 0.9683 (seed 1) | 0.9992 | 0.9110 |
 | `solution_3_synthetic_augmented_retrieval` | 0.9747 | 0.9817 (seed 0) | 0.9683 (seed 1) | 0.9993 | 0.9160 |
 | `solution_4_length_aware_completion` | 0.9730 | 0.9783 (seed 9) | 0.9683 (seed 1) | 0.9992 | 0.9110 |
@@ -46,27 +48,27 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 
 | Solution | Metric | Direction | Mean | Std | Best | Best seed | Worst | Worst seed | Determinism note |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | --- |
-| `solution_0_rule_mock` | `ood_avg_top1` | higher_is_better | 0.6737 | 0.0144 | 0.6967 | 0 | 0.6433 | 1 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `ood_avg_top1` | higher_is_better | 0.6743 | 0.0152 | 0.6983 | 0 | 0.6433 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `ood_ic_mrr` | higher_is_better | 0.8041 | 0.0155 | 0.8350 | 0 | 0.7796 | 5 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `ood_ic_top1` | higher_is_better | 0.6385 | 0.0276 | 0.6950 | 0 | 0.5850 | 5 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `ood_igbt_mrr` | higher_is_better | 0.8303 | 0.0132 | 0.8608 | 9 | 0.8133 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `ood_igbt_top1` | higher_is_better | 0.6935 | 0.0256 | 0.7400 | 9 | 0.6500 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `ood_mosfet_mrr` | higher_is_better | 0.8430 | 0.0149 | 0.8692 | 8 | 0.8146 | 9 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `ood_mosfet_top1` | higher_is_better | 0.6890 | 0.0296 | 0.7400 | 8 | 0.6350 | 9 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `ood_mosfet_mrr` | higher_is_better | 0.8440 | 0.0165 | 0.8692 | 8 | 0.8096 | 9 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `ood_mosfet_top1` | higher_is_better | 0.6910 | 0.0328 | 0.7400 | 2 | 0.6250 | 9 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `public_lookup_coverage` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_0_rule_mock` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_0_rule_mock` | `task1_canonical_top1` | higher_is_better | 0.9450 | 0.0037 | 0.9517 | 8 | 0.9400 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `task1_canonical_top2` | higher_is_better | 0.9918 | 0.0037 | 1.0000 | 2 | 0.9867 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `task1_mrr` | higher_is_better | 0.8318 | 0.0064 | 0.8441 | 1 | 0.8214 | 3 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `task1_same_canonical_miss_rate` | higher_is_better | 0.8310 | 0.0134 | 0.8535 | 8 | 0.8075 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `task1_top1` | higher_is_better | 0.6740 | 0.0127 | 0.6983 | 1 | 0.6550 | 5 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `task1_mrr` | higher_is_better | 0.8309 | 0.0064 | 0.8441 | 1 | 0.8214 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `task1_same_canonical_miss_rate` | higher_is_better | 0.8320 | 0.0130 | 0.8557 | 8 | 0.8075 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `task1_top1` | higher_is_better | 0.6722 | 0.0131 | 0.6983 | 1 | 0.6550 | 5 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `task1_top2` | higher_is_better | 0.9760 | 0.0058 | 0.9850 | 8 | 0.9667 | 0 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `task1_top3` | higher_is_better | 0.9895 | 0.0043 | 0.9967 | 8 | 0.9833 | 3 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_0_rule_mock` | `task2_block_accuracy` | higher_is_better | 0.3723 | 0.0019 | 0.3763 | 9 | 0.3697 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `task2_exact_match` | higher_is_better | 0.0002 | 0.0005 | 0.0017 | 1 | 0.0000 | 0 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `task2_normalized_edit_distance` | lower_is_better | 0.6044 | 0.0009 | 0.6031 | 9 | 0.6061 | 8 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_0_rule_mock` | `task2_token_accuracy` | higher_is_better | 0.2053 | 0.0031 | 0.2114 | 9 | 0.2003 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `task2_normalized_edit_distance` | lower_is_better | 0.6045 | 0.0009 | 0.6031 | 9 | 0.6061 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_0_rule_mock` | `task2_token_accuracy` | higher_is_better | 0.2054 | 0.0031 | 0.2114 | 9 | 0.2003 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_0_rule_mock` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_0_rule_mock` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_0_rule_mock` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -91,7 +93,7 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_10_confidence_gated_consensus` | `task2_block_accuracy` | higher_is_better | 0.7348 | 0.0051 | 0.7392 | 9 | 0.7234 | 3 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_10_confidence_gated_consensus` | `task2_exact_match` | higher_is_better | 0.0027 | 0.0013 | 0.0050 | 9 | 0.0000 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_10_confidence_gated_consensus` | `task2_normalized_edit_distance` | lower_is_better | 0.2327 | 0.0029 | 0.2273 | 2 | 0.2365 | 0 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_10_confidence_gated_consensus` | `task2_token_accuracy` | higher_is_better | 0.4724 | 0.0070 | 0.4795 | 7 | 0.4551 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task2_token_accuracy` | higher_is_better | 0.4724 | 0.0070 | 0.4796 | 7 | 0.4551 | 3 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_10_confidence_gated_consensus` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_10_confidence_gated_consensus` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_10_confidence_gated_consensus` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -107,16 +109,16 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_11_ood_guarded_consensus` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_11_ood_guarded_consensus` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_11_ood_guarded_consensus` | `task1_mrr` | higher_is_better | 0.8454 | 0.0082 | 0.8585 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_11_ood_guarded_consensus` | `task1_mrr` | higher_is_better | 0.8455 | 0.0081 | 0.8585 | 9 | 0.8315 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_11_ood_guarded_consensus` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_11_ood_guarded_consensus` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_11_ood_guarded_consensus` | `task2_block_accuracy` | higher_is_better | 0.7348 | 0.0051 | 0.7392 | 9 | 0.7234 | 3 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task2_exact_match` | higher_is_better | 0.0027 | 0.0013 | 0.0050 | 9 | 0.0000 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task2_normalized_edit_distance` | lower_is_better | 0.2327 | 0.0029 | 0.2273 | 2 | 0.2365 | 0 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_11_ood_guarded_consensus` | `task2_token_accuracy` | higher_is_better | 0.4724 | 0.0070 | 0.4795 | 7 | 0.4551 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_11_ood_guarded_consensus` | `task2_token_accuracy` | higher_is_better | 0.4724 | 0.0070 | 0.4796 | 7 | 0.4551 | 3 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_11_ood_guarded_consensus` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_11_ood_guarded_consensus` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_11_ood_guarded_consensus` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -132,16 +134,16 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_12_mbr_completion` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_12_mbr_completion` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_12_mbr_completion` | `task1_mrr` | higher_is_better | 0.8454 | 0.0082 | 0.8585 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_12_mbr_completion` | `task1_mrr` | higher_is_better | 0.8455 | 0.0081 | 0.8585 | 9 | 0.8315 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_12_mbr_completion` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_12_mbr_completion` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_12_mbr_completion` | `task2_block_accuracy` | higher_is_better | 0.7248 | 0.0040 | 0.7308 | 6 | 0.7178 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task2_exact_match` | higher_is_better | 0.0038 | 0.0018 | 0.0067 | 2 | 0.0000 | 0 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task2_normalized_edit_distance` | lower_is_better | 0.2260 | 0.0017 | 0.2234 | 6 | 0.2294 | 0 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_12_mbr_completion` | `task2_token_accuracy` | higher_is_better | 0.4638 | 0.0056 | 0.4771 | 6 | 0.4578 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_12_mbr_completion` | `task2_token_accuracy` | higher_is_better | 0.4638 | 0.0056 | 0.4771 | 6 | 0.4577 | 3 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_12_mbr_completion` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_12_mbr_completion` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_12_mbr_completion` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -157,9 +159,9 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_1_hybrid_retrieval` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_1_hybrid_retrieval` | `task1_canonical_top1` | higher_is_better | 0.9687 | 0.0050 | 0.9733 | 0 | 0.9600 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_1_hybrid_retrieval` | `task1_mrr` | higher_is_better | 0.8432 | 0.0079 | 0.8560 | 9 | 0.8299 | 6 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_1_hybrid_retrieval` | `task1_same_canonical_miss_rate` | higher_is_better | 0.8982 | 0.0167 | 0.9158 | 6 | 0.8686 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_1_hybrid_retrieval` | `task1_top1` | higher_is_better | 0.6917 | 0.0152 | 0.7150 | 9 | 0.6633 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_1_hybrid_retrieval` | `task1_mrr` | higher_is_better | 0.8433 | 0.0077 | 0.8560 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_1_hybrid_retrieval` | `task1_same_canonical_miss_rate` | higher_is_better | 0.8981 | 0.0167 | 0.9154 | 6 | 0.8686 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_1_hybrid_retrieval` | `task1_top1` | higher_is_better | 0.6918 | 0.0149 | 0.7150 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -182,9 +184,9 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_2_eval_aware_retrieval` | `public_lookup_exact_next_when_covered` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_2_eval_aware_retrieval` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_2_eval_aware_retrieval` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_2_eval_aware_retrieval` | `task1_mrr` | higher_is_better | 0.8454 | 0.0082 | 0.8585 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_2_eval_aware_retrieval` | `task1_mrr` | higher_is_better | 0.8455 | 0.0081 | 0.8585 | 9 | 0.8315 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_2_eval_aware_retrieval` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_2_eval_aware_retrieval` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_2_eval_aware_retrieval` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_2_eval_aware_retrieval` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_2_eval_aware_retrieval` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_2_eval_aware_retrieval` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -232,9 +234,9 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_4_length_aware_completion` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_4_length_aware_completion` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_4_length_aware_completion` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_4_length_aware_completion` | `task1_mrr` | higher_is_better | 0.8454 | 0.0082 | 0.8585 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_4_length_aware_completion` | `task1_mrr` | higher_is_better | 0.8455 | 0.0081 | 0.8585 | 9 | 0.8315 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_4_length_aware_completion` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_4_length_aware_completion` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_4_length_aware_completion` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_4_length_aware_completion` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_4_length_aware_completion` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_4_length_aware_completion` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -257,9 +259,9 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_5_tuned_rank_ensemble` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_5_tuned_rank_ensemble` | `task1_canonical_top1` | higher_is_better | 0.9687 | 0.0050 | 0.9733 | 0 | 0.9600 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_5_tuned_rank_ensemble` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_5_tuned_rank_ensemble` | `task1_mrr` | higher_is_better | 0.8432 | 0.0074 | 0.8543 | 9 | 0.8299 | 6 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_5_tuned_rank_ensemble` | `task1_same_canonical_miss_rate` | higher_is_better | 0.8982 | 0.0166 | 0.9158 | 6 | 0.8693 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_5_tuned_rank_ensemble` | `task1_top1` | higher_is_better | 0.6917 | 0.0144 | 0.7117 | 9 | 0.6633 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_5_tuned_rank_ensemble` | `task1_mrr` | higher_is_better | 0.8433 | 0.0072 | 0.8543 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_5_tuned_rank_ensemble` | `task1_same_canonical_miss_rate` | higher_is_better | 0.8982 | 0.0166 | 0.9154 | 6 | 0.8693 | 4 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_5_tuned_rank_ensemble` | `task1_top1` | higher_is_better | 0.6918 | 0.0140 | 0.7117 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_5_tuned_rank_ensemble` | `task1_top2` | higher_is_better | 0.9858 | 0.0043 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_5_tuned_rank_ensemble` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_5_tuned_rank_ensemble` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -282,16 +284,16 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_6_alias_calibrated_retrieval` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_6_alias_calibrated_retrieval` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_6_alias_calibrated_retrieval` | `task1_canonical_top2` | higher_is_better | 0.9990 | 0.0011 | 1.0000 | 0 | 0.9967 | 5 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_6_alias_calibrated_retrieval` | `task1_mrr` | higher_is_better | 0.8455 | 0.0080 | 0.8582 | 9 | 0.8310 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | `task1_mrr` | higher_is_better | 0.8456 | 0.0078 | 0.8582 | 9 | 0.8318 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_6_alias_calibrated_retrieval` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_6_alias_calibrated_retrieval` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_6_alias_calibrated_retrieval` | `task1_top2` | higher_is_better | 0.9860 | 0.0044 | 0.9917 | 6 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_6_alias_calibrated_retrieval` | `task1_top3` | higher_is_better | 0.9978 | 0.0015 | 1.0000 | 3 | 0.9950 | 0 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | `task1_top3` | higher_is_better | 0.9977 | 0.0013 | 1.0000 | 8 | 0.9950 | 0 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_6_alias_calibrated_retrieval` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
-| `solution_6_alias_calibrated_retrieval` | `task2_block_accuracy` | higher_is_better | 0.7159 | 0.0064 | 0.7270 | 9 | 0.7088 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | `task2_block_accuracy` | higher_is_better | 0.7160 | 0.0064 | 0.7270 | 9 | 0.7088 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_6_alias_calibrated_retrieval` | `task2_exact_match` | higher_is_better | 0.0028 | 0.0021 | 0.0067 | 4 | 0.0000 | 3 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_6_alias_calibrated_retrieval` | `task2_normalized_edit_distance` | lower_is_better | 0.2383 | 0.0020 | 0.2346 | 0 | 0.2406 | 8 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_6_alias_calibrated_retrieval` | `task2_token_accuracy` | higher_is_better | 0.4483 | 0.0066 | 0.4586 | 9 | 0.4403 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | `task2_normalized_edit_distance` | lower_is_better | 0.2385 | 0.0020 | 0.2346 | 0 | 0.2408 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_6_alias_calibrated_retrieval` | `task2_token_accuracy` | higher_is_better | 0.4481 | 0.0066 | 0.4584 | 9 | 0.4400 | 8 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_6_alias_calibrated_retrieval` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_6_alias_calibrated_retrieval` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_6_alias_calibrated_retrieval` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -307,9 +309,9 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_7_monte_carlo_suffix_ensemble` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_7_monte_carlo_suffix_ensemble` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_7_monte_carlo_suffix_ensemble` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_7_monte_carlo_suffix_ensemble` | `task1_mrr` | higher_is_better | 0.8454 | 0.0082 | 0.8585 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_7_monte_carlo_suffix_ensemble` | `task1_mrr` | higher_is_better | 0.8455 | 0.0081 | 0.8585 | 9 | 0.8315 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_7_monte_carlo_suffix_ensemble` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_7_monte_carlo_suffix_ensemble` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_7_monte_carlo_suffix_ensemble` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_7_monte_carlo_suffix_ensemble` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_7_monte_carlo_suffix_ensemble` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_7_monte_carlo_suffix_ensemble` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
@@ -332,9 +334,9 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_8_semantic_conformance_ensemble` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
 | `solution_8_semantic_conformance_ensemble` | `task1_canonical_top1` | higher_is_better | 0.9730 | 0.0031 | 0.9783 | 9 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_8_semantic_conformance_ensemble` | `task1_canonical_top2` | higher_is_better | 0.9992 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_8_semantic_conformance_ensemble` | `task1_mrr` | higher_is_better | 0.8454 | 0.0082 | 0.8585 | 9 | 0.8307 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_8_semantic_conformance_ensemble` | `task1_mrr` | higher_is_better | 0.8455 | 0.0081 | 0.8585 | 9 | 0.8315 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_8_semantic_conformance_ensemble` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9110 | 0.0105 | 0.9226 | 9 | 0.8941 | 4 | varies_by_local_split_seed_model_itself_deterministic |
-| `solution_8_semantic_conformance_ensemble` | `task1_top1` | higher_is_better | 0.6960 | 0.0159 | 0.7200 | 9 | 0.6650 | 6 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_8_semantic_conformance_ensemble` | `task1_top1` | higher_is_better | 0.6962 | 0.0156 | 0.7200 | 9 | 0.6667 | 6 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_8_semantic_conformance_ensemble` | `task1_top2` | higher_is_better | 0.9860 | 0.0042 | 0.9917 | 9 | 0.9750 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_8_semantic_conformance_ensemble` | `task1_top3` | higher_is_better | 0.9970 | 0.0012 | 0.9983 | 1 | 0.9950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_8_semantic_conformance_ensemble` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |

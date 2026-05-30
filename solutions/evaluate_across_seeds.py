@@ -695,9 +695,11 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "",
         "## Alias / Canonical Diagnostic",
         "",
-        "This is not an official judging metric, but it explains why exact Top-1 is much lower than process understanding.",
+        "This is diagnostic-only, not an official judging metric. Official Task 1",
+        "scoring uses exact strings; this section exists only to explain why exact Top-1",
+        "is much lower than process understanding.",
         "",
-        "| Solution | Canonical Top-1 mean | best | worst | Canonical Top-2 mean | Same-canonical miss-rate mean |",
+        "| Solution | Diagnostic-only canonical Top-1 mean | best | worst | Diagnostic-only canonical Top-2 mean | Same-canonical miss-rate mean |",
         "| --- | ---: | ---: | ---: | ---: | ---: |",
     ]
     for solution, _runner in SOLUTIONS:

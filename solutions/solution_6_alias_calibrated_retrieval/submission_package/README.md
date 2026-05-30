@@ -37,12 +37,17 @@ These are local self-eval scores because the official hidden eval files and
 | Task 1 | Top-5 | `1.0000` |
 | Task 1 | MRR | `0.8644` |
 | Task 2 | Exact match | `0.0000` |
-| Task 2 | Normalized edit distance | `0.2405` |
-| Task 2 | Token accuracy | `0.4496` |
-| Task 2 | Block accuracy | `0.7189` |
+| Task 2 | Normalized edit distance | `0.2406` |
+| Task 2 | Token accuracy | `0.4492` |
+| Task 2 | Block accuracy | `0.7187` |
 | Task 3 | Accuracy | `1.0000` |
 | Task 3 | F1 valid | `1.0000` |
 | Task 3 | ROC-AUC valid probability | `1.0000` |
+
+If a copied `metrics.md` file also contains canonical/process-step
+numbers, treat those as diagnostics only. The official Task 1
+submission contract scores exact strings in `RANK_1` through
+`RANK_5`.
 
 ## Honesty Note
 

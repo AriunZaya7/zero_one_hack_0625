@@ -203,15 +203,15 @@
       },
       {
         "count": 11,
-        "predicted": "PASSIVATION ETCH PAD OPENING",
-        "same_canonical": true,
-        "truth": "PASSIVATION ETCH"
-      },
-      {
-        "count": 11,
         "predicted": "MEASURE PASSIVATION THICKNESS",
         "same_canonical": true,
         "truth": "MEASURE PASSIVATION QUALITY"
+      },
+      {
+        "count": 11,
+        "predicted": "PASSIVATION ETCH PAD OPENING",
+        "same_canonical": true,
+        "truth": "PASSIVATION ETCH"
       },
       {
         "count": 9,
@@ -239,12 +239,6 @@
       },
       {
         "count": 7,
-        "predicted": "MEASURE VIA CD",
-        "same_canonical": false,
-        "truth": "DEPOSIT BARRIER METAL"
-      },
-      {
-        "count": 7,
         "predicted": "CMP INTERLAYER DIELECTRIC",
         "same_canonical": true,
         "truth": "CMP DIELECTRIC"
@@ -260,6 +254,12 @@
         "predicted": "MEASURE SURFACE PLANARITY",
         "same_canonical": true,
         "truth": "MEASURE PLANARITY"
+      },
+      {
+        "count": 7,
+        "predicted": "MEASURE VIA CD",
+        "same_canonical": false,
+        "truth": "DEPOSIT BARRIER METAL"
       },
       {
         "count": 6,
@@ -281,21 +281,21 @@
       },
       {
         "count": 4,
-        "predicted": "OPEN PAD WINDOW LITHO",
-        "same_canonical": true,
-        "truth": "PAD WINDOW LITHO"
-      },
-      {
-        "count": 4,
         "predicted": "OPEN BOND PAD WINDOW",
         "same_canonical": true,
         "truth": "OPEN PAD WINDOW"
       },
       {
-        "count": 3,
-        "predicted": "VIA ETCH",
+        "count": 4,
+        "predicted": "OPEN PAD WINDOW LITHO",
         "same_canonical": true,
-        "truth": "VIA ETCH THROUGH DIELECTRIC"
+        "truth": "PAD WINDOW LITHO"
+      },
+      {
+        "count": 3,
+        "predicted": "MEASURE FILM THICKNESS",
+        "same_canonical": true,
+        "truth": "MEASURE DIELECTRIC THICKNESS"
       },
       {
         "count": 3,

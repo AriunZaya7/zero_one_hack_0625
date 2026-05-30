@@ -19,9 +19,9 @@
 ## Task 2: Sequence Completion
 
 - Exact match: 0.0000
-- Normalized edit distance: 0.6152
-- Token accuracy: 0.2073
-- Block accuracy: 0.3922
+- Normalized edit distance: 0.6026
+- Token accuracy: 0.2101
+- Block accuracy: 0.3752
 - Examples: 600
 
 ## Task 3: Anomaly Detection

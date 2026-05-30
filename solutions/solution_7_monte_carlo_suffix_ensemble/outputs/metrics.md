@@ -15,7 +15,7 @@
 - Top-3: 1.0000
 - Top-5: 1.0000
 - MRR: 0.8650
-- Canonical Top-1: 0.9783
+- Diagnostic-only canonical Top-1: 0.9783
 
 ## Task 2
 
