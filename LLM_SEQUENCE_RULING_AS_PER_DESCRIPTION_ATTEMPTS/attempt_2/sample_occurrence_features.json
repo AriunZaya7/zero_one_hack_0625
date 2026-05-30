@@ -1,0 +1,2291 @@
+[
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 0,
+    "step": "RECEIVE WAFER LOT",
+    "operation_family": "logistics",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0,
+    "previous_3": [],
+    "next_3_training_only": [
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 1,
+    "step": "LOT IDENTIFICATION",
+    "operation_family": "logistics",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0081,
+    "previous_3": [
+      "RECEIVE WAFER LOT"
+    ],
+    "next_3_training_only": [
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 2,
+    "step": "INITIAL WAFER INSPECTION",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0161,
+    "previous_3": [
+      "RECEIVE WAFER LOT",
+      "LOT IDENTIFICATION"
+    ],
+    "next_3_training_only": [
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER",
+      "RCA CLEAN 1"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 3,
+    "step": "MEASURE SURFACE PARTICLES",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0242,
+    "previous_3": [
+      "RECEIVE WAFER LOT",
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION"
+    ],
+    "next_3_training_only": [
+      "PRE CLEAN WAFER",
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 4,
+    "step": "PRE CLEAN WAFER",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0323,
+    "previous_3": [
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES"
+    ],
+    "next_3_training_only": [
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2",
+      "HF DIP"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 5,
+    "step": "RCA CLEAN 1",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0403,
+    "previous_3": [
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER"
+    ],
+    "next_3_training_only": [
+      "WET CLEAN RCA2",
+      "HF DIP",
+      "DRY WAFER"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 6,
+    "step": "WET CLEAN RCA2",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0484,
+    "previous_3": [
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER",
+      "RCA CLEAN 1"
+    ],
+    "next_3_training_only": [
+      "HF DIP",
+      "DRY WAFER",
+      "SUBSTRATE CHECK"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 7,
+    "step": "HF DIP",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0565,
+    "previous_3": [
+      "PRE CLEAN WAFER",
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2"
+    ],
+    "next_3_training_only": [
+      "DRY WAFER",
+      "SUBSTRATE CHECK",
+      "EPITAXY PREP"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 8,
+    "step": "DRY WAFER",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0645,
+    "previous_3": [
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2",
+      "HF DIP"
+    ],
+    "next_3_training_only": [
+      "SUBSTRATE CHECK",
+      "EPITAXY PREP",
+      "EPITAXIAL DEPOSITION"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 9,
+    "step": "SUBSTRATE CHECK",
+    "operation_family": "other_process",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0726,
+    "previous_3": [
+      "WET CLEAN RCA2",
+      "HF DIP",
+      "DRY WAFER"
+    ],
+    "next_3_training_only": [
+      "EPITAXY PREP",
+      "EPITAXIAL DEPOSITION",
+      "MEASURE EPITAXY THICKNESS"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 10,
+    "step": "EPITAXY PREP",
+    "operation_family": "other_process",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0806,
+    "previous_3": [
+      "HF DIP",
+      "DRY WAFER",
+      "SUBSTRATE CHECK"
+    ],
+    "next_3_training_only": [
+      "EPITAXIAL DEPOSITION",
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 11,
+    "step": "EPITAXIAL DEPOSITION",
+    "operation_family": "deposition_growth",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0887,
+    "previous_3": [
+      "DRY WAFER",
+      "SUBSTRATE CHECK",
+      "EPITAXY PREP"
+    ],
+    "next_3_training_only": [
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY",
+      "EPITAXY ANNEAL"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 12,
+    "step": "MEASURE EPITAXY THICKNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0968,
+    "previous_3": [
+      "SUBSTRATE CHECK",
+      "EPITAXY PREP",
+      "EPITAXIAL DEPOSITION"
+    ],
+    "next_3_training_only": [
+      "MEASURE RESISTIVITY",
+      "EPITAXY ANNEAL",
+      "WAFER SURFACE CLEAN"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 13,
+    "step": "MEASURE RESISTIVITY",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1048,
+    "previous_3": [
+      "EPITAXY PREP",
+      "EPITAXIAL DEPOSITION",
+      "MEASURE EPITAXY THICKNESS"
+    ],
+    "next_3_training_only": [
+      "EPITAXY ANNEAL",
+      "WAFER SURFACE CLEAN",
+      "THERMAL OXIDATION"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 14,
+    "step": "EPITAXY ANNEAL",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1129,
+    "previous_3": [
+      "EPITAXIAL DEPOSITION",
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY"
+    ],
+    "next_3_training_only": [
+      "WAFER SURFACE CLEAN",
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS"
+    ],
+    "distance_since_clean": 6,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 15,
+    "step": "WAFER SURFACE CLEAN",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.121,
+    "previous_3": [
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY",
+      "EPITAXY ANNEAL"
+    ],
+    "next_3_training_only": [
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "distance_since_clean": 7,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 16,
+    "step": "THERMAL OXIDATION",
+    "operation_family": "deposition_growth",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.129,
+    "previous_3": [
+      "MEASURE RESISTIVITY",
+      "EPITAXY ANNEAL",
+      "WAFER SURFACE CLEAN"
+    ],
+    "next_3_training_only": [
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 17,
+    "step": "MEASURE OXIDE THICKNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1371,
+    "previous_3": [
+      "EPITAXY ANNEAL",
+      "WAFER SURFACE CLEAN",
+      "THERMAL OXIDATION"
+    ],
+    "next_3_training_only": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 18,
+    "step": "SPIN COAT PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1452,
+    "previous_3": [
+      "WAFER SURFACE CLEAN",
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS"
+    ],
+    "next_3_training_only": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 19,
+    "step": "SOFT BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1532,
+    "previous_3": [
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 20,
+    "step": "ALIGN MASK LEVEL 1",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.1613,
+    "previous_3": [
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "next_3_training_only": [
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 21,
+    "step": "EXPOSE LITHO LEVEL 1",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.1694,
+    "previous_3": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST",
+      "PATTERN INSPECTION LEVEL 1"
+    ],
+    "distance_since_clean": 6,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 22,
+    "step": "POST EXPOSE BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1774,
+    "previous_3": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "DEVELOP PHOTORESIST",
+      "PATTERN INSPECTION LEVEL 1",
+      "HARD BAKE"
+    ],
+    "distance_since_clean": 7,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 23,
+    "step": "DEVELOP PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1855,
+    "previous_3": [
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE"
+    ],
+    "next_3_training_only": [
+      "PATTERN INSPECTION LEVEL 1",
+      "HARD BAKE",
+      "OXIDE ETCH"
+    ],
+    "distance_since_clean": 8,
+    "distance_since_develop": null
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 24,
+    "step": "PATTERN INSPECTION LEVEL 1",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.1935,
+    "previous_3": [
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "HARD BAKE",
+      "OXIDE ETCH",
+      "STRIP PHOTORESIST"
+    ],
+    "distance_since_clean": 9,
+    "distance_since_develop": 1
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 25,
+    "step": "HARD BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.2016,
+    "previous_3": [
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST",
+      "PATTERN INSPECTION LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "OXIDE ETCH",
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER ETCH"
+    ],
+    "distance_since_clean": 10,
+    "distance_since_develop": 2
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 26,
+    "step": "OXIDE ETCH",
+    "operation_family": "etch",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2097,
+    "previous_3": [
+      "DEVELOP PHOTORESIST",
+      "PATTERN INSPECTION LEVEL 1",
+      "HARD BAKE"
+    ],
+    "next_3_training_only": [
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER ETCH",
+      "MEASURE OPENING CD"
+    ],
+    "distance_since_clean": 11,
+    "distance_since_develop": 3
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 27,
+    "step": "STRIP PHOTORESIST",
+    "operation_family": "strip_resist",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2177,
+    "previous_3": [
+      "PATTERN INSPECTION LEVEL 1",
+      "HARD BAKE",
+      "OXIDE ETCH"
+    ],
+    "next_3_training_only": [
+      "CLEAN AFTER ETCH",
+      "MEASURE OPENING CD",
+      "IMPLANT WELL"
+    ],
+    "distance_since_clean": 12,
+    "distance_since_develop": 4
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 28,
+    "step": "CLEAN AFTER ETCH",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2258,
+    "previous_3": [
+      "HARD BAKE",
+      "OXIDE ETCH",
+      "STRIP PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "MEASURE OPENING CD",
+      "IMPLANT WELL",
+      "PRE ANNEAL CHECK"
+    ],
+    "distance_since_clean": 13,
+    "distance_since_develop": 5
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 29,
+    "step": "MEASURE OPENING CD",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2339,
+    "previous_3": [
+      "OXIDE ETCH",
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER ETCH"
+    ],
+    "next_3_training_only": [
+      "IMPLANT WELL",
+      "PRE ANNEAL CHECK",
+      "DRIVE IN DIFFUSION"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": 6
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 30,
+    "step": "IMPLANT WELL",
+    "operation_family": "implant",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2419,
+    "previous_3": [
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER ETCH",
+      "MEASURE OPENING CD"
+    ],
+    "next_3_training_only": [
+      "PRE ANNEAL CHECK",
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": 7
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 31,
+    "step": "PRE ANNEAL CHECK",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.25,
+    "previous_3": [
+      "CLEAN AFTER ETCH",
+      "MEASURE OPENING CD",
+      "IMPLANT WELL"
+    ],
+    "next_3_training_only": [
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL",
+      "MEASURE JUNCTION DEPTH"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": 8
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 32,
+    "step": "DRIVE IN DIFFUSION",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2581,
+    "previous_3": [
+      "MEASURE OPENING CD",
+      "IMPLANT WELL",
+      "PRE ANNEAL CHECK"
+    ],
+    "next_3_training_only": [
+      "RAPID THERMAL ANNEAL",
+      "MEASURE JUNCTION DEPTH",
+      "THERMAL OXIDATION"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": 9
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 33,
+    "step": "RAPID THERMAL ANNEAL",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2661,
+    "previous_3": [
+      "IMPLANT WELL",
+      "PRE ANNEAL CHECK",
+      "DRIVE IN DIFFUSION"
+    ],
+    "next_3_training_only": [
+      "MEASURE JUNCTION DEPTH",
+      "THERMAL OXIDATION",
+      "GATE OXIDE PREP"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": 10
+  },
+  {
+    "family": "MOSFET",
+    "sequence_id": "seq_0001",
+    "index": 34,
+    "step": "MEASURE JUNCTION DEPTH",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2742,
+    "previous_3": [
+      "PRE ANNEAL CHECK",
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL"
+    ],
+    "next_3_training_only": [
+      "THERMAL OXIDATION",
+      "GATE OXIDE PREP",
+      "GATE OXIDE GROWTH"
+    ],
+    "distance_since_clean": 6,
+    "distance_since_develop": 11
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 0,
+    "step": "RECEIVE WAFER LOT",
+    "operation_family": "logistics",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0,
+    "previous_3": [],
+    "next_3_training_only": [
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 1,
+    "step": "LOT IDENTIFICATION",
+    "operation_family": "logistics",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0067,
+    "previous_3": [
+      "RECEIVE WAFER LOT"
+    ],
+    "next_3_training_only": [
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 2,
+    "step": "INITIAL WAFER INSPECTION",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0134,
+    "previous_3": [
+      "RECEIVE WAFER LOT",
+      "LOT IDENTIFICATION"
+    ],
+    "next_3_training_only": [
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER",
+      "BACKSIDE CLEAN"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 3,
+    "step": "MEASURE SURFACE PARTICLES",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0201,
+    "previous_3": [
+      "RECEIVE WAFER LOT",
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION"
+    ],
+    "next_3_training_only": [
+      "PRE CLEAN WAFER",
+      "BACKSIDE CLEAN",
+      "FRONTSIDE CLEAN"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 4,
+    "step": "PRE CLEAN WAFER",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0268,
+    "previous_3": [
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES"
+    ],
+    "next_3_training_only": [
+      "BACKSIDE CLEAN",
+      "FRONTSIDE CLEAN",
+      "RCA CLEAN 1"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 5,
+    "step": "BACKSIDE CLEAN",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "backside",
+    "mask_level": null,
+    "normalized_position": 0.0336,
+    "previous_3": [
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER"
+    ],
+    "next_3_training_only": [
+      "FRONTSIDE CLEAN",
+      "RCA CLEAN 1",
+      "RCA CLEAN 2"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 6,
+    "step": "FRONTSIDE CLEAN",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0403,
+    "previous_3": [
+      "MEASURE SURFACE PARTICLES",
+      "PRE CLEAN WAFER",
+      "BACKSIDE CLEAN"
+    ],
+    "next_3_training_only": [
+      "RCA CLEAN 1",
+      "RCA CLEAN 2",
+      "HF DIP"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 7,
+    "step": "RCA CLEAN 1",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.047,
+    "previous_3": [
+      "PRE CLEAN WAFER",
+      "BACKSIDE CLEAN",
+      "FRONTSIDE CLEAN"
+    ],
+    "next_3_training_only": [
+      "RCA CLEAN 2",
+      "HF DIP",
+      "EPITAXIAL WAFER CHECK"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 8,
+    "step": "RCA CLEAN 2",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0537,
+    "previous_3": [
+      "BACKSIDE CLEAN",
+      "FRONTSIDE CLEAN",
+      "RCA CLEAN 1"
+    ],
+    "next_3_training_only": [
+      "HF DIP",
+      "EPITAXIAL WAFER CHECK",
+      "MEASURE EPITAXY THICKNESS"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 9,
+    "step": "HF DIP",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0604,
+    "previous_3": [
+      "FRONTSIDE CLEAN",
+      "RCA CLEAN 1",
+      "RCA CLEAN 2"
+    ],
+    "next_3_training_only": [
+      "EPITAXIAL WAFER CHECK",
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 10,
+    "step": "EPITAXIAL WAFER CHECK",
+    "operation_family": "other_process",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0671,
+    "previous_3": [
+      "RCA CLEAN 1",
+      "RCA CLEAN 2",
+      "HF DIP"
+    ],
+    "next_3_training_only": [
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY",
+      "EPITAXIAL LAYER PREP"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 11,
+    "step": "MEASURE EPITAXY THICKNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0738,
+    "previous_3": [
+      "RCA CLEAN 2",
+      "HF DIP",
+      "EPITAXIAL WAFER CHECK"
+    ],
+    "next_3_training_only": [
+      "MEASURE RESISTIVITY",
+      "EPITAXIAL LAYER PREP",
+      "THERMAL OXIDATION"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 12,
+    "step": "MEASURE RESISTIVITY",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0805,
+    "previous_3": [
+      "HF DIP",
+      "EPITAXIAL WAFER CHECK",
+      "MEASURE EPITAXY THICKNESS"
+    ],
+    "next_3_training_only": [
+      "EPITAXIAL LAYER PREP",
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 13,
+    "step": "EPITAXIAL LAYER PREP",
+    "operation_family": "other_process",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0872,
+    "previous_3": [
+      "EPITAXIAL WAFER CHECK",
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY"
+    ],
+    "next_3_training_only": [
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 14,
+    "step": "THERMAL OXIDATION",
+    "operation_family": "deposition_growth",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.094,
+    "previous_3": [
+      "MEASURE EPITAXY THICKNESS",
+      "MEASURE RESISTIVITY",
+      "EPITAXIAL LAYER PREP"
+    ],
+    "next_3_training_only": [
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 15,
+    "step": "MEASURE OXIDE THICKNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1007,
+    "previous_3": [
+      "MEASURE RESISTIVITY",
+      "EPITAXIAL LAYER PREP",
+      "THERMAL OXIDATION"
+    ],
+    "next_3_training_only": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1"
+    ],
+    "distance_since_clean": 6,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 16,
+    "step": "SPIN COAT PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1074,
+    "previous_3": [
+      "EPITAXIAL LAYER PREP",
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS"
+    ],
+    "next_3_training_only": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1"
+    ],
+    "distance_since_clean": 7,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 17,
+    "step": "SOFT BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1141,
+    "previous_3": [
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE"
+    ],
+    "distance_since_clean": 8,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 18,
+    "step": "ALIGN MASK LEVEL 1",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.1208,
+    "previous_3": [
+      "MEASURE OXIDE THICKNESS",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "next_3_training_only": [
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST"
+    ],
+    "distance_since_clean": 9,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 19,
+    "step": "EXPOSE LITHO LEVEL 1",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.1275,
+    "previous_3": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1"
+    ],
+    "distance_since_clean": 10,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 20,
+    "step": "POST EXPOSE BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1342,
+    "previous_3": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1",
+      "OXIDE ETCH DRY"
+    ],
+    "distance_since_clean": 11,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 21,
+    "step": "DEVELOP PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.1409,
+    "previous_3": [
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE"
+    ],
+    "next_3_training_only": [
+      "INSPECT PATTERN LEVEL 1",
+      "OXIDE ETCH DRY",
+      "STRIP PHOTORESIST"
+    ],
+    "distance_since_clean": 12,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 22,
+    "step": "INSPECT PATTERN LEVEL 1",
+    "operation_family": "other_process",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.1477,
+    "previous_3": [
+      "EXPOSE LITHO LEVEL 1",
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "OXIDE ETCH DRY",
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER OXIDE ETCH"
+    ],
+    "distance_since_clean": 13,
+    "distance_since_develop": 1
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 23,
+    "step": "OXIDE ETCH DRY",
+    "operation_family": "etch",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1544,
+    "previous_3": [
+      "POST EXPOSE BAKE",
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER OXIDE ETCH",
+      "MEASURE OPENING CD"
+    ],
+    "distance_since_clean": 14,
+    "distance_since_develop": 2
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 24,
+    "step": "STRIP PHOTORESIST",
+    "operation_family": "strip_resist",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1611,
+    "previous_3": [
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1",
+      "OXIDE ETCH DRY"
+    ],
+    "next_3_training_only": [
+      "CLEAN AFTER OXIDE ETCH",
+      "MEASURE OPENING CD",
+      "IMPLANT P BODY"
+    ],
+    "distance_since_clean": 15,
+    "distance_since_develop": 3
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 25,
+    "step": "CLEAN AFTER OXIDE ETCH",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1678,
+    "previous_3": [
+      "INSPECT PATTERN LEVEL 1",
+      "OXIDE ETCH DRY",
+      "STRIP PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "MEASURE OPENING CD",
+      "IMPLANT P BODY",
+      "DRIVE IN DIFFUSION"
+    ],
+    "distance_since_clean": 16,
+    "distance_since_develop": 4
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 26,
+    "step": "MEASURE OPENING CD",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1745,
+    "previous_3": [
+      "OXIDE ETCH DRY",
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER OXIDE ETCH"
+    ],
+    "next_3_training_only": [
+      "IMPLANT P BODY",
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": 5
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 27,
+    "step": "IMPLANT P BODY",
+    "operation_family": "implant",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.1812,
+    "previous_3": [
+      "STRIP PHOTORESIST",
+      "CLEAN AFTER OXIDE ETCH",
+      "MEASURE OPENING CD"
+    ],
+    "next_3_training_only": [
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL",
+      "MEASURE JUNCTION DEPTH"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": 6
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 28,
+    "step": "DRIVE IN DIFFUSION",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.1879,
+    "previous_3": [
+      "CLEAN AFTER OXIDE ETCH",
+      "MEASURE OPENING CD",
+      "IMPLANT P BODY"
+    ],
+    "next_3_training_only": [
+      "RAPID THERMAL ANNEAL",
+      "MEASURE JUNCTION DEPTH",
+      "THERMAL OXIDATION"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": 7
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 29,
+    "step": "RAPID THERMAL ANNEAL",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.1946,
+    "previous_3": [
+      "MEASURE OPENING CD",
+      "IMPLANT P BODY",
+      "DRIVE IN DIFFUSION"
+    ],
+    "next_3_training_only": [
+      "MEASURE JUNCTION DEPTH",
+      "THERMAL OXIDATION",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": 8
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 30,
+    "step": "MEASURE JUNCTION DEPTH",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2013,
+    "previous_3": [
+      "IMPLANT P BODY",
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL"
+    ],
+    "next_3_training_only": [
+      "THERMAL OXIDATION",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": 9
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 31,
+    "step": "THERMAL OXIDATION",
+    "operation_family": "deposition_growth",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2081,
+    "previous_3": [
+      "DRIVE IN DIFFUSION",
+      "RAPID THERMAL ANNEAL",
+      "MEASURE JUNCTION DEPTH"
+    ],
+    "next_3_training_only": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 2"
+    ],
+    "distance_since_clean": 6,
+    "distance_since_develop": 10
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 32,
+    "step": "SPIN COAT PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.2148,
+    "previous_3": [
+      "RAPID THERMAL ANNEAL",
+      "MEASURE JUNCTION DEPTH",
+      "THERMAL OXIDATION"
+    ],
+    "next_3_training_only": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 2",
+      "EXPOSE LITHO LEVEL 2"
+    ],
+    "distance_since_clean": 7,
+    "distance_since_develop": 11
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 33,
+    "step": "SOFT BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.2215,
+    "previous_3": [
+      "MEASURE JUNCTION DEPTH",
+      "THERMAL OXIDATION",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "ALIGN MASK LEVEL 2",
+      "EXPOSE LITHO LEVEL 2",
+      "DEVELOP PHOTORESIST"
+    ],
+    "distance_since_clean": 8,
+    "distance_since_develop": 12
+  },
+  {
+    "family": "IGBT",
+    "sequence_id": "seq_0001",
+    "index": 34,
+    "step": "ALIGN MASK LEVEL 2",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 2,
+    "normalized_position": 0.2282,
+    "previous_3": [
+      "THERMAL OXIDATION",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "next_3_training_only": [
+      "EXPOSE LITHO LEVEL 2",
+      "DEVELOP PHOTORESIST",
+      "P BODY WINDOW INSPECTION"
+    ],
+    "distance_since_clean": 9,
+    "distance_since_develop": 13
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 0,
+    "step": "RECEIVE WAFER LOT",
+    "operation_family": "logistics",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0,
+    "previous_3": [],
+    "next_3_training_only": [
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE DEFECTS"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 1,
+    "step": "LOT IDENTIFICATION",
+    "operation_family": "logistics",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0092,
+    "previous_3": [
+      "RECEIVE WAFER LOT"
+    ],
+    "next_3_training_only": [
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE DEFECTS",
+      "WAFER CLEAN PRE PROCESS"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 2,
+    "step": "INITIAL WAFER INSPECTION",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prefix",
+    "mask_level": null,
+    "normalized_position": 0.0183,
+    "previous_3": [
+      "RECEIVE WAFER LOT",
+      "LOT IDENTIFICATION"
+    ],
+    "next_3_training_only": [
+      "MEASURE SURFACE DEFECTS",
+      "WAFER CLEAN PRE PROCESS",
+      "RCA CLEAN 1"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 3,
+    "step": "MEASURE SURFACE DEFECTS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0275,
+    "previous_3": [
+      "RECEIVE WAFER LOT",
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION"
+    ],
+    "next_3_training_only": [
+      "WAFER CLEAN PRE PROCESS",
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 4,
+    "step": "WAFER CLEAN PRE PROCESS",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0367,
+    "previous_3": [
+      "LOT IDENTIFICATION",
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE DEFECTS"
+    ],
+    "next_3_training_only": [
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2",
+      "HF DIP"
+    ],
+    "distance_since_clean": null,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 5,
+    "step": "RCA CLEAN 1",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0459,
+    "previous_3": [
+      "INITIAL WAFER INSPECTION",
+      "MEASURE SURFACE DEFECTS",
+      "WAFER CLEAN PRE PROCESS"
+    ],
+    "next_3_training_only": [
+      "WET CLEAN RCA2",
+      "HF DIP",
+      "DRY WAFER"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 6,
+    "step": "WET CLEAN RCA2",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.055,
+    "previous_3": [
+      "MEASURE SURFACE DEFECTS",
+      "WAFER CLEAN PRE PROCESS",
+      "RCA CLEAN 1"
+    ],
+    "next_3_training_only": [
+      "HF DIP",
+      "DRY WAFER",
+      "WAFER CLEAN PRE-GRIND"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 7,
+    "step": "HF DIP",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0642,
+    "previous_3": [
+      "WAFER CLEAN PRE PROCESS",
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2"
+    ],
+    "next_3_training_only": [
+      "DRY WAFER",
+      "WAFER CLEAN PRE-GRIND",
+      "GRINDING WAFER BACKSIDE"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 8,
+    "step": "DRY WAFER",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0734,
+    "previous_3": [
+      "RCA CLEAN 1",
+      "WET CLEAN RCA2",
+      "HF DIP"
+    ],
+    "next_3_training_only": [
+      "WAFER CLEAN PRE-GRIND",
+      "GRINDING WAFER BACKSIDE",
+      "MEASURE GEOMETRY"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 9,
+    "step": "WAFER CLEAN PRE-GRIND",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.0826,
+    "previous_3": [
+      "WET CLEAN RCA2",
+      "HF DIP",
+      "DRY WAFER"
+    ],
+    "next_3_training_only": [
+      "GRINDING WAFER BACKSIDE",
+      "MEASURE GEOMETRY",
+      "ETCH WET BACKSIDE"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 10,
+    "step": "GRINDING WAFER BACKSIDE",
+    "operation_family": "backside",
+    "macro_block_guess": "backside",
+    "mask_level": null,
+    "normalized_position": 0.0917,
+    "previous_3": [
+      "HF DIP",
+      "DRY WAFER",
+      "WAFER CLEAN PRE-GRIND"
+    ],
+    "next_3_training_only": [
+      "MEASURE GEOMETRY",
+      "ETCH WET BACKSIDE",
+      "RINSE WET WAFER_EDGE"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 11,
+    "step": "MEASURE GEOMETRY",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1009,
+    "previous_3": [
+      "DRY WAFER",
+      "WAFER CLEAN PRE-GRIND",
+      "GRINDING WAFER BACKSIDE"
+    ],
+    "next_3_training_only": [
+      "ETCH WET BACKSIDE",
+      "RINSE WET WAFER_EDGE",
+      "DRY WAFER BACKSIDE"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 12,
+    "step": "ETCH WET BACKSIDE",
+    "operation_family": "etch",
+    "macro_block_guess": "backside",
+    "mask_level": null,
+    "normalized_position": 0.1101,
+    "previous_3": [
+      "WAFER CLEAN PRE-GRIND",
+      "GRINDING WAFER BACKSIDE",
+      "MEASURE GEOMETRY"
+    ],
+    "next_3_training_only": [
+      "RINSE WET WAFER_EDGE",
+      "DRY WAFER BACKSIDE",
+      "BACKSIDE CLEAN"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 13,
+    "step": "RINSE WET WAFER_EDGE",
+    "operation_family": "other_process",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1193,
+    "previous_3": [
+      "GRINDING WAFER BACKSIDE",
+      "MEASURE GEOMETRY",
+      "ETCH WET BACKSIDE"
+    ],
+    "next_3_training_only": [
+      "DRY WAFER BACKSIDE",
+      "BACKSIDE CLEAN",
+      "MEASURE BACKSIDE ROUGHNESS"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 14,
+    "step": "DRY WAFER BACKSIDE",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "backside",
+    "mask_level": null,
+    "normalized_position": 0.1284,
+    "previous_3": [
+      "MEASURE GEOMETRY",
+      "ETCH WET BACKSIDE",
+      "RINSE WET WAFER_EDGE"
+    ],
+    "next_3_training_only": [
+      "BACKSIDE CLEAN",
+      "MEASURE BACKSIDE ROUGHNESS",
+      "THERMAL OXIDATION"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 15,
+    "step": "BACKSIDE CLEAN",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "backside",
+    "mask_level": null,
+    "normalized_position": 0.1376,
+    "previous_3": [
+      "ETCH WET BACKSIDE",
+      "RINSE WET WAFER_EDGE",
+      "DRY WAFER BACKSIDE"
+    ],
+    "next_3_training_only": [
+      "MEASURE BACKSIDE ROUGHNESS",
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 16,
+    "step": "MEASURE BACKSIDE ROUGHNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "backside",
+    "mask_level": null,
+    "normalized_position": 0.1468,
+    "previous_3": [
+      "RINSE WET WAFER_EDGE",
+      "DRY WAFER BACKSIDE",
+      "BACKSIDE CLEAN"
+    ],
+    "next_3_training_only": [
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS",
+      "RCA CLEAN 1"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 17,
+    "step": "THERMAL OXIDATION",
+    "operation_family": "deposition_growth",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.156,
+    "previous_3": [
+      "DRY WAFER BACKSIDE",
+      "BACKSIDE CLEAN",
+      "MEASURE BACKSIDE ROUGHNESS"
+    ],
+    "next_3_training_only": [
+      "MEASURE OXIDE THICKNESS",
+      "RCA CLEAN 1",
+      "RCA CLEAN 2"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 18,
+    "step": "MEASURE OXIDE THICKNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1651,
+    "previous_3": [
+      "BACKSIDE CLEAN",
+      "MEASURE BACKSIDE ROUGHNESS",
+      "THERMAL OXIDATION"
+    ],
+    "next_3_training_only": [
+      "RCA CLEAN 1",
+      "RCA CLEAN 2",
+      "HF DIP"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 19,
+    "step": "RCA CLEAN 1",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "prep",
+    "mask_level": null,
+    "normalized_position": 0.1743,
+    "previous_3": [
+      "MEASURE BACKSIDE ROUGHNESS",
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS"
+    ],
+    "next_3_training_only": [
+      "RCA CLEAN 2",
+      "HF DIP",
+      "OXIDE STRIP"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 20,
+    "step": "RCA CLEAN 2",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.1835,
+    "previous_3": [
+      "THERMAL OXIDATION",
+      "MEASURE OXIDE THICKNESS",
+      "RCA CLEAN 1"
+    ],
+    "next_3_training_only": [
+      "HF DIP",
+      "OXIDE STRIP",
+      "SURFACE PREP FOR DEPOSITION"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 21,
+    "step": "HF DIP",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.1927,
+    "previous_3": [
+      "MEASURE OXIDE THICKNESS",
+      "RCA CLEAN 1",
+      "RCA CLEAN 2"
+    ],
+    "next_3_training_only": [
+      "OXIDE STRIP",
+      "SURFACE PREP FOR DEPOSITION",
+      "DEPOSIT PAD OXIDE"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 22,
+    "step": "OXIDE STRIP",
+    "operation_family": "clean_surface_prep",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2018,
+    "previous_3": [
+      "RCA CLEAN 1",
+      "RCA CLEAN 2",
+      "HF DIP"
+    ],
+    "next_3_training_only": [
+      "SURFACE PREP FOR DEPOSITION",
+      "DEPOSIT PAD OXIDE",
+      "ANNEAL OXIDE"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 23,
+    "step": "SURFACE PREP FOR DEPOSITION",
+    "operation_family": "other_process",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.211,
+    "previous_3": [
+      "RCA CLEAN 2",
+      "HF DIP",
+      "OXIDE STRIP"
+    ],
+    "next_3_training_only": [
+      "DEPOSIT PAD OXIDE",
+      "ANNEAL OXIDE",
+      "MEASURE FILM THICKNESS"
+    ],
+    "distance_since_clean": 1,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 24,
+    "step": "DEPOSIT PAD OXIDE",
+    "operation_family": "deposition_growth",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2202,
+    "previous_3": [
+      "HF DIP",
+      "OXIDE STRIP",
+      "SURFACE PREP FOR DEPOSITION"
+    ],
+    "next_3_training_only": [
+      "ANNEAL OXIDE",
+      "MEASURE FILM THICKNESS",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "distance_since_clean": 2,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 25,
+    "step": "ANNEAL OXIDE",
+    "operation_family": "anneal_diffusion",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2294,
+    "previous_3": [
+      "OXIDE STRIP",
+      "SURFACE PREP FOR DEPOSITION",
+      "DEPOSIT PAD OXIDE"
+    ],
+    "next_3_training_only": [
+      "MEASURE FILM THICKNESS",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "distance_since_clean": 3,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 26,
+    "step": "MEASURE FILM THICKNESS",
+    "operation_family": "measurement_inspection",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.2385,
+    "previous_3": [
+      "SURFACE PREP FOR DEPOSITION",
+      "DEPOSIT PAD OXIDE",
+      "ANNEAL OXIDE"
+    ],
+    "next_3_training_only": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1"
+    ],
+    "distance_since_clean": 4,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 27,
+    "step": "SPIN COAT PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.2477,
+    "previous_3": [
+      "DEPOSIT PAD OXIDE",
+      "ANNEAL OXIDE",
+      "MEASURE FILM THICKNESS"
+    ],
+    "next_3_training_only": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1"
+    ],
+    "distance_since_clean": 5,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 28,
+    "step": "SOFT BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.2569,
+    "previous_3": [
+      "ANNEAL OXIDE",
+      "MEASURE FILM THICKNESS",
+      "SPIN COAT PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1",
+      "DEVELOP PHOTORESIST"
+    ],
+    "distance_since_clean": 6,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 29,
+    "step": "ALIGN MASK LEVEL 1",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.2661,
+    "previous_3": [
+      "MEASURE FILM THICKNESS",
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE"
+    ],
+    "next_3_training_only": [
+      "EXPOSE LITHO LEVEL 1",
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1"
+    ],
+    "distance_since_clean": 7,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 30,
+    "step": "EXPOSE LITHO LEVEL 1",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.2752,
+    "previous_3": [
+      "SPIN COAT PHOTORESIST",
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1",
+      "HARD BAKE"
+    ],
+    "distance_since_clean": 8,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 31,
+    "step": "DEVELOP PHOTORESIST",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.2844,
+    "previous_3": [
+      "SOFT BAKE",
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "INSPECT PATTERN LEVEL 1",
+      "HARD BAKE",
+      "OXIDE ETCH DRY"
+    ],
+    "distance_since_clean": 9,
+    "distance_since_develop": null
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 32,
+    "step": "INSPECT PATTERN LEVEL 1",
+    "operation_family": "other_process",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": 1,
+    "normalized_position": 0.2936,
+    "previous_3": [
+      "ALIGN MASK LEVEL 1",
+      "EXPOSE LITHO LEVEL 1",
+      "DEVELOP PHOTORESIST"
+    ],
+    "next_3_training_only": [
+      "HARD BAKE",
+      "OXIDE ETCH DRY",
+      "STRIP RESIST"
+    ],
+    "distance_since_clean": 10,
+    "distance_since_develop": 1
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 33,
+    "step": "HARD BAKE",
+    "operation_family": "lithography",
+    "macro_block_guess": "lithography_cycle",
+    "mask_level": null,
+    "normalized_position": 0.3028,
+    "previous_3": [
+      "EXPOSE LITHO LEVEL 1",
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1"
+    ],
+    "next_3_training_only": [
+      "OXIDE ETCH DRY",
+      "STRIP RESIST",
+      "CLEAN AFTER ETCH"
+    ],
+    "distance_since_clean": 11,
+    "distance_since_develop": 2
+  },
+  {
+    "family": "IC",
+    "sequence_id": "seq_0001",
+    "index": 34,
+    "step": "OXIDE ETCH DRY",
+    "operation_family": "etch",
+    "macro_block_guess": "device_fabrication",
+    "mask_level": null,
+    "normalized_position": 0.3119,
+    "previous_3": [
+      "DEVELOP PHOTORESIST",
+      "INSPECT PATTERN LEVEL 1",
+      "HARD BAKE"
+    ],
+    "next_3_training_only": [
+      "STRIP RESIST",
+      "CLEAN AFTER ETCH",
+      "MEASURE CD LEVEL 1"
+    ],
+    "distance_since_clean": 12,
+    "distance_since_develop": 3
+  }
+]
