@@ -40,6 +40,7 @@ artifacts are local self-eval outputs unless explicitly noted otherwise.
 | `solution_14_synthetic_ml_generator_ensemble` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Best current submission candidate if the released input coupling is preserved; the generated-data fallback is included for robustness if exact full-route matches disappear. |
 | `solution_15_route_memory_mbr` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready guarded upper-bound variant. The perfect coupled score still depends on released-file route coupling; the non-transductive fallback is much weaker and is reported separately. |
 | `solution_16_pseudolabel_metric_audit` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready audit candidate. It proves current predictions score perfectly under eval_metrics.py against pseudo labels inferred from released inputs, but those pseudo labels are not hidden official labels. |
+| `solution_17_conformal_route_guard` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready guarded candidate. Current official rows all use exact route matching; the conformal guard is a risk-control artifact for cases where exact route coverage drops. |
 
 ## Standalone Completeness Matrix
 
@@ -67,6 +68,7 @@ and a generated package with report/results/training/demo artifacts.
 | `solution_14_synthetic_ml_generator_ensemble` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_15_route_memory_mbr` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_16_pseudolabel_metric_audit` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_17_conformal_route_guard` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 
 ## What Counts As Complete Here
 

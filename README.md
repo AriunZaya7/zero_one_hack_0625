@@ -74,6 +74,7 @@ python -B solutions/solution_13_transductive_generator_validator/solution.py
 python -B solutions/solution_14_synthetic_ml_generator_ensemble/solution.py
 python -B solutions/solution_15_route_memory_mbr/solution.py
 python -B solutions/solution_16_pseudolabel_metric_audit/solution.py
+python -B solutions/solution_17_conformal_route_guard/solution.py
 python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```

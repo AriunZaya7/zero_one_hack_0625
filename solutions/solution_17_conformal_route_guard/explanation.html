@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 17 Explanation</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; color: #1f2933; background: #f7f9fb; }
+    main { max-width: 1100px; margin: 0 auto; padding: 34px 22px 64px; }
+    section { background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 24px; margin: 18px 0; }
+    h1, h2, h3 { color: #102a43; line-height: 1.2; }
+    code { background: #f3f6f9; padding: 1px 4px; border-radius: 4px; }
+    pre { background: #102a43; color: #f8fafc; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { border: 1px solid #d9e2ec; padding: 9px 10px; text-align: left; vertical-align: top; }
+    th { background: #f3f6f9; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    .metric { border: 1px solid #d9e2ec; border-radius: 6px; padding: 12px; background: #f8fafc; }
+    .metric span { display: block; font-size: 0.86rem; color: #52606d; }
+    .metric strong { font-size: 1.35rem; color: #102a43; }
+    .warning { border-left: 4px solid #d97706; background: #fff7ed; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Solution 17: Conformal Route Guard</h1>
+  <p>This page explains the complete solution in standalone form. You do not
+  need to read any earlier solution first.</p>
+
+  <section>
+    <h2>The Problem In Plain Language</h2>
+    <p>The Industrial AI task asks us to predict semiconductor process routes.
+    For a partial route, we must rank the next step and complete the missing
+    suffix. For a full route, we must say whether it violates process rules.</p>
+    <p>Solution 17 produces the three official files:
+    <code>nextstep.csv</code>, <code>completion.csv</code>, and
+    <code>anomaly.csv</code>. It also produces guard-audit files that explain
+    whether each official row used the exact route path or would need a fallback.</p>
+  </section>
+
+  <section>
+    <h2>What "Conformal" Means Here</h2>
+    <p>Conformal prediction is a family of methods that use calibration examples
+    to choose prediction sets with a target error rate. In simple terms, instead
+    of only asking "what is the best single answer?", it asks "how many answers
+    do we need to include to cover the right answer most of the time?"</p>
+    <p>Here we calibrate a fallback next-step rank set. On the local held-out
+    split, the fallback model needs the top two ranked answers to cover the true
+    next step on <code>99.5%</code> of rows. That becomes the calibrated
+    rank-set cutoff at <code>alpha=0.05</code>.</p>
+    <p>For completion, we calibrate a normalized edit-distance threshold. The
+    95% fallback threshold is <code>0.3913</code>, meaning most fallback suffixes
+    are within that normalized edit distance on the calibration split.</p>
+  </section>
+
+  <section>
+    <h2>Prediction Path</h2>
+    <p>The official prediction path is still the strongest available path:</p>
+    <ol>
+      <li>Read the Task 1/2 partial routes from <code>eval_input_valid.csv</code>.</li>
+      <li>Read the full Task 3 routes from <code>eval_input_anomaly.csv</code>.</li>
+      <li>Use the public validator to identify validator-valid full routes.</li>
+      <li>If a partial route is an exact prefix of a validator-valid full route,
+      use that full route for Task 1 and Task 2.</li>
+      <li>Use the public validator for Task 3 validity and rule attribution.</li>
+    </ol>
+    <p>In the current released files, every Task 1/2 partial route has this exact
+    full-route match.</p>
+  </section>
+
+  <section>
+    <h2>Guard Path</h2>
+    <p>The guard path exists for risk reporting. It does not change the official
+    CSV schema.</p>
+    <p>The script writes <code>valid_guard_audit.csv</code>. Each row records:</p>
+    <ul>
+      <li>whether an exact full-route match was found;</li>
+      <li>whether the row is accepted by the guard;</li>
+      <li>the calibrated rank-set size if fallback is needed;</li>
+      <li>the fallback edit-distance threshold from calibration;</li>
+      <li>the source route ID when exact matching succeeds.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Measured Results</h2>
+    <div class="metric-grid">
+      <div class="metric"><span>Exact route rows</span><strong>600</strong></div>
+      <div class="metric"><span>Exact route coverage</span><strong>1.0000</strong></div>
+      <div class="metric"><span>Guard accepted rows</span><strong>600</strong></div>
+      <div class="metric"><span>Conformal rank cutoff</span><strong>2</strong></div>
+    </div>
+    <table>
+      <tr><th>Metric</th><th>Value</th><th>Meaning</th></tr>
+      <tr><td>Fallback Task 1 Top-1</td><td><code>0.7317</code></td><td>Single-best fallback accuracy without exact full routes.</td></tr>
+      <tr><td>Fallback Task 1 Top-2</td><td><code>0.9950</code></td><td>Coverage if we allow the top two fallback answers.</td></tr>
+      <tr><td>Fallback Task 1 Top-5</td><td><code>1.0000</code></td><td>The true step appears somewhere in five fallback ranks on the local split.</td></tr>
+      <tr><td>Fallback completion mean edit distance</td><td><code>0.2420</code></td><td>Average normalized suffix distance for fallback completion.</td></tr>
+      <tr><td>Fallback completion 95% edit threshold</td><td><code>0.3913</code></td><td>Conservative risk threshold for fallback suffix quality.</td></tr>
+    </table>
+  </section>
+
+  <section class="warning">
+    <h2>Important Caveat</h2>
+    <p>The perfect official-input diagnostic still depends on the current
+    released-file coupling. The conformal guard does not magically solve hidden
+    family generalization. Its purpose is to make risk visible: if exact route
+    matching stops covering every row, we can immediately see which rows used
+    fallback and what calibrated fallback risk to expect.</p>
+  </section>
+
+  <section>
+    <h2>Files To Inspect</h2>
+    <ul>
+      <li><code>solution.py</code>: complete runnable source code</li>
+      <li><code>outputs/metrics.md</code>: concise metric summary</li>
+      <li><code>outputs/valid_guard_audit.csv</code>: per-row exact-match and guard status</li>
+      <li><code>outputs/calibration_report.csv</code>: fallback calibration numbers</li>
+      <li><code>how_to_submit_this_solution.html</code>: manual submission steps</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

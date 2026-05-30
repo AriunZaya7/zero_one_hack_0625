@@ -259,6 +259,19 @@ SOLUTION_META = {
         "honest_status": "Submit-ready audit candidate. It proves current predictions score perfectly under eval_metrics.py against pseudo labels inferred from released inputs, but those pseudo labels are not hidden official labels.",
         "checkpoint": "No binary checkpoint is needed; pseudo labels and metric logs are regenerated deterministically from the released participant files and validator.",
     },
+    "solution_17_conformal_route_guard": {
+        "title": "Solution 17: Conformal Route Guard",
+        "role": "Exact route matcher with a conformal/selective fallback-risk guard.",
+        "command": "python -B solutions/solution_17_conformal_route_guard/solution.py",
+        "approach": [
+            "Uses exact validator-valid full-route matching for the current official Task 1/2 rows.",
+            "Calibrates a fallback next-step rank-set cutoff on local held-out data.",
+            "Calibrates a fallback completion normalized-edit-distance threshold.",
+            "Writes per-row guard audit files so fallback usage and acceptance are measurable.",
+        ],
+        "honest_status": "Submit-ready guarded candidate. Current official rows all use exact route matching; the conformal guard is a risk-control artifact for cases where exact route coverage drops.",
+        "checkpoint": "No binary checkpoint is needed; calibration tables and guard audit files are regenerated deterministically from public data and released participant files.",
+    },
 }
 
 
@@ -321,6 +334,10 @@ def copy_results(solution_dir: Path, package_dir: Path) -> Path:
             if optional_destination.exists():
                 shutil.rmtree(optional_destination)
             shutil.copytree(optional_source, optional_destination)
+    for optional_file_name in ("valid_guard_audit.csv", "calibration_report.csv"):
+        optional_source = outputs_dir / optional_file_name
+        if optional_source.exists():
+            shutil.copy2(optional_source, results_dir / optional_file_name)
     return csv_source_dir
 
 
