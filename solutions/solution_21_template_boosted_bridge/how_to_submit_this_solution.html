@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How to Submit Solution 21</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172026;
+      background: #f7f9fb;
+      line-height: 1.55;
+    }
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 64px;
+    }
+    section {
+      background: #fff;
+      border: 1px solid #d7dde2;
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    h1, h2 {
+      margin: 0 0 12px;
+      line-height: 1.2;
+    }
+    code {
+      background: #eef2f5;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    pre {
+      background: #172026;
+      color: #f7f9fb;
+      padding: 14px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+    li { margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>How to Submit Solution 21</h1>
+    <p>
+      This guide is written as manual steps. It assumes you are in the shared
+      repository and on branch <code>dev/bati</code>.
+    </p>
+  </section>
+
+  <section>
+    <h2>1. Confirm the branch and dependencies</h2>
+    <pre><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current
+python - <<'PY'
+import xgboost, catboost
+print("xgboost", xgboost.__version__)
+print("catboost", catboost.__version__)
+PY</code></pre>
+    <p>The branch should print <code>dev/bati</code>. XGBoost and CatBoost should import successfully.</p>
+  </section>
+
+  <section>
+    <h2>2. Regenerate this solution</h2>
+    <pre><code>python -B solutions/solution_21_template_boosted_bridge/solution.py</code></pre>
+    <p>
+      This writes the required three CSV files and the XGBoost raw-vs-template
+      diagnostic outputs. It may take a little longer than the deterministic
+      retrieval solutions because it trains multiple small XGBoost models.
+    </p>
+  </section>
+
+  <section>
+    <h2>3. Check the required CSV files</h2>
+    <pre><code>python - <<'PY'
+from pathlib import Path
+import csv
+base = Path("solutions/solution_21_template_boosted_bridge/outputs/official_submission")
+expected = {
+    "nextstep.csv": ["EXAMPLE_ID", "RANK_1", "RANK_2", "RANK_3", "RANK_4", "RANK_5"],
+    "completion.csv": ["EXAMPLE_ID", "PREDICTED_SEQUENCE"],
+    "anomaly.csv": ["EXAMPLE_ID", "IS_VALID", "SCORE", "PREDICTED_RULE"],
+}
+for name, header in expected.items():
+    path = base / name
+    with path.open(newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        actual = next(reader)
+        rows = sum(1 for _ in reader)
+    print(name, actual == header, rows)
+PY</code></pre>
+    <p>
+      Expected row counts are 600 for <code>nextstep.csv</code>, 600 for
+      <code>completion.csv</code>, and 987 for <code>anomaly.csv</code>.
+    </p>
+  </section>
+
+  <section>
+    <h2>4. Package the solution</h2>
+    <pre><code>python -B solutions/prepare_submission_packages.py</code></pre>
+    <p>
+      The package for this solution will be created under
+      <code>solutions/solution_21_template_boosted_bridge/submission_package/</code>.
+    </p>
+  </section>
+
+  <section>
+    <h2>5. Upload the official CSVs</h2>
+    <ol>
+      <li>Open the hackathon submission page.</li>
+      <li>Choose the Industrial AI / Infineon track submission form.</li>
+      <li>Upload <code>outputs/official_submission/nextstep.csv</code> for Task 1.</li>
+      <li>Upload <code>outputs/official_submission/completion.csv</code> for Task 2.</li>
+      <li>Upload <code>outputs/official_submission/anomaly.csv</code> for Task 3.</li>
+      <li>If the form accepts supporting material, attach or reference the generated submission package and <code>explanation.html</code>.</li>
+      <li>Before final submit, verify the column headers exactly match the track specification.</li>
+    </ol>
+  </section>
+</main>
+</body>
+</html>

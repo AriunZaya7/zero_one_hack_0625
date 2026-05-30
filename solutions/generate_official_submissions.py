@@ -37,6 +37,8 @@ from solutions.solution_16_pseudolabel_metric_audit import solution as sol16  # 
 from solutions.solution_17_conformal_route_guard import solution as sol17  # noqa: E402
 from solutions.solution_18_family_template_grammar import solution as sol18  # noqa: E402
 from solutions.solution_19_valid_lattice_template import solution as sol19  # noqa: E402
+from solutions.solution_20_paired_length_lattice import solution as sol20  # noqa: E402
+from solutions.solution_21_template_boosted_bridge import solution as sol21  # noqa: E402
 
 
 OFFICIAL_VALID = sol13.OFFICIAL_VALID
@@ -307,6 +309,20 @@ def run_solution_19() -> None:
     print("Wrote solution_19_valid_lattice_template official_submission")
 
 
+def run_solution_20() -> None:
+    synthetic = sol18.generated_template_sequences()
+    template_training = sol18.build_template_training_bundle(sol18.public_sequences(), synthetic)
+    sol20.run_official_prediction(template_training)
+    print("Wrote solution_20_paired_length_lattice official_submission")
+
+
+def run_solution_21() -> None:
+    synthetic = sol18.generated_template_sequences()
+    template_training = sol18.build_template_training_bundle(sol18.public_sequences(), synthetic)
+    sol21.run_official_prediction(template_training)
+    print("Wrote solution_21_template_boosted_bridge official_submission")
+
+
 STANDARD_BUILDERS = {
     "solution_0_rule_mock": build_solution_0,
     "solution_1_hybrid_retrieval": build_solution_1,
@@ -338,6 +354,8 @@ def main() -> None:
     run_solution_17()
     run_solution_18()
     run_solution_19()
+    run_solution_20()
+    run_solution_21()
 
 
 if __name__ == "__main__":

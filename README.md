@@ -36,6 +36,12 @@ This branch contains our Industrial AI (Infineon) solution attempts under
 - [`solutions/solution_19_valid_lattice_template/`](./solutions/solution_19_valid_lattice_template/) -
   current strongest OOD-facing candidate: exact route memory, then
   shorter/longer valid-partial lattice, then `__FAMILY__` template fallback
+- [`solutions/solution_20_paired_length_lattice/`](./solutions/solution_20_paired_length_lattice/) -
+  current final OOD-facing candidate: Solution 19's evidence cascade plus a
+  conservative paired 60%/80% length guard for fallback completion
+- [`solutions/solution_21_template_boosted_bridge/`](./solutions/solution_21_template_boosted_bridge/) -
+  final hybrid candidate: Solution 20's submit-ready evidence cascade plus
+  XGBoost raw-vs-template OOD diagnostics
 - [`REPORT.md`](./REPORT.md) - root submission report
 - [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
   metrics and solution comparison
@@ -62,12 +68,17 @@ audit, so format drift fails fast instead of silently reaching submission.
 
 ### Setup
 
-Use Python 3.10 or newer. The current deterministic solution scripts use only
-the Python standard library.
+Use Python 3.10 or newer. Most deterministic solution scripts use only the
+Python standard library. Solution 21 also needs XGBoost/CatBoost-style ML
+dependencies for the trained bridge diagnostic.
 
 ```bash
 python -m pip install -r requirements.txt
+python -m pip install xgboost catboost
 ```
+
+On macOS, XGBoost may also require the OpenMP runtime (`libomp`). The local
+development machine has it installed so Solution 21 can run.
 
 ### Run All Current Solution Attempts
 
@@ -94,6 +105,8 @@ python -B solutions/solution_16_pseudolabel_metric_audit/solution.py
 python -B solutions/solution_17_conformal_route_guard/solution.py
 python -B solutions/solution_18_family_template_grammar/solution.py
 python -B solutions/solution_19_valid_lattice_template/solution.py
+python -B solutions/solution_20_paired_length_lattice/solution.py
+python -B solutions/solution_21_template_boosted_bridge/solution.py
 python -B solutions/generate_official_submissions.py
 python -B solutions/prepare_submission_packages.py
 ```

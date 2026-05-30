@@ -43,6 +43,8 @@ artifacts are local self-eval outputs unless explicitly noted otherwise.
 | `solution_17_conformal_route_guard` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready guarded candidate. Current official rows all use exact route matching; the conformal guard is a risk-control artifact for cases where exact route coverage drops. |
 | `solution_18_family_template_grammar` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. Current official rows still all use exact route matching; the new value is a stronger hidden-family fallback when exact strings are derivable from the visible family name. |
 | `solution_19_valid_lattice_template` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. Current official rows still all use exact full-route matching; the new value is stronger fallback if final OOD inputs expose shorter/longer partials from the same hidden route. |
+| `solution_20_paired_length_lattice` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready OOD-oriented candidate. It keeps Solution 19's exact/lattice path and adds a conservative completion-only length guard; the 110-family probe shows equal Task 1 Top-1 and slightly better Task 2 edit/block metrics than Solution 19. |
+| `solution_21_template_boosted_bridge` | yes | nextstep.csv: header ok, 600 official rows; completion.csv: header ok, 600 official rows; anomaly.csv: header ok, 987 official rows | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Submit-ready final hybrid candidate. Official predictions still use the stronger direct-evidence cascade; the trained XGBoost bridge is evidence that learned models need template-normalized labels to generalize exact strings to unseen families. |
 
 ## Standalone Completeness Matrix
 
@@ -73,6 +75,8 @@ and a generated package with report/results/training/demo artifacts.
 | `solution_17_conformal_route_guard` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_18_family_template_grammar` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_19_valid_lattice_template` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_20_paired_length_lattice` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_21_template_boosted_bridge` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 
 ## What Counts As Complete Here
 

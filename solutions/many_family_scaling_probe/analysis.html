@@ -66,7 +66,9 @@
         family-step template to the visible validation family name. The larger
         jump comes from valid-partial lattice matching: longer visible partials
         can reveal exact next steps for shorter partials from the same hidden
-        route.
+        route. The paired-length model adds a smaller fallback-only completion
+        improvement: it uses the two observed prefix lengths from a 60%/80%
+        route pair to constrain the route's unknown total length.
       </div>
       <p>
         The probe uses 110 synthetic families. The first 100 form the training
@@ -137,12 +139,23 @@
 <circle cx="458.1" cy="64.7" r="4" fill="#315c9a"/>
 <circle cx="596.0" cy="64.7" r="4" fill="#315c9a"/>
 <circle cx="734.0" cy="65.4" r="4" fill="#315c9a"/>
-<line x1="58" y1="296" x2="82" y2="296" stroke="#8a4b0f" stroke-width="3"/>
-<text x="90" y="300" class="legend">raw exact retrieval</text>
-<line x1="268" y1="296" x2="292" y2="296" stroke="#0d6b72" stroke-width="3"/>
-<text x="300" y="300" class="legend">template-adapted retrieval</text>
-<line x1="528" y1="296" x2="552" y2="296" stroke="#315c9a" stroke-width="3"/>
-<text x="560" y="300" class="legend">valid-lattice template</text>
+<polyline fill="none" stroke="#7a3f8f" stroke-width="3" points="58.0,66.8 78.7,66.8 113.2,63.3 182.2,66.1 320.1,64.7 458.1,64.7 596.0,64.7 734.0,65.4"/>
+<circle cx="58.0" cy="66.8" r="4" fill="#7a3f8f"/>
+<circle cx="78.7" cy="66.8" r="4" fill="#7a3f8f"/>
+<circle cx="113.2" cy="63.3" r="4" fill="#7a3f8f"/>
+<circle cx="182.2" cy="66.1" r="4" fill="#7a3f8f"/>
+<circle cx="320.1" cy="64.7" r="4" fill="#7a3f8f"/>
+<circle cx="458.1" cy="64.7" r="4" fill="#7a3f8f"/>
+<circle cx="596.0" cy="64.7" r="4" fill="#7a3f8f"/>
+<circle cx="734.0" cy="65.4" r="4" fill="#7a3f8f"/>
+<line x1="58" y1="296" x2="80" y2="296" stroke="#8a4b0f" stroke-width="3"/>
+<text x="86" y="300" class="legend">raw exact</text>
+<line x1="208" y1="296" x2="230" y2="296" stroke="#0d6b72" stroke-width="3"/>
+<text x="236" y="300" class="legend">template</text>
+<line x1="358" y1="296" x2="380" y2="296" stroke="#315c9a" stroke-width="3"/>
+<text x="386" y="300" class="legend">valid lattice</text>
+<line x1="508" y1="296" x2="530" y2="296" stroke="#7a3f8f" stroke-width="3"/>
+<text x="536" y="300" class="legend">paired length</text>
 <text x="734" y="304" text-anchor="end" class="tick">training families</text>
 </svg></div>
         <div class="chart-card"><svg viewBox="0 0 760 310" role="img" aria-label="Family-specific next-step Top-1 chart">
@@ -204,12 +217,23 @@
 <circle cx="458.1" cy="42.0" r="4" fill="#315c9a"/>
 <circle cx="596.0" cy="42.0" r="4" fill="#315c9a"/>
 <circle cx="734.0" cy="42.0" r="4" fill="#315c9a"/>
-<line x1="58" y1="296" x2="82" y2="296" stroke="#8a4b0f" stroke-width="3"/>
-<text x="90" y="300" class="legend">raw exact retrieval</text>
-<line x1="268" y1="296" x2="292" y2="296" stroke="#0d6b72" stroke-width="3"/>
-<text x="300" y="300" class="legend">template-adapted retrieval</text>
-<line x1="528" y1="296" x2="552" y2="296" stroke="#315c9a" stroke-width="3"/>
-<text x="560" y="300" class="legend">valid-lattice template</text>
+<polyline fill="none" stroke="#7a3f8f" stroke-width="3" points="58.0,42.0 78.7,42.0 113.2,42.0 182.2,42.0 320.1,42.0 458.1,42.0 596.0,42.0 734.0,42.0"/>
+<circle cx="58.0" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="78.7" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="113.2" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="182.2" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="320.1" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="458.1" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="596.0" cy="42.0" r="4" fill="#7a3f8f"/>
+<circle cx="734.0" cy="42.0" r="4" fill="#7a3f8f"/>
+<line x1="58" y1="296" x2="80" y2="296" stroke="#8a4b0f" stroke-width="3"/>
+<text x="86" y="300" class="legend">raw exact</text>
+<line x1="208" y1="296" x2="230" y2="296" stroke="#0d6b72" stroke-width="3"/>
+<text x="236" y="300" class="legend">template</text>
+<line x1="358" y1="296" x2="380" y2="296" stroke="#315c9a" stroke-width="3"/>
+<text x="386" y="300" class="legend">valid lattice</text>
+<line x1="508" y1="296" x2="530" y2="296" stroke="#7a3f8f" stroke-width="3"/>
+<text x="536" y="300" class="legend">paired length</text>
 <text x="734" y="304" text-anchor="end" class="tick">training families</text>
 </svg></div>
         <div class="chart-card"><svg viewBox="0 0 760 310" role="img" aria-label="Task 2 edit distance chart">
@@ -271,12 +295,23 @@
 <circle cx="458.1" cy="190.9" r="4" fill="#315c9a"/>
 <circle cx="596.0" cy="190.9" r="4" fill="#315c9a"/>
 <circle cx="734.0" cy="190.6" r="4" fill="#315c9a"/>
-<line x1="58" y1="296" x2="82" y2="296" stroke="#8a4b0f" stroke-width="3"/>
-<text x="90" y="300" class="legend">raw exact retrieval</text>
-<line x1="268" y1="296" x2="292" y2="296" stroke="#0d6b72" stroke-width="3"/>
-<text x="300" y="300" class="legend">template-adapted retrieval</text>
-<line x1="528" y1="296" x2="552" y2="296" stroke="#315c9a" stroke-width="3"/>
-<text x="560" y="300" class="legend">valid-lattice template</text>
+<polyline fill="none" stroke="#7a3f8f" stroke-width="3" points="58.0,188.9 78.7,191.0 113.2,190.8 182.2,191.9 320.1,191.8 458.1,191.1 596.0,191.0 734.0,190.7"/>
+<circle cx="58.0" cy="188.9" r="4" fill="#7a3f8f"/>
+<circle cx="78.7" cy="191.0" r="4" fill="#7a3f8f"/>
+<circle cx="113.2" cy="190.8" r="4" fill="#7a3f8f"/>
+<circle cx="182.2" cy="191.9" r="4" fill="#7a3f8f"/>
+<circle cx="320.1" cy="191.8" r="4" fill="#7a3f8f"/>
+<circle cx="458.1" cy="191.1" r="4" fill="#7a3f8f"/>
+<circle cx="596.0" cy="191.0" r="4" fill="#7a3f8f"/>
+<circle cx="734.0" cy="190.7" r="4" fill="#7a3f8f"/>
+<line x1="58" y1="296" x2="80" y2="296" stroke="#8a4b0f" stroke-width="3"/>
+<text x="86" y="300" class="legend">raw exact</text>
+<line x1="208" y1="296" x2="230" y2="296" stroke="#0d6b72" stroke-width="3"/>
+<text x="236" y="300" class="legend">template</text>
+<line x1="358" y1="296" x2="380" y2="296" stroke="#315c9a" stroke-width="3"/>
+<text x="386" y="300" class="legend">valid lattice</text>
+<line x1="508" y1="296" x2="530" y2="296" stroke="#7a3f8f" stroke-width="3"/>
+<text x="536" y="300" class="legend">paired length</text>
 <text x="734" y="304" text-anchor="end" class="tick">training families</text>
 </svg></div>
         <div class="chart-card"><svg viewBox="0 0 760 310" role="img" aria-label="Task 2 block accuracy chart">
@@ -338,12 +373,23 @@
 <circle cx="458.1" cy="58.5" r="4" fill="#315c9a"/>
 <circle cx="596.0" cy="56.6" r="4" fill="#315c9a"/>
 <circle cx="734.0" cy="56.6" r="4" fill="#315c9a"/>
-<line x1="58" y1="296" x2="82" y2="296" stroke="#8a4b0f" stroke-width="3"/>
-<text x="90" y="300" class="legend">raw exact retrieval</text>
-<line x1="268" y1="296" x2="292" y2="296" stroke="#0d6b72" stroke-width="3"/>
-<text x="300" y="300" class="legend">template-adapted retrieval</text>
-<line x1="528" y1="296" x2="552" y2="296" stroke="#315c9a" stroke-width="3"/>
-<text x="560" y="300" class="legend">valid-lattice template</text>
+<polyline fill="none" stroke="#7a3f8f" stroke-width="3" points="58.0,67.6 78.7,61.5 113.2,59.2 182.2,57.2 320.1,54.7 458.1,54.3 596.0,52.3 734.0,52.3"/>
+<circle cx="58.0" cy="67.6" r="4" fill="#7a3f8f"/>
+<circle cx="78.7" cy="61.5" r="4" fill="#7a3f8f"/>
+<circle cx="113.2" cy="59.2" r="4" fill="#7a3f8f"/>
+<circle cx="182.2" cy="57.2" r="4" fill="#7a3f8f"/>
+<circle cx="320.1" cy="54.7" r="4" fill="#7a3f8f"/>
+<circle cx="458.1" cy="54.3" r="4" fill="#7a3f8f"/>
+<circle cx="596.0" cy="52.3" r="4" fill="#7a3f8f"/>
+<circle cx="734.0" cy="52.3" r="4" fill="#7a3f8f"/>
+<line x1="58" y1="296" x2="80" y2="296" stroke="#8a4b0f" stroke-width="3"/>
+<text x="86" y="300" class="legend">raw exact</text>
+<line x1="208" y1="296" x2="230" y2="296" stroke="#0d6b72" stroke-width="3"/>
+<text x="236" y="300" class="legend">template</text>
+<line x1="358" y1="296" x2="380" y2="296" stroke="#315c9a" stroke-width="3"/>
+<text x="386" y="300" class="legend">valid lattice</text>
+<line x1="508" y1="296" x2="530" y2="296" stroke="#7a3f8f" stroke-width="3"/>
+<text x="536" y="300" class="legend">paired length</text>
 <text x="734" y="304" text-anchor="end" class="tick">training families</text>
 </svg></div>
       </div>
@@ -358,14 +404,18 @@
             <th>Raw Task 1 Top-1</th>
             <th>Template Task 1 Top-1</th>
             <th>Lattice Task 1 Top-1</th>
+            <th>Paired Task 1 Top-1</th>
             <th>Lattice coverage</th>
+            <th>Paired evidence coverage</th>
             <th>Raw family-step Top-1</th>
             <th>Template family-step Top-1</th>
             <th>Raw Task 2 edit</th>
             <th>Template Task 2 edit</th>
             <th>Lattice Task 2 edit</th>
+            <th>Paired Task 2 edit</th>
             <th>Template Task 2 block</th>
             <th>Lattice Task 2 block</th>
+            <th>Paired Task 2 block</th>
           </tr>
         </thead>
         <tbody>
@@ -374,105 +424,137 @@
               <td>0.5906</td>
               <td>0.7344</td>
               <td>0.8875</td>
+              <td>0.8875</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.3285</td>
               <td>0.1559</td>
               <td>0.1090</td>
+              <td>0.1091</td>
               <td>0.7205</td>
               <td>0.8815</td>
+              <td>0.8834</td>
             </tr>            <tr>
               <td>5</td>
               <td>0.6156</td>
               <td>0.7281</td>
               <td>0.8875</td>
+              <td>0.8875</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2392</td>
               <td>0.1558</td>
               <td>0.1054</td>
+              <td>0.1060</td>
               <td>0.7427</td>
               <td>0.9048</td>
+              <td>0.9113</td>
             </tr>            <tr>
               <td>10</td>
               <td>0.6188</td>
               <td>0.7781</td>
               <td>0.9031</td>
+              <td>0.9031</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2408</td>
               <td>0.1549</td>
               <td>0.1063</td>
+              <td>0.1063</td>
               <td>0.7518</td>
               <td>0.9152</td>
+              <td>0.9218</td>
             </tr>            <tr>
               <td>20</td>
               <td>0.6062</td>
               <td>0.7562</td>
               <td>0.8906</td>
+              <td>0.8906</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2394</td>
               <td>0.1537</td>
               <td>0.1051</td>
+              <td>0.1047</td>
               <td>0.7500</td>
               <td>0.9115</td>
+              <td>0.9308</td>
             </tr>            <tr>
               <td>40</td>
               <td>0.6156</td>
               <td>0.7625</td>
               <td>0.8969</td>
+              <td>0.8969</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2385</td>
               <td>0.1543</td>
               <td>0.1051</td>
+              <td>0.1048</td>
               <td>0.7580</td>
               <td>0.9228</td>
+              <td>0.9420</td>
             </tr>            <tr>
               <td>60</td>
               <td>0.6031</td>
               <td>0.7656</td>
               <td>0.8969</td>
+              <td>0.8969</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2380</td>
               <td>0.1528</td>
               <td>0.1062</td>
+              <td>0.1059</td>
               <td>0.7714</td>
               <td>0.9250</td>
+              <td>0.9442</td>
             </tr>            <tr>
               <td>80</td>
               <td>0.6094</td>
               <td>0.7656</td>
               <td>0.8969</td>
+              <td>0.8969</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2387</td>
               <td>0.1529</td>
               <td>0.1062</td>
+              <td>0.1060</td>
               <td>0.7790</td>
               <td>0.9336</td>
+              <td>0.9530</td>
             </tr>            <tr>
               <td>100</td>
               <td>0.6188</td>
               <td>0.7688</td>
               <td>0.8938</td>
+              <td>0.8938</td>
               <td>0.5000</td>
+              <td>1.0000</td>
               <td>0.0000</td>
               <td>1.0000</td>
               <td>0.2396</td>
               <td>0.1546</td>
               <td>0.1066</td>
+              <td>0.1065</td>
               <td>0.7839</td>
               <td>0.9338</td>
+              <td>0.9533</td>
             </tr>
         </tbody>
       </table>
@@ -503,6 +585,15 @@
         exact strings follow a derivable pattern. If the organizers use entirely
         new names that are neither visible nor derivable, the exact-string limit
         remains.
+      </p>
+      <p>
+        Solution 21 adds a trained-model cross-check to this same story. It
+        trains raw XGBoost and template-normalized XGBoost on the 110-family
+        setup. The raw model has zero family-specific label coverage for held-out
+        families, while the template model can predict
+        <code>__FAMILY__ ...</code> labels and rewrite them to the visible
+        validation family name. That makes the learned-model path compatible
+        with the OOD evidence strategy instead of competing with it.
       </p>
       <p>
         Raw data files are in <a href="outputs/README.md">outputs/README.md</a>,

@@ -300,6 +300,34 @@ SOLUTION_META = {
         "honest_status": "Submit-ready OOD-oriented candidate. Current official rows still all use exact full-route matching; the new value is stronger fallback if final OOD inputs expose shorter/longer partials from the same hidden route.",
         "checkpoint": "No binary checkpoint is needed; full-route memory, valid-partial lattice, synthetic template routes, and retrieval indexes are regenerated deterministically from source.",
     },
+    "solution_20_paired_length_lattice": {
+        "title": "Solution 20: Paired-Length Lattice",
+        "role": "Solution 19 plus a paired 60%/80% length guard for fallback completion.",
+        "command": "python -B solutions/solution_20_paired_length_lattice/solution.py",
+        "approach": [
+            "Uses exact validator-valid full-route matching for the current official Task 1/2 rows.",
+            "Uses the valid-partial lattice from Solution 19 before any statistical fallback.",
+            "Preserves Solution 19's Task 1 ranking because paired-length reranking was not reliable enough for exact Top-1.",
+            "Uses paired 60%/80% prefix lengths only as a Task 2 completion guard when no full route is available.",
+            "Writes a paired-length guard audit and training manifest for demo/report evidence.",
+        ],
+        "honest_status": "Submit-ready OOD-oriented candidate. It keeps Solution 19's exact/lattice path and adds a conservative completion-only length guard; the 110-family probe shows equal Task 1 Top-1 and slightly better Task 2 edit/block metrics than Solution 19.",
+        "checkpoint": "No binary checkpoint is needed; full-route memory, valid-partial lattice, paired-length statistics, template routes, and retrieval indexes are regenerated deterministically from source.",
+    },
+    "solution_21_template_boosted_bridge": {
+        "title": "Solution 21: Template-Boosted Evidence Bridge",
+        "role": "Solution 20 submission cascade plus a trained XGBoost raw-vs-template OOD diagnostic.",
+        "command": "python -B solutions/solution_21_template_boosted_bridge/solution.py",
+        "approach": [
+            "Uses Solution 20's exact full-route, valid-lattice, paired-length, and template fallback cascade for the official CSVs.",
+            "Trains a raw XGBoost next-step model on exact step-string labels for the 110-family OOD probe.",
+            "Trains the same XGBoost setup after normalizing family-specific labels to `__FAMILY__ ...` templates.",
+            "Evaluates the trained bridge across ten XGBoost seeds at the 100-training-family setting.",
+            "Writes template-boosting metrics, examples, feature importances, and explanation material.",
+        ],
+        "honest_status": "Submit-ready final hybrid candidate. Official predictions still use the stronger direct-evidence cascade; the trained XGBoost bridge is evidence that learned models need template-normalized labels to generalize exact strings to unseen families.",
+        "checkpoint": "The XGBoost bridge is retrained deterministically from source for each diagnostic run; no binary checkpoint is committed because the model is small and rebuildable.",
+    },
 }
 
 
@@ -369,6 +397,12 @@ def copy_results(solution_dir: Path, package_dir: Path) -> Path:
         "template_training_manifest.csv",
         "lattice_guard_audit.csv",
         "lattice_training_manifest.csv",
+        "paired_length_guard_audit.csv",
+        "paired_length_training_manifest.csv",
+        "template_boosting_curve.csv",
+        "template_boosting_10_seed.csv",
+        "template_boosting_examples.csv",
+        "template_boosting_bridge.json",
     ):
         optional_source = outputs_dir / optional_file_name
         if optional_source.exists():
@@ -677,14 +711,39 @@ def write_training_artifacts(package_dir: Path, meta: dict, metrics: dict) -> No
     t1 = task(metrics, "task1_next_step")
     t2 = task(metrics, "task2_completion")
     t3 = task(metrics, "task3_anomaly")
+    bridge = metrics.get("template_boosting_bridge")
+    training_intro = (
+        "This solution includes a deterministic evidence cascade and a small "
+        "XGBoost raw-vs-template diagnostic. The official CSV path is rebuilt "
+        "from lookup tables and validator evidence; the bridge diagnostic "
+        "trains XGBoost classifiers from the synthetic 110-family probe."
+        if bridge
+        else (
+            "This solution is deterministic. \"Training\" means fitting counts, "
+            "lookup tables, retrieval indexes, generated-data indexes, or fixed "
+            "statistics from the public CSV files. It does not run gradient descent."
+        )
+    )
+    bridge_snapshot = ""
+    if bridge:
+        summary = bridge["seed_summary"]
+        bridge_snapshot = dedent(
+            f"""\
+
+            ## XGBoost Bridge Snapshot
+
+            - Raw XGBoost 10-seed Top-1: `{fmt(summary["raw_xgb_exact"]["task1_top1"]["mean"])}`
+            - Template XGBoost 10-seed Top-1: `{fmt(summary["template_xgb_bridge"]["task1_top1"]["mean"])}`
+            - Raw family-specific label coverage: `{fmt(summary["raw_xgb_exact"]["family_specific_truth_label_coverage"]["mean"])}`
+            - Template family-specific label coverage: `{fmt(summary["template_xgb_bridge"]["family_specific_truth_label_coverage"]["mean"])}`
+            """
+        )
     artifact_dir.joinpath("training_log.md").write_text(
         dedent(
             f"""\
             # Training / Fitting Log
 
-            This solution is deterministic. "Training" means fitting counts,
-            lookup tables, retrieval indexes, generated-data indexes, or fixed
-            statistics from the public CSV files. It does not run gradient descent.
+            {training_intro}
 
             ## Command
 
@@ -707,6 +766,7 @@ def write_training_artifacts(package_dir: Path, meta: dict, metrics: dict) -> No
             - Task 2 normalized edit distance: `{fmt(t2["normalized_edit_distance"])}`
             - Task 2 block accuracy: `{fmt(t2["block_accuracy"])}`
             - Task 3 accuracy: `{fmt(t3["accuracy"])}`
+            {bridge_snapshot}
 
             ## Checkpoint Status
 

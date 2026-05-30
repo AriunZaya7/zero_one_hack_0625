@@ -37,6 +37,12 @@ TRAIN_SEQUENCES_PER_FAMILY = 20
 VALIDATION_SEQUENCES_PER_FAMILY = 16
 FRACTIONS = (0.6, 0.8)
 FAMILY_PLACEHOLDER = "__FAMILY__"
+MODEL_SERIES = [
+    ("raw_exact_retrieval", "#8a4b0f", "raw exact"),
+    ("template_adapted_retrieval", "#0d6b72", "template"),
+    ("valid_lattice_template_retrieval", "#315c9a", "valid lattice"),
+    ("paired_length_lattice_template_retrieval", "#7a3f8f", "paired length"),
+]
 
 sys.path.insert(0, str(ROOT))
 
@@ -45,6 +51,9 @@ from solutions.ood_fourth_family_probe.fourth_family_probe import (  # noqa: E40
 )
 from solutions.solution_0_rule_mock import solution as base  # noqa: E402
 from solutions.solution_2_eval_aware_retrieval import solution as sol2  # noqa: E402
+from solutions.solution_13_transductive_generator_validator import solution as sol13  # noqa: E402
+from solutions.solution_18_family_template_grammar import solution as sol18  # noqa: E402
+from solutions.solution_20_paired_length_lattice import solution as sol20  # noqa: E402
 from training_data.generate_sequences import validate_sequence  # noqa: E402
 
 
@@ -341,7 +350,63 @@ class ValidLatticeTemplateRetrieval:
         return hits / max(len(examples), 1)
 
 
-ScalingModel = RawExactRetrieval | TemplateAdaptedRetrieval | ValidLatticeTemplateRetrieval
+class PairedLengthLatticeTemplateRetrieval:
+    name = "paired_length_lattice_template_retrieval"
+
+    def __init__(
+        self,
+        train_sequences: dict[str, list[str]],
+        valid_examples: list[base.ValidExample],
+    ) -> None:
+        template_training = sol18.build_template_training_bundle(
+            public=train_sequences,
+            synthetic={},
+        )
+        self.valid_inputs = [
+            sol13.ValidInput(
+                example_id=ex.example_id,
+                family=ex.family,
+                completion_fraction=ex.completion_fraction,
+                partial=ex.partial,
+            )
+            for ex in valid_examples
+        ]
+        self.model = sol20.PairedLengthLatticeModel(
+            self.valid_inputs,
+            [],
+            template_training,
+        )
+
+    def next_step_ranking(
+        self,
+        prefix: list[str],
+        family: str,
+        completion_fraction: float,
+        k: int = 5,
+    ) -> list[str]:
+        return self.model.next_step_ranking(prefix, family, completion_fraction, k=k)
+
+    def complete(
+        self,
+        prefix: list[str],
+        family: str,
+        completion_fraction: float,
+    ) -> list[str]:
+        return self.model.complete(prefix, family, completion_fraction)
+
+    def lookup_coverage(self, examples: list[base.ValidExample]) -> float:
+        coverage = self.model.coverage(self.valid_inputs)
+        lattice_rows = int(coverage["valid_lattice"]["valid_lattice_rows"])
+        paired_rows = int(coverage["paired_length"]["paired_length_rows"])
+        return (lattice_rows + paired_rows) / max(len(examples), 1)
+
+
+ScalingModel = (
+    RawExactRetrieval
+    | TemplateAdaptedRetrieval
+    | ValidLatticeTemplateRetrieval
+    | PairedLengthLatticeTemplateRetrieval
+)
 
 
 def predict_task1(model: ScalingModel, examples: list[base.ValidExample]) -> list[dict[str, object]]:
@@ -543,11 +608,7 @@ def svg_line_chart(
     plot_h = height - pad_top - pad_bottom
     counts = list(TRAIN_FAMILY_COUNTS)
     series = []
-    for model_name, color in [
-        ("raw_exact_retrieval", "#8a4b0f"),
-        ("template_adapted_retrieval", "#0d6b72"),
-        ("valid_lattice_template_retrieval", "#315c9a"),
-    ]:
+    for model_name, color, _label in MODEL_SERIES:
         values = [
             float(next(r for r in rows if r["model"] == model_name and int(r["train_family_count"]) == c)[metric])
             for c in counts
@@ -591,13 +652,12 @@ def svg_line_chart(
         for count, value in zip(counts, values):
             pieces.append(f'<circle cx="{x_pos(count):.1f}" cy="{y_pos(value):.1f}" r="4" fill="{color}"/>')
     legend_y = height - 14
+    legend_x = pad_left
+    for _model_name, color, label in MODEL_SERIES:
+        pieces.append(f'<line x1="{legend_x}" y1="{legend_y}" x2="{legend_x + 22}" y2="{legend_y}" stroke="{color}" stroke-width="3"/>')
+        pieces.append(f'<text x="{legend_x + 28}" y="{legend_y + 4}" class="legend">{label}</text>')
+        legend_x += 150
     pieces += [
-        f'<line x1="{pad_left}" y1="{legend_y}" x2="{pad_left + 24}" y2="{legend_y}" stroke="#8a4b0f" stroke-width="3"/>',
-        f'<text x="{pad_left + 32}" y="{legend_y + 4}" class="legend">raw exact retrieval</text>',
-        f'<line x1="{pad_left + 210}" y1="{legend_y}" x2="{pad_left + 234}" y2="{legend_y}" stroke="#0d6b72" stroke-width="3"/>',
-        f'<text x="{pad_left + 242}" y="{legend_y + 4}" class="legend">template-adapted retrieval</text>',
-        f'<line x1="{pad_left + 470}" y1="{legend_y}" x2="{pad_left + 494}" y2="{legend_y}" stroke="#315c9a" stroke-width="3"/>',
-        f'<text x="{pad_left + 502}" y="{legend_y + 4}" class="legend">valid-lattice template</text>',
         f'<text x="{pad_left + plot_w}" y="{pad_top + plot_h + 42}" text-anchor="end" class="tick">training families</text>',
         "</svg>",
     ]
@@ -613,12 +673,17 @@ def write_outputs_readme(summary_rows: list[dict[str, object]]) -> None:
         row for row in summary_rows
         if row["model"] == "valid_lattice_template_retrieval"
     ]
+    paired_rows = [
+        row for row in summary_rows
+        if row["model"] == "paired_length_lattice_template_retrieval"
+    ]
     raw_rows = [
         row for row in summary_rows
         if row["model"] == "raw_exact_retrieval"
     ]
     best_template = template_rows[-1]
     best_lattice = lattice_rows[-1]
+    best_paired = paired_rows[-1]
     best_raw = raw_rows[-1]
     lines = [
         "# Many-Family Scaling Probe Results",
@@ -645,19 +710,25 @@ def write_outputs_readme(summary_rows: list[dict[str, object]]) -> None:
         "the placeholder to the visible validation family name. The",
         "valid-lattice model adds the strongest transductive signal: longer",
         "visible partials can reveal exact next steps for shorter partials from",
-        "the same hidden route.",
+        "the same hidden route. Solution 20's paired-length model adds a",
+        "completion guard: when both a 60% and 80% prefix from the same route",
+        "are visible, their lengths constrain the unknown total route length.",
         "",
         "At 100 training families:",
         "",
         f"- Raw Task 1 Top-1: {fmt(best_raw['task1_top1'])}",
         f"- Template Task 1 Top-1: {fmt(best_template['task1_top1'])}",
         f"- Valid-lattice template Task 1 Top-1: {fmt(best_lattice['task1_top1'])}",
+        f"- Paired-length lattice Task 1 Top-1: {fmt(best_paired['task1_top1'])}",
         f"- Valid-lattice template partial-lattice coverage: {fmt(best_lattice['lookup_coverage'])}",
+        f"- Paired-length visible-evidence coverage: {fmt(best_paired['lookup_coverage'])}",
         f"- Raw family-specific next-step Top-1: {fmt(best_raw['family_specific_task1_top1'])}",
         f"- Template family-specific next-step Top-1: {fmt(best_template['family_specific_task1_top1'])}",
         f"- Raw Task 2 edit distance: {fmt(best_raw['task2_normalized_edit_distance'])}",
         f"- Template Task 2 edit distance: {fmt(best_template['task2_normalized_edit_distance'])}",
         f"- Valid-lattice template Task 2 edit distance: {fmt(best_lattice['task2_normalized_edit_distance'])}",
+        f"- Paired-length lattice Task 2 edit distance: {fmt(best_paired['task2_normalized_edit_distance'])}",
+        f"- Paired-length lattice Task 2 block accuracy: {fmt(best_paired['task2_block_accuracy'])}",
         "",
         "## Aggregate Curves",
         "",
@@ -680,11 +751,18 @@ def write_outputs_readme(summary_rows: list[dict[str, object]]) -> None:
         "  match in its training index. For template-adapted retrieval this is a",
         "  normalized template match, not a same-family exact route. For the",
         "  valid-lattice model, it means a longer visible partial from the same",
-        "  validation route exists.",
+        "  validation route exists. For the paired-length model, it means either",
+        "  that longer-partial lattice evidence exists or a shorter/longer pair",
+        "  gives a total-length constraint.",
         "- `family-specific next-step Top-1` isolates the hard rows where the true",
         "  next step starts with the validation family name.",
         "- Task 3 is flat because it is handled by the public process-rule",
         "  validator, not by learned family scaling.",
+        "- Related trained-model bridge: Solution 21 repeats the core OOD",
+        "  question with XGBoost. Raw XGBoost cannot emit unseen family-specific",
+        "  exact labels; template-normalized XGBoost recovers those labels by",
+        "  learning `__FAMILY__ ...` labels and rewriting them to the visible",
+        "  validation family name.",
         "- This probe validates the final pitch caveat: exact strings need either",
         "  visible evidence or a valid derivation rule. More families help the",
         "  derivation rule, but raw memorization cannot invent unseen names.",
@@ -704,6 +782,11 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
         for row in summary_rows
         if row["model"] == "valid_lattice_template_retrieval"
     }
+    rows_by_paired = {
+        int(row["train_family_count"]): row
+        for row in summary_rows
+        if row["model"] == "paired_length_lattice_template_retrieval"
+    }
     rows_by_raw = {
         int(row["train_family_count"]): row
         for row in summary_rows
@@ -714,6 +797,7 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
         raw = rows_by_raw[count]
         templ = rows_by_template[count]
         lattice = rows_by_lattice[count]
+        paired = rows_by_paired[count]
         table_rows.append(
             "\n".join(
                 [
@@ -722,14 +806,18 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
                     f"              <td>{fmt(raw['task1_top1'])}</td>",
                     f"              <td>{fmt(templ['task1_top1'])}</td>",
                     f"              <td>{fmt(lattice['task1_top1'])}</td>",
+                    f"              <td>{fmt(paired['task1_top1'])}</td>",
                     f"              <td>{fmt(lattice['lookup_coverage'])}</td>",
+                    f"              <td>{fmt(paired['lookup_coverage'])}</td>",
                     f"              <td>{fmt(raw['family_specific_task1_top1'])}</td>",
                     f"              <td>{fmt(templ['family_specific_task1_top1'])}</td>",
                     f"              <td>{fmt(raw['task2_normalized_edit_distance'])}</td>",
                     f"              <td>{fmt(templ['task2_normalized_edit_distance'])}</td>",
                     f"              <td>{fmt(lattice['task2_normalized_edit_distance'])}</td>",
+                    f"              <td>{fmt(paired['task2_normalized_edit_distance'])}</td>",
                     f"              <td>{fmt(templ['task2_block_accuracy'])}</td>",
                     f"              <td>{fmt(lattice['task2_block_accuracy'])}</td>",
+                    f"              <td>{fmt(paired['task2_block_accuracy'])}</td>",
                     "            </tr>",
                 ]
             )
@@ -802,7 +890,9 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
         family-step template to the visible validation family name. The larger
         jump comes from valid-partial lattice matching: longer visible partials
         can reveal exact next steps for shorter partials from the same hidden
-        route.
+        route. The paired-length model adds a smaller fallback-only completion
+        improvement: it uses the two observed prefix lengths from a 60%/80%
+        route pair to constrain the route's unknown total length.
       </div>
       <p>
         The probe uses 110 synthetic families. The first 100 form the training
@@ -830,14 +920,18 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
             <th>Raw Task 1 Top-1</th>
             <th>Template Task 1 Top-1</th>
             <th>Lattice Task 1 Top-1</th>
+            <th>Paired Task 1 Top-1</th>
             <th>Lattice coverage</th>
+            <th>Paired evidence coverage</th>
             <th>Raw family-step Top-1</th>
             <th>Template family-step Top-1</th>
             <th>Raw Task 2 edit</th>
             <th>Template Task 2 edit</th>
             <th>Lattice Task 2 edit</th>
+            <th>Paired Task 2 edit</th>
             <th>Template Task 2 block</th>
             <th>Lattice Task 2 block</th>
+            <th>Paired Task 2 block</th>
           </tr>
         </thead>
         <tbody>
@@ -873,6 +967,15 @@ def write_analysis_html(summary_rows: list[dict[str, object]]) -> None:
         remains.
       </p>
       <p>
+        Solution 21 adds a trained-model cross-check to this same story. It
+        trains raw XGBoost and template-normalized XGBoost on the 110-family
+        setup. The raw model has zero family-specific label coverage for held-out
+        families, while the template model can predict
+        <code>__FAMILY__ ...</code> labels and rewrite them to the visible
+        validation family name. That makes the learned-model path compatible
+        with the OOD evidence strategy instead of competing with it.
+      </p>
+      <p>
         Raw data files are in <a href="outputs/README.md">outputs/README.md</a>,
         <a href="outputs/metrics_by_count.csv">metrics_by_count.csv</a>, and
         <a href="outputs/per_family_metrics.csv">per_family_metrics.csv</a>.
@@ -904,6 +1007,7 @@ def main() -> None:
             RawExactRetrieval(train_sequences),
             TemplateAdaptedRetrieval(train_sequences),
             ValidLatticeTemplateRetrieval(train_sequences, valid_examples),
+            PairedLengthLatticeTemplateRetrieval(train_sequences, valid_examples),
         ]:
             summary, per_family = evaluate_model(
                 train_family_count=train_count,

@@ -1,8 +1,6 @@
 # Training / Fitting Log
 
-This solution is deterministic. "Training" means fitting counts,
-lookup tables, retrieval indexes, generated-data indexes, or fixed
-statistics from the public CSV files. It does not run gradient descent.
+This solution is deterministic. "Training" means fitting counts, lookup tables, retrieval indexes, generated-data indexes, or fixed statistics from the public CSV files. It does not run gradient descent.
 
 ## Command
 
@@ -25,6 +23,7 @@ python -B solutions/solution_2_eval_aware_retrieval/solution.py
 - Task 2 normalized edit distance: `0.2420`
 - Task 2 block accuracy: `0.7167`
 - Task 3 accuracy: `1.0000`
+
 
 ## Checkpoint Status
 

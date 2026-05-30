@@ -1,2 +1,5 @@
-# Current industrial-track solution scripts use only the Python standard library.
 # Python 3.10+ is recommended.
+# Most industrial-track solution scripts use only the Python standard library.
+# Solution 21 uses these packages for the trained raw-vs-template bridge.
+xgboost
+catboost
