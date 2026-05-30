@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of eleven Industrial AI sequence-modeling solution
+We built a reproducible suite of twelve Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -20,6 +20,9 @@ hidden-family choice.
 `solutions/solution_10_confidence_gated_consensus` keeps the same Task 1 and
 Task 3 specialists while improving local Task 2 normalized edit distance with a
 confidence-gated consensus decoder.
+`solutions/solution_11_ood_guarded_consensus` keeps that Task 2 decoder but
+switches Task 1 back to the stronger leave-one-family-out specialist for a
+more conservative hidden-family submission story.
 
 ## Problem
 
@@ -62,6 +65,9 @@ are clearly marked as local self-eval scores.
 - `solution_10_confidence_gated_consensus`: keeps Solution 9's Task 1 and Task
   3 specialists, but uses a confidence-gated weighted suffix consensus for Task
   2 when top generated continuations strongly agree.
+- `solution_11_ood_guarded_consensus`: keeps Solution 10's Task 2 consensus and
+  Solution 8's Task 3 checker, but uses Solution 2's Task 1 specialist for
+  stronger leave-one-family-out evidence.
 
 ## How To Run It
 
@@ -80,6 +86,7 @@ python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
 python -B solutions/solution_8_semantic_conformance_ensemble/solution.py
 python -B solutions/solution_9_judge_aware_portfolio/solution.py
 python -B solutions/solution_10_confidence_gated_consensus/solution.py
+python -B solutions/solution_11_ood_guarded_consensus/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -109,6 +116,7 @@ Headline seed-42 local self-eval:
 | `solution_8_semantic_conformance_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_9_judge_aware_portfolio` | `0.7350` | `0.8661` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_10_confidence_gated_consensus` | `0.7350` | `0.8661` | `0.2319` | `0.7374` | `1.0000` |
+| `solution_11_ood_guarded_consensus` | `0.7317` | `0.8650` | `0.2319` | `0.7374` | `1.0000` |
 
 Task 3 is perfect locally on the generated anomaly rows. Earlier solutions use
 the public validator oracle, while Solutions 8 and 9 use an explicit semantic
@@ -117,7 +125,7 @@ still not evidence of learned anomaly detection.
 
 ## What Worked
 
-- All eleven solutions emit the required Industrial AI CSV shapes.
+- All twelve solutions emit the required Industrial AI CSV shapes.
 - Retrieval strongly improves Task 2 completion over the simple n-gram baseline.
 - The larger Monte Carlo suffix library in Solution 7 improves local Task 2
   edit distance, token accuracy, and block accuracy over the earlier
@@ -129,6 +137,8 @@ still not evidence of learned anomaly detection.
   strongest explainable anomaly specialist in one candidate submission.
 - Solution 10 improves local Task 2 normalized edit distance with a gated
   consensus decoder while keeping Solution 9's Task 1 and Task 3 strengths.
+- Solution 11 keeps the Task 2 consensus gain while restoring the stronger
+  Solution 2/8 leave-one-family-out Task 1 proxy.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
   alias misses rather than process-order mistakes.
 - Each solution now has a submission package matching the repo checklist.

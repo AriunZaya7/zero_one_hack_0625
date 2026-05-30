@@ -159,6 +159,19 @@ SOLUTION_META = {
         "honest_status": "Improves visible Task 2 edit distance versus Solution 9, but exact completion match is lower and Task 1 keeps the same hidden-family caveat as Solution 9.",
         "checkpoint": "No binary checkpoint is needed; all selected specialists and the consensus gate rebuild deterministically.",
     },
+    "solution_11_ood_guarded_consensus": {
+        "title": "Solution 11: OOD-Guarded Consensus",
+        "role": "Risk-aware portfolio that keeps the consensus Task 2 decoder while restoring the stronger LOFO Task 1 specialist.",
+        "command": "python -B solutions/solution_11_ood_guarded_consensus/solution.py",
+        "approach": [
+            "Uses Solution 2 eval-aware retrieval for Task 1 next-step ranking to improve leave-one-family-out evidence.",
+            "Uses confidence-gated weighted suffix consensus for Task 2 completion.",
+            "Uses Solution 8 semantic conformance checking for Task 3 anomaly detection.",
+            "Explicitly trades a small visible Task 1 loss for stronger hidden-family proxy performance.",
+        ],
+        "honest_status": "Stronger hidden-family Task 1 proxy than Solutions 9/10 while keeping Solution 10's Task 2 edit distance, but visible Task 1 Top-1 is slightly lower.",
+        "checkpoint": "No binary checkpoint is needed; all selected specialists and the consensus gate rebuild deterministically.",
+    },
 }
 
 
