@@ -1,10 +1,10 @@
-# Solution 7: Monte Carlo Suffix Ensemble - Industrial AI Report
+# Solution 10: Confidence-Gated Consensus - Industrial AI Report
 
 ## TL;DR
 
-Task-specialized ensemble with a larger generated suffix library for completion. It produces the three required Industrial AI eval CSV
+Task-level portfolio with a confidence-gated Task 2 consensus decoder. It produces the three required Industrial AI eval CSV
 shapes and reports local scores for next-step prediction, sequence
-completion, and anomaly detection. Strong deterministic Task 2 completion baseline with higher exact completion match than Solution 10, but now slightly behind Solution 10 on normalized edit distance.
+completion, and anomaly detection. Improves visible Task 2 edit distance versus Solution 9, but exact completion match is lower and Task 1 keeps the same hidden-family caveat as Solution 9.
 
 ## Problem
 
@@ -17,19 +17,19 @@ self-eval split.
 
 ## Approach
 
-- Uses Solution 2 eval-aware retrieval for Task 1 next-step ranking.
-- Generates 10,000 valid public-grammar sequences per known family for Task 2 completion retrieval.
-- Keeps the generated suffix library in memory instead of committing bulky generated CSVs.
-- Keeps the public symbolic validator oracle for Task 3.
+- Uses Solution 3 synthetic-augmented retrieval for Task 1 next-step ranking.
+- Uses a confidence-gated weighted consensus over Solution 7's generated suffix library for Task 2 completion.
+- Uses Solution 8 semantic conformance checking for Task 3 anomaly detection.
+- Falls back to valid single-suffix retrieval when candidate agreement is weak.
 
 ## How To Run It
 
 ```bash
-python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
+python -B solutions/solution_10_confidence_gated_consensus/solution.py
 ```
 
 The command uses only files already in this repository and writes outputs
-to `solutions/solution_7_monte_carlo_suffix_ensemble/outputs/`.
+to `solutions/solution_10_confidence_gated_consensus/outputs/`.
 
 ## Results
 
@@ -41,15 +41,15 @@ Local self-eval rows:
 
 Headline scores:
 
-- **Task 1 exact Top-1:** `0.7317`
+- **Task 1 exact Top-1:** `0.7350`
 - **Task 1 exact Top-3:** `1.0000`
 - **Task 1 exact Top-5:** `1.0000`
-- **Task 1 MRR:** `0.8650`
+- **Task 1 MRR:** `0.8661`
 - **Canonical process-step Top-1:** `0.9783` local diagnostic
-- **Task 2 exact match:** `0.0067`
-- **Task 2 normalized edit distance:** `0.2333`
-- **Task 2 token accuracy:** `0.4737`
-- **Task 2 block accuracy:** `0.7367`
+- **Task 2 exact match:** `0.0033`
+- **Task 2 normalized edit distance:** `0.2319`
+- **Task 2 token accuracy:** `0.4752`
+- **Task 2 block accuracy:** `0.7374`
 - **Task 3 accuracy:** `1.0000`
 - **Task 3 F1 valid:** `1.0000`
 - **Task 3 ROC-AUC valid probability:** `1.0000`

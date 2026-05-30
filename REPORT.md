@@ -2,7 +2,7 @@
 
 ## TL;DR
 
-We built a reproducible suite of nine Industrial AI sequence-modeling solution
+We built a reproducible suite of eleven Industrial AI sequence-modeling solution
 attempts. Each solution produces the required `nextstep.csv`, `completion.csv`,
 and `anomaly.csv` files, reports local scores, and includes a submission package
 with results, training-artifact notes, and demo material.
@@ -10,12 +10,16 @@ with results, training-artifact notes, and demo material.
 The strongest seed-42 Task 1 in-distribution attempt so far is
 `solutions/solution_3_synthetic_augmented_retrieval`. The strongest Task 2
 completion attempt by normalized edit distance is
-`solutions/solution_7_monte_carlo_suffix_ensemble`. The strongest
+`solutions/solution_10_confidence_gated_consensus`. The strongest
 generalization proxy among the deterministic attempts remains the Solution 2
 family of eval-aware retrieval models on leave-one-family-out Task 1.
 `solutions/solution_9_judge_aware_portfolio` combines the strongest visible
 Task 1, Task 2, and Task 3 specialists into one transparent portfolio; it is
-the strongest visible-task bundle, but not the safest hidden-family choice.
+still the higher exact-completion visible bundle, but not the safest
+hidden-family choice.
+`solutions/solution_10_confidence_gated_consensus` keeps the same Task 1 and
+Task 3 specialists while improving local Task 2 normalized edit distance with a
+confidence-gated consensus decoder.
 
 ## Problem
 
@@ -55,6 +59,9 @@ are clearly marked as local self-eval scores.
 - `solution_9_judge_aware_portfolio`: uses Solution 3 for Task 1, Solution 7
   for Task 2, and Solution 8 for Task 3 so each submitted CSV comes from the
   strongest measured specialist for that task.
+- `solution_10_confidence_gated_consensus`: keeps Solution 9's Task 1 and Task
+  3 specialists, but uses a confidence-gated weighted suffix consensus for Task
+  2 when top generated continuations strongly agree.
 
 ## How To Run It
 
@@ -72,6 +79,7 @@ python -B solutions/solution_6_alias_calibrated_retrieval/solution.py
 python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
 python -B solutions/solution_8_semantic_conformance_ensemble/solution.py
 python -B solutions/solution_9_judge_aware_portfolio/solution.py
+python -B solutions/solution_10_confidence_gated_consensus/solution.py
 python -B solutions/prepare_submission_packages.py
 ```
 
@@ -100,6 +108,7 @@ Headline seed-42 local self-eval:
 | `solution_7_monte_carlo_suffix_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_8_semantic_conformance_ensemble` | `0.7317` | `0.8650` | `0.2333` | `0.7367` | `1.0000` |
 | `solution_9_judge_aware_portfolio` | `0.7350` | `0.8661` | `0.2333` | `0.7367` | `1.0000` |
+| `solution_10_confidence_gated_consensus` | `0.7350` | `0.8661` | `0.2319` | `0.7374` | `1.0000` |
 
 Task 3 is perfect locally on the generated anomaly rows. Earlier solutions use
 the public validator oracle, while Solutions 8 and 9 use an explicit semantic
@@ -108,7 +117,7 @@ still not evidence of learned anomaly detection.
 
 ## What Worked
 
-- All nine solutions emit the required Industrial AI CSV shapes.
+- All eleven solutions emit the required Industrial AI CSV shapes.
 - Retrieval strongly improves Task 2 completion over the simple n-gram baseline.
 - The larger Monte Carlo suffix library in Solution 7 improves local Task 2
   edit distance, token accuracy, and block accuracy over the earlier
@@ -118,6 +127,8 @@ still not evidence of learned anomaly detection.
 - Solution 9 demonstrates a measured task-level portfolio: use the strongest
   visible next-step specialist, the strongest completion specialist, and the
   strongest explainable anomaly specialist in one candidate submission.
+- Solution 10 improves local Task 2 normalized edit distance with a gated
+  consensus decoder while keeping Solution 9's Task 1 and Task 3 strengths.
 - Canonical process-step diagnostics show that many exact Top-1 misses are
   alias misses rather than process-order mistakes.
 - Each solution now has a submission package matching the repo checklist.

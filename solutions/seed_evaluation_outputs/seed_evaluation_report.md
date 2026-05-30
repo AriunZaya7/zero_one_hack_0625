@@ -2,7 +2,7 @@
 
 This report evaluates the current solutions across seeds `0` through `9`.
 
-Important interpretation: these solutions do not train stochastic neural weights. For a fixed local split, each one is deterministic. Here, the seed changes the local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses deterministic public-generator augmentation inside each run; Solution 9 uses the same augmentation for Task 1. Solutions 7, 8, and 9 use a cached deterministic Monte Carlo suffix library in this evaluator to avoid regenerating the same 30,000 suffix candidates for every split seed. Metrics marked `constant_across_split_seeds` did not change at all across the 10 runs.
+Important interpretation: these solutions do not train stochastic neural weights. For a fixed local split, each one is deterministic. Here, the seed changes the local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses deterministic public-generator augmentation inside each run; Solutions 9 and 10 use the same augmentation for Task 1. Solutions 7, 8, 9, and 10 use a cached deterministic Monte Carlo suffix library in this evaluator to avoid regenerating the same 30,000 suffix candidates for every split seed. Metrics marked `constant_across_split_seeds` did not change at all across the 10 runs.
 
 ## Main Judging Metrics
 
@@ -18,6 +18,7 @@ Important interpretation: these solutions do not train stochastic neural weights
 | `solution_7_monte_carlo_suffix_ensemble` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7347 | 0.2334 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_8_semantic_conformance_ensemble` | 0.6960 | 0.7200 (seed 9) | 0.6650 (seed 6) | 0.8454 | 0.7347 | 0.2334 | 1.0000 | 0.6787 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_9_judge_aware_portfolio` | 0.6970 | 0.7150 (seed 4) | 0.6767 (seed 0) | 0.8462 | 0.7347 | 0.2334 | 1.0000 | 0.6622 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | 0.6970 | 0.7150 (seed 4) | 0.6767 (seed 0) | 0.8462 | 0.7348 | 0.2327 | 1.0000 | 0.6622 | varies_by_local_split_seed_model_itself_deterministic |
 
 ## Alias / Canonical Diagnostic
 
@@ -35,6 +36,7 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_7_monte_carlo_suffix_ensemble` | 0.9730 | 0.9783 (seed 9) | 0.9683 (seed 1) | 0.9992 | 0.9110 |
 | `solution_8_semantic_conformance_ensemble` | 0.9730 | 0.9783 (seed 9) | 0.9683 (seed 1) | 0.9992 | 0.9110 |
 | `solution_9_judge_aware_portfolio` | 0.9747 | 0.9817 (seed 0) | 0.9683 (seed 1) | 0.9993 | 0.9160 |
+| `solution_10_confidence_gated_consensus` | 0.9747 | 0.9817 (seed 0) | 0.9683 (seed 1) | 0.9993 | 0.9160 |
 
 ## Full Summary Table
 
@@ -65,6 +67,31 @@ This is not an official judging metric, but it explains why exact Top-1 is much 
 | `solution_0_rule_mock` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_0_rule_mock` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_0_rule_mock` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_10_confidence_gated_consensus` | `ood_avg_top1` | higher_is_better | 0.6622 | 0.0080 | 0.6717 | 0 | 0.6417 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `ood_ic_mrr` | higher_is_better | 0.7977 | 0.0157 | 0.8229 | 1 | 0.7700 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `ood_ic_top1` | higher_is_better | 0.6235 | 0.0194 | 0.6550 | 1 | 0.5950 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `ood_igbt_mrr` | higher_is_better | 0.8233 | 0.0086 | 0.8408 | 9 | 0.8117 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `ood_igbt_top1` | higher_is_better | 0.6800 | 0.0110 | 0.7000 | 9 | 0.6600 | 8 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `ood_mosfet_mrr` | higher_is_better | 0.8406 | 0.0113 | 0.8617 | 5 | 0.8237 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `ood_mosfet_top1` | higher_is_better | 0.6830 | 0.0220 | 0.7250 | 5 | 0.6500 | 2 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `public_lookup_coverage` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_10_confidence_gated_consensus` | `public_lookup_exact_next_when_covered` | not_applicable |  |  |  |  |  |  | not_reported_for_this_solution |
+| `solution_10_confidence_gated_consensus` | `task1_canonical_top1` | higher_is_better | 0.9747 | 0.0041 | 0.9817 | 0 | 0.9683 | 1 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_canonical_top2` | higher_is_better | 0.9993 | 0.0008 | 1.0000 | 0 | 0.9983 | 1 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_mrr` | higher_is_better | 0.8462 | 0.0078 | 0.8556 | 9 | 0.8347 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_same_canonical_miss_rate` | higher_is_better | 0.9160 | 0.0151 | 0.9433 | 0 | 0.8927 | 1 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_top1` | higher_is_better | 0.6970 | 0.0145 | 0.7150 | 4 | 0.6767 | 0 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_top2` | higher_is_better | 0.9877 | 0.0038 | 0.9950 | 5 | 0.9817 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_top3` | higher_is_better | 0.9968 | 0.0024 | 1.0000 | 5 | 0.9917 | 0 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task1_top5` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_10_confidence_gated_consensus` | `task2_block_accuracy` | higher_is_better | 0.7348 | 0.0051 | 0.7392 | 9 | 0.7234 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task2_exact_match` | higher_is_better | 0.0027 | 0.0013 | 0.0050 | 9 | 0.0000 | 1 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task2_normalized_edit_distance` | lower_is_better | 0.2327 | 0.0029 | 0.2273 | 2 | 0.2365 | 0 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task2_token_accuracy` | higher_is_better | 0.4724 | 0.0070 | 0.4795 | 7 | 0.4551 | 3 | varies_by_local_split_seed_model_itself_deterministic |
+| `solution_10_confidence_gated_consensus` | `task3_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_10_confidence_gated_consensus` | `task3_f1_valid` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_10_confidence_gated_consensus` | `task3_roc_auc_valid_probability` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
+| `solution_10_confidence_gated_consensus` | `task3_rule_attribution_accuracy` | higher_is_better | 1.0000 | 0.0000 | 1.0000 | 0 | 1.0000 | 0 | constant_across_split_seeds |
 | `solution_1_hybrid_retrieval` | `ood_avg_top1` | higher_is_better | 0.6627 | 0.0177 | 0.7067 | 0 | 0.6367 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `ood_ic_mrr` | higher_is_better | 0.7984 | 0.0147 | 0.8167 | 7 | 0.7758 | 4 | varies_by_local_split_seed_model_itself_deterministic |
 | `solution_1_hybrid_retrieval` | `ood_ic_top1` | higher_is_better | 0.6250 | 0.0263 | 0.6600 | 7 | 0.5750 | 4 | varies_by_local_split_seed_model_itself_deterministic |

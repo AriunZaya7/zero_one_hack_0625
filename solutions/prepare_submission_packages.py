@@ -117,7 +117,7 @@ SOLUTION_META = {
             "Keeps the generated suffix library in memory instead of committing bulky generated CSVs.",
             "Keeps the public symbolic validator oracle for Task 3.",
         ],
-        "honest_status": "Best deterministic Task 2 completion attempt so far by normalized edit distance, but still not a neural model and still alias-limited for exact Top-1.",
+        "honest_status": "Strong deterministic Task 2 completion baseline with higher exact completion match than Solution 10, but now slightly behind Solution 10 on normalized edit distance.",
         "checkpoint": "No binary checkpoint is needed; generated suffix library and retrieval tables are rebuilt deterministically.",
     },
     "solution_8_semantic_conformance_ensemble": {
@@ -143,8 +143,21 @@ SOLUTION_META = {
             "Uses Solution 8 semantic conformance checking for Task 3 anomaly detection.",
             "Documents the hidden-family tradeoff explicitly instead of hiding it.",
         ],
-        "honest_status": "Strongest visible-task portfolio so far, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.",
+        "honest_status": "Strong visible-task portfolio with better exact completion match than Solution 10, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.",
         "checkpoint": "No binary checkpoint is needed; all selected specialists rebuild deterministically.",
+    },
+    "solution_10_confidence_gated_consensus": {
+        "title": "Solution 10: Confidence-Gated Consensus",
+        "role": "Task-level portfolio with a confidence-gated Task 2 consensus decoder.",
+        "command": "python -B solutions/solution_10_confidence_gated_consensus/solution.py",
+        "approach": [
+            "Uses Solution 3 synthetic-augmented retrieval for Task 1 next-step ranking.",
+            "Uses a confidence-gated weighted consensus over Solution 7's generated suffix library for Task 2 completion.",
+            "Uses Solution 8 semantic conformance checking for Task 3 anomaly detection.",
+            "Falls back to valid single-suffix retrieval when candidate agreement is weak.",
+        ],
+        "honest_status": "Improves visible Task 2 edit distance versus Solution 9, but exact completion match is lower and Task 1 keeps the same hidden-family caveat as Solution 9.",
+        "checkpoint": "No binary checkpoint is needed; all selected specialists and the consensus gate rebuild deterministically.",
     },
 }
 

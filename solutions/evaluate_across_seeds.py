@@ -36,6 +36,7 @@ from solutions.solution_5_tuned_rank_ensemble import solution as sol5  # noqa: E
 from solutions.solution_6_alias_calibrated_retrieval import solution as sol6  # noqa: E402
 from solutions.solution_7_monte_carlo_suffix_ensemble import solution as sol7  # noqa: E402
 from solutions.solution_8_semantic_conformance_ensemble import solution as sol8  # noqa: E402
+from solutions.solution_10_confidence_gated_consensus import solution as sol10  # noqa: E402
 from training_data.generate_sequences import generate_dataset  # noqa: E402
 
 
@@ -53,6 +54,7 @@ def set_solution_seed(seed: int) -> None:
     sol6.SEED = seed
     sol7.SEED = seed
     sol8.SEED = seed
+    sol10.SEED = seed
 
 
 def add_top2(rows: list[dict[str, object]], examples: list[sol0.ValidExample]) -> float:
@@ -378,6 +380,55 @@ def evaluate_solution_9(seed: int) -> MetricDict:
     )
 
 
+class CachedCompletionTask2Model:
+    """Solution 7-compatible completion model using the evaluator's cache."""
+
+    def __init__(self, train_sequences: dict[str, list[str]]) -> None:
+        completion_library = dict(train_sequences)
+        completion_library.update(completion_generated_cache())
+        self.completion_model = sol1.HybridRetrievalModel(completion_library)
+
+    def complete(
+        self,
+        prefix: list[str],
+        family: str,
+        completion_fraction: float,
+    ) -> list[str]:
+        return self.completion_model.complete(
+            prefix,
+            family=family,
+            completion_fraction=completion_fraction,
+        )
+
+
+def evaluate_solution_10(seed: int) -> MetricDict:
+    train, _heldout, valid_examples, anomaly_examples, by_family = load_seed_data(seed)
+    model = sol10.ConfidenceGatedConsensusPortfolio.__new__(
+        sol10.ConfidenceGatedConsensusPortfolio
+    )
+    augmented_train = sol3.augment_with_generated_sequences(train)
+    model.task1_model = sol1.HybridRetrievalModel(augmented_train)
+    model.task2_model = CachedCompletionTask2Model(train)
+    model.consensus_used = 0
+    model.fallback_used = 0
+    model.avg_consensus_share_sum = 0.0
+
+    task1_rows = model.predict_task1(valid_examples)
+    task2_rows = model.predict_task2(valid_examples)
+    task3_rows = sol8.predict_task3_semantic(anomaly_examples)
+    task1 = sol0.evaluate_task1(task1_rows, valid_examples)
+    task1["top2"] = add_top2(task1_rows, valid_examples)
+    return flatten_common_metrics(
+        seed=seed,
+        solution_name="solution_10_confidence_gated_consensus",
+        task1=task1,
+        task2=sol0.evaluate_task2(task2_rows, valid_examples),
+        task3=sol0.evaluate_task3(task3_rows, anomaly_examples),
+        ood=sol3.evaluate_ood_proxy(by_family),
+        canonical=sol2.evaluate_canonical_task1(task1_rows, valid_examples),
+    )
+
+
 SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_0_rule_mock", evaluate_solution_0),
     ("solution_1_hybrid_retrieval", evaluate_solution_1),
@@ -389,6 +440,7 @@ SOLUTIONS: tuple[tuple[str, Callable[[int], MetricDict]], ...] = (
     ("solution_7_monte_carlo_suffix_ensemble", evaluate_solution_7),
     ("solution_8_semantic_conformance_ensemble", evaluate_solution_8),
     ("solution_9_judge_aware_portfolio", evaluate_solution_9),
+    ("solution_10_confidence_gated_consensus", evaluate_solution_10),
 )
 
 
@@ -545,8 +597,8 @@ def write_markdown(rows: list[MetricDict], summary_rows: list[dict[str, object]]
         "Important interpretation: these solutions do not train stochastic neural weights. "
         "For a fixed local split, each one is deterministic. Here, the seed changes the "
         "local train/held-out split, anomaly shuffle, and OOD sample. Solution 3 uses "
-        "deterministic public-generator augmentation inside each run; Solution 9 uses "
-        "the same augmentation for Task 1. Solutions 7, 8, and 9 "
+        "deterministic public-generator augmentation inside each run; Solutions 9 and 10 use "
+        "the same augmentation for Task 1. Solutions 7, 8, 9, and 10 "
         "use a cached deterministic Monte Carlo suffix library in this evaluator to avoid "
         "regenerating the same 30,000 suffix candidates for every split seed. Metrics marked "
         "`constant_across_split_seeds` did not change at all across the 10 runs.",

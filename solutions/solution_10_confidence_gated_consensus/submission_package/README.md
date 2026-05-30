@@ -1,4 +1,4 @@
-# Solution 7: Monte Carlo Suffix Ensemble Submission Package
+# Solution 10: Confidence-Gated Consensus Submission Package
 
 This folder packages one complete candidate submission for the Industrial AI
 track checklist. It is intentionally self-contained: a reviewer can find the
@@ -10,10 +10,10 @@ reading another solution first.
 Run from the repository root:
 
 ```bash
-python -B solutions/solution_7_monte_carlo_suffix_ensemble/solution.py
+python -B solutions/solution_10_confidence_gated_consensus/solution.py
 ```
 
-The command rewrites the source outputs in `solutions/solution_7_monte_carlo_suffix_ensemble/outputs/`.
+The command rewrites the source outputs in `solutions/solution_10_confidence_gated_consensus/outputs/`.
 This package then mirrors the submission-facing files under
 `submission_package/extras/`.
 
@@ -32,18 +32,18 @@ These are local self-eval scores because the official hidden eval files and
 
 | Task | Metric | Value |
 | --- | --- | ---: |
-| Task 1 | Top-1 | `0.7317` |
+| Task 1 | Top-1 | `0.7350` |
 | Task 1 | Top-3 | `1.0000` |
 | Task 1 | Top-5 | `1.0000` |
-| Task 1 | MRR | `0.8650` |
-| Task 2 | Exact match | `0.0067` |
-| Task 2 | Normalized edit distance | `0.2333` |
-| Task 2 | Token accuracy | `0.4737` |
-| Task 2 | Block accuracy | `0.7367` |
+| Task 1 | MRR | `0.8661` |
+| Task 2 | Exact match | `0.0033` |
+| Task 2 | Normalized edit distance | `0.2319` |
+| Task 2 | Token accuracy | `0.4752` |
+| Task 2 | Block accuracy | `0.7374` |
 | Task 3 | Accuracy | `1.0000` |
 | Task 3 | F1 valid | `1.0000` |
 | Task 3 | ROC-AUC valid probability | `1.0000` |
 
 ## Honesty Note
 
-Strong deterministic Task 2 completion baseline with higher exact completion match than Solution 10, but now slightly behind Solution 10 on normalized edit distance.
+Improves visible Task 2 edit distance versus Solution 9, but exact completion match is lower and Task 1 keeps the same hidden-family caveat as Solution 9.

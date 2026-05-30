@@ -46,4 +46,4 @@ These are local self-eval scores because the official hidden eval files and
 
 ## Honesty Note
 
-Strongest visible-task portfolio so far, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.
+Strong visible-task portfolio with better exact completion match than Solution 10, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.

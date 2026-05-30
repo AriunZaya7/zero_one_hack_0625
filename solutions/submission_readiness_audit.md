@@ -28,9 +28,10 @@ are local self-eval outputs unless explicitly noted otherwise.
 | `solution_4_length_aware_completion` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Improves block alignment slightly but worsens normalized edit distance. |
 | `solution_5_tuned_rank_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Useful ablation; does not beat Solution 3 in-distribution or Solution 2/4 on LOFO. |
 | `solution_6_alias_calibrated_retrieval` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Preserves Task 1 coverage and slightly improves Task 2 completion metrics, but does not beat Solution 3 in-distribution. |
-| `solution_7_monte_carlo_suffix_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Best deterministic Task 2 completion attempt so far by normalized edit distance, but still not a neural model and still alias-limited for exact Top-1. |
+| `solution_7_monte_carlo_suffix_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Strong deterministic Task 2 completion baseline with higher exact completion match than Solution 10, but now slightly behind Solution 10 on normalized edit distance. |
 | `solution_8_semantic_conformance_ensemble` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Keeps perfect local Task 3 metrics without direct validator inference, but remains symbolic rather than neural. |
-| `solution_9_judge_aware_portfolio` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Strongest visible-task portfolio so far, but weaker than Solution 2/8 on IC leave-one-family-out Task 1. |
+| `solution_9_judge_aware_portfolio` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Strong visible-task portfolio with better exact completion match than Solution 10, but weaker than Solution 2/8 on IC leave-one-family-out Task 1. |
+| `solution_10_confidence_gated_consensus` | yes | local metrics + LOFO family proxy | deterministic manifest/log/loss-curve note | video script + examples | Improves visible Task 2 edit distance versus Solution 9, but exact completion match is lower and Task 1 keeps the same hidden-family caveat as Solution 9. |
 
 ## Standalone Completeness Matrix
 
@@ -51,6 +52,7 @@ and a generated package with report/results/training/demo artifacts.
 | `solution_7_monte_carlo_suffix_ensemble` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_8_semantic_conformance_ensemble` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 | `solution_9_judge_aware_portfolio` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
+| `solution_10_confidence_gated_consensus` | yes | yes | yes | yes | yes | yes | yes | yes | yes |
 
 ## What Counts As Complete Here
 

@@ -4,7 +4,7 @@
 
 Transparent task-level portfolio over the strongest completed specialists. It produces the three required Industrial AI eval CSV
 shapes and reports local scores for next-step prediction, sequence
-completion, and anomaly detection. Strongest visible-task portfolio so far, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.
+completion, and anomaly detection. Strong visible-task portfolio with better exact completion match than Solution 10, but weaker than Solution 2/8 on IC leave-one-family-out Task 1.
 
 ## Problem
 
