@@ -19,6 +19,9 @@ Welcome to the central repository for Zero One Hack_01, hosted by [Lumos Consult
 This branch contains our Industrial AI (Infineon) solution attempts under
 [`solutions/`](./solutions/). The current suite is documented in:
 
+- [`OVERALL_SUMMARY.html`](./OVERALL_SUMMARY.html) - standalone end-to-end
+  explanation of what we learned, including the generator/validator upper-bound
+  result
 - [`REPORT.md`](./REPORT.md) - root submission report
 - [`solutions/solutions_comparison.md`](./solutions/solutions_comparison.md) -
   metrics and solution comparison
