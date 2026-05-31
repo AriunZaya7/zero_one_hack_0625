@@ -131,7 +131,9 @@ The slide materials are under `presentation/`:
 - `SUBMISSION_1_WIN_DECK.pptx`
 - `SUBMISSION_1_WIN_DECK.pdf`
 - `SUBMISSION_1_DEMO_SCRIPT.md`
+- `SUBMISSION_1_NARRATION.txt`
 - `SUBMISSION_1_DEMO_STORYBOARD.mp4`
+- `SUBMISSION_1_FINAL_VIDEO.mp4`
 
-The storyboard is a silent demonstrator. The final narrated video still needs to
-be recorded/uploaded outside the repository.
+`SUBMISSION_1_FINAL_VIDEO.mp4` is the narrated final video generated from the
+planned script lines in `SUBMISSION_1_NARRATION.txt`.

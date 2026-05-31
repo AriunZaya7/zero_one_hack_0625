@@ -1,0 +1,9 @@
+This is the final branch we should submit. The root files nextstep.csv, completion.csv, and anomaly.csv were generated from the official participant inputs and use official IDs. The GPT checkpoint is included at outputs/gpt_large_train12.
+
+We stopped optimizing on self-eval and moved the decision to an out-of-distribution protocol: 15 families total, train on 12, test on 3 unseen families, and report the family-wise average.
+
+The safe n-gram baseline is valid and runnable, but GPT large wins the OOD3 proxy. Top-1 improves from 0.662 to 0.720, Top-5 from 0.976 to 0.999, and MRR from 0.799 to 0.847.
+
+For anomalies, we do not rely on model guesses for hard process rules. The validator owns rule compliance and emits official rule names. GPT surprisal is used only as a continuous score when available.
+
+This is the best legal winning bet: official-format files, no final eval training leakage, a trained local checkpoint, a dependency-free fallback, and a more realistic hidden-family proxy than the earlier single-family attempts.

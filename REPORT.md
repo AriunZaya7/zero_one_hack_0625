@@ -93,7 +93,9 @@ Presentation:
 - `presentation/SUBMISSION_1_WIN_DECK.pptx`
 - `presentation/SUBMISSION_1_WIN_DECK.pdf`
 - `presentation/SUBMISSION_1_DEMO_SCRIPT.md`
+- `presentation/SUBMISSION_1_NARRATION.txt`
 - `presentation/SUBMISSION_1_DEMO_STORYBOARD.mp4`
+- `presentation/SUBMISSION_1_FINAL_VIDEO.mp4`
 
 ## Definition Of Done Check
 
@@ -105,7 +107,7 @@ Presentation:
 - [x] Generalization test on unseen synthetic families.
 - [x] Eval report and final-format CSVs.
 - [x] Small demonstrator materials.
-- [ ] Final narrated submission video recording/upload.
+- [x] Final narrated submission video.
 
 ## Legal Boundary
 
