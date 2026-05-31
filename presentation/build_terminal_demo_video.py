@@ -1,8 +1,8 @@
 """Generate the narrated terminal-style demo video.
 
 This script builds `SUBMISSION_2_FINAL_VIDEO.mp4` from a realistic animated
-terminal sequence and `SUBMISSION_2_NARRATION.txt`. It uses local macOS `say`
-for a neutral synthesized voice and imageio-ffmpeg for the final MP4.
+terminal sequence. By default the final MP4 is silent; pass `--with-audio` to
+generate and embed the optional narration from `SUBMISSION_2_NARRATION.txt`.
 """
 from __future__ import annotations
 
@@ -10,6 +10,7 @@ import math
 import re
 import subprocess
 from pathlib import Path
+import argparse
 
 from PIL import Image, ImageDraw, ImageFont
 import imageio_ffmpeg
@@ -253,7 +254,11 @@ def render_frame(t: float, duration: float) -> Image.Image:
 
 
 def main() -> None:
-    duration = synthesize_audio()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--with-audio", action="store_true", help="Generate and embed narration audio.")
+    args = parser.parse_args()
+
+    duration = synthesize_audio() if args.with_audio else 113.0
     video_duration = min(119.0, max(duration + 1.0, 105.0))
     frames = math.ceil(video_duration * FPS)
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
@@ -270,8 +275,10 @@ def main() -> None:
         str(FPS),
         "-i",
         "-",
-        "-i",
-        str(AUDIO),
+    ]
+    if args.with_audio:
+        cmd += ["-i", str(AUDIO)]
+    cmd += [
         "-vf",
         "fps=30,format=yuv420p",
         "-c:v",
@@ -280,13 +287,14 @@ def main() -> None:
         "slow",
         "-crf",
         "18",
-        "-c:a",
-        "aac",
-        "-b:a",
-        "160k",
+    ]
+    if args.with_audio:
+        cmd += ["-c:a", "aac", "-b:a", "160k", "-shortest"]
+    else:
+        cmd += ["-an"]
+    cmd += [
         "-movflags",
         "+faststart",
-        "-shortest",
         str(OUT),
     ]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
@@ -298,7 +306,8 @@ def main() -> None:
     ret = proc.wait()
     if ret != 0:
         raise SystemExit(ret)
-    print(f"Wrote {OUT} ({video_duration:.1f}s video, {duration:.1f}s narration)")
+    mode = "with narration" if args.with_audio else "silent"
+    print(f"Wrote {OUT} ({video_duration:.1f}s, {mode})")
 
 
 if __name__ == "__main__":
