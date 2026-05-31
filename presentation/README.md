@@ -4,6 +4,9 @@ Use these files for the final hackathon presentation layer:
 
 - `SUBMISSION_2_PITCH_DECK.pptx` - editable pitch deck.
 - `SUBMISSION_2_PITCH_DECK.pdf` - upload-ready pitch PDF.
+- `FAMILY_VARIATION_DIAGRAM_BANK.pptx` - editable diagram bank for explaining process-family variation.
+- `FAMILY_VARIATION_DIAGRAM_BANK.pdf` - PDF version of the diagram bank.
+- `family_variation_diagrams/` - individual PNG exports from the diagram bank.
 - `SUBMISSION_2_DEMO_SCRIPT.md` - two-minute demo script.
 - `KREMSIANS_PITCH_TALK_TRACK.md` - four-minute pitch talk track.
 - `SUBMISSION_2_NARRATION.txt` - archived optional narration text; not embedded in the final video.
