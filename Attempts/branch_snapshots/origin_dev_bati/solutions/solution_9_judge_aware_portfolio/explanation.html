@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 9 Explanation - Judge-Aware Portfolio</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c2530; background: #fff; line-height: 1.58; }
+    main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 72px; }
+    header { padding-bottom: 22px; margin-bottom: 28px; border-bottom: 1px solid #d9e0e8; }
+    h1 { margin: 0 0 12px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-top: 10px; border-top: 1px solid #d9e0e8; font-size: 1.34rem; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 1.08rem; letter-spacing: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #13202d; background: #eef2f6; border: 1px solid #dbe3ec; border-radius: 4px; padding: 1px 4px; font-size: 0.93em; }
+    pre { overflow-x: auto; background: #0f1b26; color: #edf4fb; border-radius: 6px; padding: 14px 16px; line-height: 1.45; font-size: 0.91rem; }
+    pre code { background: transparent; border: 0; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 0.95rem; }
+    th, td { border: 1px solid #d9e0e8; padding: 9px 10px; vertical-align: top; }
+    th { background: #eef3f7; text-align: left; }
+    .note { background: #f6f8fb; border-left: 4px solid #176b87; padding: 12px 14px; margin: 14px 0; }
+    .warning { background: #fff8eb; border-left: 4px solid #875c13; padding: 12px 14px; margin: 14px 0; }
+    .good { color: #17613a; font-weight: 650; }
+    .warn { color: #875c13; font-weight: 650; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Solution 9: Judge-Aware Portfolio</h1>
+    <p>
+      Solution 9 is a transparent portfolio. Instead of pretending that one
+      model is best at every task, it selects the strongest completed specialist
+      for each submitted output file.
+    </p>
+  </header>
+
+  <section>
+    <h2>Why A Portfolio Makes Sense</h2>
+    <p>
+      The Industrial AI track has different scoring surfaces. Task 1 rewards the
+      exact next step. Task 2 rewards a full suffix. Task 3 rewards anomaly
+      detection and rule attribution. Our experiments showed that the same model
+      does not dominate all three.
+    </p>
+    <div class="note">
+      <p>
+        For a junior engineer: a <strong>portfolio</strong> is just a controlled
+        selection of multiple methods. Here it means we use one method for
+        <code>nextstep.csv</code>, another for <code>completion.csv</code>, and
+        another for <code>anomaly.csv</code>.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>The Problem This Solution Solves</h2>
+    <p>
+      The input data describes semiconductor manufacturing routes. A route is an
+      ordered list of process steps such as cleaning, lithography, etching,
+      deposition, measurement, testing, and shipping. The official submission
+      expects three separate CSV files:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Output file</th><th>What the file answers</th><th>What a row contains</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>nextstep.csv</code></td>
+          <td>Given a partial route, rank the next manufacturing step.</td>
+          <td>One example ID and five ranked string predictions.</td>
+        </tr>
+        <tr>
+          <td><code>completion.csv</code></td>
+          <td>Given a partial route, predict the remaining suffix of the route.</td>
+          <td>One example ID and one pipe-separated sequence string.</td>
+        </tr>
+        <tr>
+          <td><code>anomaly.csv</code></td>
+          <td>Given a full route, decide if it is valid and name the likely rule.</td>
+          <td>One example ID, a valid/invalid flag, a score, and a rule label.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Because those files are submitted separately, the solution can be honest
+      and practical: it can use the best measured method for each file. That is
+      the whole reason Solution 9 exists.
+    </p>
+  </section>
+
+  <section>
+    <h2>How The Local Evaluation Was Built</h2>
+    <p>
+      The official hidden evaluation data is not included in this checkout, so
+      this solution uses the same local self-evaluation setup as the other
+      solution attempts. Public training sequences are split into local training
+      and local held-out rows. For each known product family, 100 public variant
+      routes are held out. Each held-out route is cut at 60 percent and 80
+      percent progress, producing 600 valid examples across MOSFET, IGBT, and
+      IC.
+    </p>
+    <p>
+      For Task 3, the held-out valid routes are kept, and matching invalid
+      variants are generated by injecting rule violations. This gives 600 local
+      anomaly rows. These numbers are useful for comparing our own attempts,
+      but they are not official leaderboard results.
+    </p>
+  </section>
+
+  <section>
+    <h2>Specialists Chosen</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Chosen specialist</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 next-step ranking</td>
+          <td>Solution 3 synthetic-augmented retrieval</td>
+          <td>
+            Best seed-42 visible Top-1 and MRR among completed attempts. It
+            trains a retrieval index on public sequences plus valid generated
+            routes from the public grammar.
+          </td>
+        </tr>
+        <tr>
+          <td>Task 2 completion</td>
+          <td>Solution 7 Monte Carlo suffix library</td>
+          <td>
+            Best deterministic normalized edit distance, token accuracy, and
+            block accuracy. It uses a larger generated library only for full
+            suffix completion, where a structurally close route is valuable.
+          </td>
+        </tr>
+        <tr>
+          <td>Task 3 anomaly detection</td>
+          <td>Solution 8 semantic conformance checker</td>
+          <td>
+            Perfect local anomaly metrics with a better explanation path than
+            direct validator inference. It checks process-order rules with
+            explicit features and names the likely violation.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>What The Selected Specialists Mean</h2>
+    <h3>Task 1: synthetic-augmented retrieval</h3>
+    <p>
+      Retrieval means "find similar prefixes we have seen before, then reuse the
+      next step that followed those prefixes." The synthetic-augmented version
+      adds generated valid routes to the retrieval index. This gives the model
+      more valid route patterns to compare against. It does not invent hidden
+      labels; it uses the public route generator and then evaluates on held-out
+      public rows.
+    </p>
+    <h3>Task 2: Monte Carlo suffix library</h3>
+    <p>
+      A suffix is the part of the route that comes after the provided partial
+      prefix. The Monte Carlo suffix library generates many valid full routes,
+      searches for routes with a similar prefix, and returns the suffix from the
+      nearest matching route. "Monte Carlo" here just means we sample many valid
+      generated examples with fixed random seeds. It is deterministic once the
+      seeds are fixed.
+    </p>
+    <h3>Task 3: semantic conformance</h3>
+    <p>
+      Conformance checking means comparing a sequence against rules about what
+      process steps are allowed to happen before or after other steps. For
+      example, a patterned etch usually needs a recent mask/develop context, and
+      shipping should not happen before wafer sort testing. Solution 8 expresses
+      these checks directly instead of calling the public validator function at
+      prediction time.
+    </p>
+  </section>
+
+  <section>
+    <h2>Important Code</h2>
+    <p>
+      The whole model-selection rule is visible in
+      <code>solution.py</code>:
+    </p>
+    <pre><code>class JudgeAwarePortfolio:
+    def __init__(self, train_sequences):
+        augmented_train = sol3.augment_with_generated_sequences(train_sequences)
+        self.task1_model = sol1.HybridRetrievalModel(augmented_train)
+        self.task2_model = sol7.TaskSpecializedMonteCarloModel(train_sequences)
+
+    def predict_task1(self, examples):
+        return sol1.predict_task1(self.task1_model, examples)
+
+    def predict_task2(self, examples):
+        return sol7.predict_task2(self.task2_model, examples)
+
+    @staticmethod
+    def predict_task3(examples):
+        return sol8.predict_task3_semantic(examples)</code></pre>
+    <p>
+      This code is intentionally simple. The value is in the measured selection
+      rule, not in hidden complexity.
+    </p>
+  </section>
+
+  <section>
+    <h2>Output Files Produced</h2>
+    <p>
+      Running <code>python -B solutions/solution_9_judge_aware_portfolio/solution.py</code>
+      writes five files under <code>solutions/solution_9_judge_aware_portfolio/outputs/</code>:
+    </p>
+    <table>
+      <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>nextstep.csv</code></td><td>Task 1 ranked next-step predictions.</td></tr>
+        <tr><td><code>completion.csv</code></td><td>Task 2 predicted missing suffixes.</td></tr>
+        <tr><td><code>anomaly.csv</code></td><td>Task 3 validity, confidence score, and predicted rule.</td></tr>
+        <tr><td><code>metrics.json</code></td><td>Machine-readable local self-eval metrics and data inventory.</td></tr>
+        <tr><td><code>metrics.md</code></td><td>Human-readable metric summary.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Local Metrics</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+          <th>Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Task 1 Top-1</td><td><span class="good">0.7350</span></td><td>Best seed-42 visible Top-1 among completed attempts.</td></tr>
+        <tr><td>Task 1 MRR</td><td><span class="good">0.8661</span></td><td>Best seed-42 visible MRR among completed attempts.</td></tr>
+        <tr><td>Task 2 normalized edit distance</td><td><span class="good">0.2333</span></td><td>Best deterministic completion edit distance so far.</td></tr>
+        <tr><td>Task 2 block accuracy</td><td><span class="good">0.7367</span></td><td>Best deterministic block-level completion score so far.</td></tr>
+        <tr><td>Task 3 accuracy</td><td><span class="good">1.0000</span></td><td>Semantic conformance checker separates all local valid/invalid rows.</td></tr>
+        <tr><td>Task 3 rule attribution</td><td><span class="good">1.0000</span></td><td>Semantic checker names the correct injected local rule.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>10-Seed Stability Result</h2>
+    <p>
+      The 10-seed report changes the local train/held-out split, anomaly
+      shuffle, and leave-one-family-out sample. It does not train random neural
+      weights. For a fixed split, Solution 9 is deterministic.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric over seeds 0-9</th>
+          <th>Mean</th>
+          <th>Best</th>
+          <th>Worst</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Task 1 Top-1</td><td>0.6970</td><td>0.7150, seed 4</td><td>0.6767, seed 0</td></tr>
+        <tr><td>Task 1 MRR</td><td>0.8462</td><td>0.8556, seed 9</td><td>0.8347, seed 3</td></tr>
+        <tr><td>Task 2 normalized edit distance</td><td>0.2334</td><td>0.2272, seed 2</td><td>0.2377, seed 0</td></tr>
+        <tr><td>Task 2 block accuracy</td><td>0.7347</td><td>0.7393, seed 5</td><td>0.7231, seed 3</td></tr>
+        <tr><td>Task 3 accuracy</td><td>1.0000</td><td>1.0000, constant</td><td>1.0000, constant</td></tr>
+        <tr><td>Leave-one-family-out average Top-1</td><td>0.6622</td><td>0.6717, seed 0</td><td>0.6417, seed 2</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Honest Tradeoff</h2>
+    <div class="warning">
+      <p>
+        This is the strongest visible-task portfolio, but it is not the safest
+        hidden-family strategy. Its Task 1 specialist is Solution 3, and
+        Solution 3 has weaker IC leave-one-family-out performance than
+        Solution 2/Solution 8.
+      </p>
+    </div>
+    <p>
+      In a final submission discussion, this gives the team a clear choice:
+      Solution 9 optimizes the known visible CSV tasks, while Solution 8 is the
+      more conservative hidden-family story.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why This Is Not Online Reinforcement Learning</h2>
+    <p>
+      Online reinforcement learning would mean the model chooses actions,
+      receives feedback, and improves from that feedback loop. That is not the
+      current judging setup. The current setup is offline prediction: the judge
+      provides hidden input rows, we submit CSV predictions, and then the judge
+      scores those predictions after the fact.
+    </p>
+    <p>
+      RL could become relevant if we had a simulator with rewards such as yield,
+      cost, cycle time, or validity. In that future setup, the state would be a
+      partial route, the action would be the next process step, and the reward
+      would tell the policy whether the chosen step led to a good manufacturing
+      outcome. Solution 9 does not claim that. It is a measurable offline
+      portfolio for the actual CSV submission interface we have now.
+    </p>
+  </section>
+
+  <section>
+    <h2>Submission Readiness</h2>
+    <p>
+      This solution is complete as a standalone candidate. It has a runnable
+      script, generated output CSVs, local metrics, this explanation page, a
+      manual submission guide, and a generated <code>submission_package/</code>
+      folder. The package contains the result CSVs, metrics, per-family proxy
+      breakdown, deterministic training-artifact notes, demo notes, and a
+      solution-level report.
+    </p>
+  </section>
+</main>
+</body>
+</html>

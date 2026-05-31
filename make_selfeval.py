@@ -180,6 +180,8 @@ def build_selfeval():
                     "FAMILY":              fam.upper(),
                     "COMPLETION_FRACTION": frac,
                     "PARTIAL_SEQUENCE":    "|".join(partial),
+                    "NEXT_STEP":           seq[cut] if cut < len(seq) else "",
+                    "FULL_SEQUENCE":        "|".join(seq),
                     # keep ground truth for self-scoring (not in real eval)
                     "_REMAINING":          "|".join(seq[cut:]),
                     "_FULL_SEQUENCE":      "|".join(seq),
@@ -197,6 +199,7 @@ def build_selfeval():
     with open(OUT_DIR / "ground_truth_valid.csv", "w", newline="") as f:
         w = csv.DictWriter(f, fieldnames=["EXAMPLE_ID", "FAMILY",
                                            "COMPLETION_FRACTION", "PARTIAL_SEQUENCE",
+                                           "NEXT_STEP", "FULL_SEQUENCE",
                                            "_REMAINING", "_FULL_SEQUENCE"])
         w.writeheader()
         for r in valid_rows:
@@ -220,8 +223,11 @@ def build_selfeval():
             })
             gt_rows.append({
                 "EXAMPLE_ID":    eid,
+                "FAMILY":        fam.upper(),
+                "SEQUENCE":      "|".join(seq),
                 "IS_VALID":      1,
                 "RULE_VIOLATED": "",
+                "VIOLATION_RULE": "",
             })
             idx += 1
 
@@ -233,7 +239,9 @@ def build_selfeval():
     for fam in fam_cycle:
         if violations_made >= target_violations:
             break
-        candidates = family_seqs[fam][200:]  # beyond the held-out 200
+        # Use any valid sequence as the base for synthetic violations. These
+        # rows are for scorer validation/reporting, not for training.
+        candidates = family_seqs[fam]
         if not candidates:
             continue
         seq = rng.choice(candidates)
@@ -260,8 +268,11 @@ def build_selfeval():
         })
         gt_rows.append({
             "EXAMPLE_ID":    eid,
+            "FAMILY":        fam.upper(),
+            "SEQUENCE":      "|".join(bad_seq),
             "IS_VALID":      0,
             "RULE_VIOLATED": rule,
+            "VIOLATION_RULE": rule,
         })
         idx += 1
         violations_made += 1
@@ -277,9 +288,33 @@ def build_selfeval():
         w.writerows(anomaly_rows)
 
     with open(OUT_DIR / "ground_truth_anomaly.csv", "w", newline="") as f:
-        w = csv.DictWriter(f, fieldnames=["EXAMPLE_ID", "IS_VALID", "RULE_VIOLATED"])
+        w = csv.DictWriter(f, fieldnames=["EXAMPLE_ID", "FAMILY", "SEQUENCE",
+                                           "IS_VALID", "RULE_VIOLATED", "VIOLATION_RULE"])
         w.writeheader()
         w.writerows(gt_rows)
+
+    with open(OUT_DIR / "ground_truth_anomaly_forbidden.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["EXAMPLE_ID", "FAMILY", "SEQUENCE", "VIOLATION_RULE"])
+        w.writeheader()
+        for r in gt_rows:
+            if r["IS_VALID"] == 0:
+                w.writerow({
+                    "EXAMPLE_ID": r["EXAMPLE_ID"],
+                    "FAMILY": r["FAMILY"],
+                    "SEQUENCE": r["SEQUENCE"],
+                    "VIOLATION_RULE": r["VIOLATION_RULE"],
+                })
+
+    with open(OUT_DIR / "ground_truth_anomaly_valid_supplement.csv", "w", newline="") as f:
+        w = csv.DictWriter(f, fieldnames=["EXAMPLE_ID", "FAMILY", "SEQUENCE"])
+        w.writeheader()
+        for r in gt_rows:
+            if r["IS_VALID"] == 1:
+                w.writerow({
+                    "EXAMPLE_ID": r["EXAMPLE_ID"],
+                    "FAMILY": r["FAMILY"],
+                    "SEQUENCE": r["SEQUENCE"],
+                })
 
     n_valid_in_anomaly = sum(1 for r in gt_rows if r["IS_VALID"] == 1)
     print(f"  eval_input_anomaly.csv: {len(anomaly_rows)} rows "

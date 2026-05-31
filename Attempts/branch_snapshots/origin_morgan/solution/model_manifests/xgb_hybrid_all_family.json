@@ -1,0 +1,8 @@
+{
+  "run_name": "xgb_hybrid_robust",
+  "next_checkpoints": [
+    "solution/checkpoints/xgboost"
+  ],
+  "completion_checkpoint": "solution/checkpoints/xgboost",
+  "anomaly_checkpoint": "solution/checkpoints/xgb_v2_reg_100k_300"
+}

@@ -1,0 +1,68 @@
+{
+  "attachments": [
+    "FINAL_PITCH_OOD_STRATEGY.html",
+    "baseline_vs_model_examples.md",
+    "final_candidate_selection_audit.md",
+    "how_to_submit_solution_21.html",
+    "paired_length_guard_audit.csv",
+    "pitch_slides_outline.md",
+    "raw_xgb_exact_seed0_xgboost_model.json",
+    "solution_21_checkpoint_manifest.md",
+    "solution_21_explanation.html",
+    "solution_21_loss_curve.csv",
+    "solution_21_metrics.json",
+    "solution_21_metrics.md",
+    "solution_21_training_log.md",
+    "submission_readiness_audit.md",
+    "template_boosting_10_seed.csv",
+    "template_boosting_bridge.json",
+    "template_boosting_curve.csv",
+    "template_boosting_examples.csv",
+    "template_boosting_tree_shap.csv",
+    "template_boosting_xgb_training_logloss.csv",
+    "template_xgb_bridge_seed0_xgboost_model.json",
+    "template_xgb_feature_names.json",
+    "video_script.md"
+  ],
+  "diagnostic_package": "solution_21_template_boosted_bridge",
+  "scored_csv_source": "evidence cascade; mirrored by solution_21_template_boosted_bridge official_submission",
+  "scored_csvs": {
+    "anomaly.csv": {
+      "header": [
+        "EXAMPLE_ID",
+        "IS_VALID",
+        "SCORE",
+        "PREDICTED_RULE"
+      ],
+      "matches_final_diagnostic_package": true,
+      "matches_selected_evidence_cascade": true,
+      "rows": 987,
+      "sha256": "9154fae9ceae404a7b2d13aaf00df1873969df5926913f526793d9cb41ad7a58"
+    },
+    "completion.csv": {
+      "header": [
+        "EXAMPLE_ID",
+        "PREDICTED_SEQUENCE"
+      ],
+      "matches_final_diagnostic_package": true,
+      "matches_selected_evidence_cascade": true,
+      "rows": 600,
+      "sha256": "c5b808447582ed35d94aadfd77c8daf50bf9183ce038160a5ba3db843fde12a1"
+    },
+    "nextstep.csv": {
+      "header": [
+        "EXAMPLE_ID",
+        "RANK_1",
+        "RANK_2",
+        "RANK_3",
+        "RANK_4",
+        "RANK_5"
+      ],
+      "matches_final_diagnostic_package": true,
+      "matches_selected_evidence_cascade": true,
+      "rows": 600,
+      "sha256": "da267b6e15392c1b4be28caac0857879230f3d472d1a091bb2b3b336d5bc10b1"
+    }
+  },
+  "selection_rule": "highest measured objective scored CSVs first; diagnostics only as tie-break evidence"
+}

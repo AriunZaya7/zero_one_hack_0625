@@ -1,0 +1,1237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Final Pitch: OOD-Ready Industrial AI Strategy</title>
+  <style>
+    :root {
+      --ink: #182233;
+      --muted: #586579;
+      --line: #d7dee8;
+      --panel: #f6f8fb;
+      --accent: #0d6b72;
+      --accent-soft: #e6f3f4;
+      --warn: #8a4b0f;
+      --warn-soft: #fff4e5;
+      --good: #11633f;
+      --good-soft: #e8f6ee;
+      --code: #111827;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.58;
+      background: #ffffff;
+    }
+
+    header {
+      background: linear-gradient(180deg, #fafdff 0%, #eef7f8 100%);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header .wrap {
+      padding: 46px 0 38px;
+    }
+
+    main.wrap {
+      padding: 30px 0 72px;
+    }
+
+    h1, h2, h3, h4 {
+      color: #102033;
+      line-height: 1.18;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 980px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+    }
+
+    h2 {
+      margin-top: 44px;
+      padding-top: 16px;
+      border-top: 2px solid var(--accent);
+      font-size: 1.75rem;
+    }
+
+    h3 {
+      margin-top: 28px;
+      font-size: 1.18rem;
+    }
+
+    h4 {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+
+    p {
+      max-width: 1000px;
+      margin: 12px 0;
+    }
+
+    a {
+      color: #0b5d85;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+
+    ul, ol {
+      max-width: 1000px;
+    }
+
+    li {
+      margin: 7px 0;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      background: #eef2f6;
+      padding: 0.1em 0.3em;
+      border-radius: 4px;
+    }
+
+    pre {
+      max-width: 1040px;
+      overflow-x: auto;
+      margin: 14px 0 22px;
+      padding: 16px;
+      color: #f6f8fb;
+      background: var(--code);
+      border-radius: 6px;
+      line-height: 1.45;
+    }
+
+    pre code {
+      color: inherit;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 26px;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #edf3f7;
+      font-weight: 700;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: #fbfcfd;
+    }
+
+    nav {
+      margin: 24px 0 34px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 6px;
+    }
+
+    nav strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    nav ol {
+      margin: 0;
+      padding-left: 22px;
+      columns: 2;
+      column-gap: 36px;
+    }
+
+    .subtitle {
+      max-width: 940px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      margin-top: 18px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 3px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    .callout {
+      max-width: 1040px;
+      margin: 18px 0;
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 6px;
+    }
+
+    .callout.good {
+      border-left-color: var(--good);
+      background: var(--good-soft);
+    }
+
+    .callout.warning {
+      border-left-color: var(--warn);
+      background: var(--warn-soft);
+    }
+
+    .metric {
+      color: #0d5943;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      max-width: 1040px;
+      margin: 16px 0 22px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 15px 16px;
+      background: #fff;
+    }
+
+    .box h3, .box h4 {
+      margin-top: 0;
+    }
+
+    .stage {
+      border-left: 4px solid var(--accent);
+      padding: 10px 0 10px 16px;
+      margin: 12px 0;
+      max-width: 1000px;
+      background: linear-gradient(90deg, #f7fbfc 0%, #ffffff 80%);
+    }
+
+    .flow-diagram {
+      max-width: 1040px;
+      margin: 18px 0 26px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfd;
+    }
+
+    .flow-row {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 10px;
+      align-items: stretch;
+    }
+
+    .flow-node {
+      min-height: 112px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-top: 4px solid var(--accent);
+      border-radius: 6px;
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-node::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(13, 107, 114, 0.55), transparent);
+      transform: translateX(-100%);
+      animation: flowPulse 3.6s ease-in-out infinite;
+    }
+
+    .flow-node:nth-child(2)::after { animation-delay: 0.25s; }
+    .flow-node:nth-child(3)::after { animation-delay: 0.5s; }
+    .flow-node:nth-child(4)::after { animation-delay: 0.75s; }
+    .flow-node:nth-child(5)::after { animation-delay: 1s; }
+    .flow-node:nth-child(6)::after { animation-delay: 1.25s; }
+
+    .flow-node strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #102033;
+      font-size: 0.94rem;
+    }
+
+    .flow-node span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.36;
+    }
+
+    .flow-node.good { border-top-color: var(--good); }
+    .flow-node.warn { border-top-color: var(--warn); }
+
+    .method-synthesis {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+      max-width: 1040px;
+      margin: 16px 0 24px;
+    }
+
+    .method-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      background: #fff;
+    }
+
+    .method-card h4 { margin-top: 0; }
+    .method-card.learned { border-top: 4px solid var(--warn); }
+    .method-card.evidence { border-top: 4px solid var(--accent); }
+
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 1040px;
+      margin: 16px 0 24px;
+    }
+
+    .metric-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .metric-card strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.15rem;
+    }
+
+    .metric-card span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.86rem;
+      margin-top: 4px;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 1040px;
+      margin: 16px 0 24px;
+    }
+
+    .check-item {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+
+    .check-item strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--good);
+    }
+
+    .shap-panel {
+      max-width: 1040px;
+      margin: 16px 0 24px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .shap-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.35fr) minmax(180px, 2fr) 88px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+
+    .shap-label strong {
+      display: block;
+      font-size: 0.94rem;
+    }
+
+    .shap-label span {
+      display: block;
+      color: var(--muted);
+      font-size: 0.84rem;
+      line-height: 1.35;
+    }
+
+    .shap-track {
+      height: 14px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #e9eef3;
+    }
+
+    .shap-fill {
+      width: var(--bar-width);
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), #0b5d85);
+      transform-origin: left center;
+      animation: shapGrow 900ms ease-out both;
+    }
+
+    .shap-value {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+
+    @keyframes flowPulse {
+      0% { transform: translateX(-100%); }
+      45%, 100% { transform: translateX(100%); }
+    }
+
+    @keyframes shapGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      padding: 18px 0 36px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 24px, 1160px); }
+      nav ol { columns: 1; }
+      .two-col { grid-template-columns: 1fr; }
+      .flow-row { grid-template-columns: 1fr; }
+      .method-synthesis { grid-template-columns: 1fr; }
+      .metric-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .check-grid { grid-template-columns: 1fr; }
+      .shap-row { grid-template-columns: 1fr; }
+      .shap-value { text-align: left; }
+      table { font-size: 0.86rem; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Final Pitch: OOD-Ready Industrial AI Strategy</h1>
+      <p class="subtitle">
+        A standalone explanation of our final Industrial AI approach. No prior
+        knowledge of the repository is needed: this document explains the task,
+        the strategy, the evidence, and the caveat around hidden out-of-distribution
+        families.
+      </p>
+      <div class="meta">
+        <span class="pill">Track: Industrial AI process sequencing</span>
+        <span class="pill">Final strategy: evidence-first OOD cascade</span>
+        <span class="pill">Stress test: two hidden families</span>
+        <span class="pill">Package: scored CSVs plus explainability artifacts</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav aria-label="Table of contents">
+      <strong>Two-section structure</strong>
+      <ol>
+        <li><a href="#tldr">TL;DR</a></li>
+        <li><a href="#details">Detailed Explanation</a></li>
+      </ol>
+    </nav>
+
+    <section id="tldr">
+      <h2>1. TL;DR</h2>
+
+      <div class="callout good">
+        <strong>Final pitch in one sentence:</strong>
+        our system first uses exact route evidence when the input files expose it, then falls back to process-aware prediction when exact evidence is missing, and it reports which mode it used so the risk is visible instead of hidden.
+      </div>
+
+      <h3>How we chose the final scored CSVs</h3>
+      <p>
+        We did not automatically submit the newest experiment. The selection
+        rule was: first maximize the objective metrics that match the official
+        tasks, then use OOD risk and explainability as tie-breakers. The scored
+        CSVs kept in the final bundle are the best measured evidence-cascade
+        outputs; the trained XGBoost bridge is included as supporting evidence,
+        not as a replacement for those stronger scored predictions.
+      </p>
+      <div class="metric-strip" aria-label="Final candidate objective selection metrics">
+        <div class="metric-card">
+          <strong>1.0000</strong>
+          <span>Local coupled Task 1 Top-1 and MRR for the selected scored CSVs.</span>
+        </div>
+        <div class="metric-card">
+          <strong>1.0000</strong>
+          <span>Local coupled Task 2 exact match; edit distance is <code>0.0000</code>.</span>
+        </div>
+        <div class="metric-card">
+          <strong>1.0000</strong>
+          <span>Local coupled Task 3 accuracy from validator-based anomaly labeling.</span>
+        </div>
+        <div class="metric-card">
+          <strong>0.7531</strong>
+          <span>10-seed OOD Top-1 for the template XGBoost bridge diagnostic, used for explainability and risk evidence.</span>
+        </div>
+      </div>
+      <p>
+        In plain English: the uploaded prediction files are the strongest
+        measured scorer files. The later learning experiment helps explain how
+        to handle new-family strings, but it is not allowed to lower the
+        objective submission score.
+      </p>
+
+      <h3>The problem in plain English</h3>
+      <p>
+        The Industrial AI track is about semiconductor manufacturing process
+        sequences. A sequence is a list of manufacturing steps such as cleaning,
+        lithography, etching, implantation, annealing, measurement, and final
+        testing. The submitted system must solve three practical tasks:
+      </p>
+      <ul>
+        <li><strong>Task 1:</strong> predict the next exact step string after a partial process route.</li>
+        <li><strong>Task 2:</strong> complete the rest of the process route from a partial route.</li>
+        <li><strong>Task 3:</strong> decide whether full routes are valid or anomalous under the process rules.</li>
+      </ul>
+
+      <h3>The most important finding</h3>
+      <p>
+        The official scoring cares about exact strings. That makes the hardest
+        OOD problem simple to state: if a hidden family introduces exact step
+        names that are never visible anywhere, no model can reliably output those
+        exact strings. If the hidden-family strings are visible in unlabeled full
+        routes, we can harvest them and use them.
+      </p>
+
+      <h3>What we built</h3>
+      <p>
+        We tested 21 solution attempts across rule-based baselines, statistical
+        sequence models, retrieval, generated-data augmentation, consensus
+        ranking, OOD guards, route memory, risk-aware completion, family-template
+        transfer, and a trained XGBoost bridge. The final candidate combines the
+        strongest evidence-first route cascade with a trained raw-vs-template
+        XGBoost diagnostic that proves how a learned model should handle new
+        family strings. The internal folder name is
+        <code>solution_21_template_boosted_bridge</code>, but the reader does
+        not need to know the earlier internal solution numbers to understand the
+        final method.
+      </p>
+      <ul>
+        <li><strong>Exact route mode:</strong> if a validator-valid full route in the input files starts with the partial route, copy the exact next step and suffix from that route.</li>
+        <li><strong>Valid-partial lattice mode:</strong> if no full route is available but a longer partial from the same eval input starts with the shorter partial, use the longer partial to recover the exact next step and a known completion bridge.</li>
+        <li><strong>Paired-length completion guard:</strong> if no full route is available, use paired 60%/80% prefix lengths to keep fallback completions consistent with the visible route length evidence.</li>
+        <li><strong>Visible-family fallback:</strong> if exact route mode is unavailable, use all visible routes to learn the new family's exact strings and local contexts.</li>
+        <li><strong>Family-template fallback:</strong> if exact route mode is unavailable, normalize family-prefixed strings into templates such as <code>__FAMILY__ JTE DOSE VERIFICATION</code>, then rewrite them to the visible eval family name.</li>
+        <li><strong>Generated/process fallback:</strong> if even related hidden-family routes are unavailable, use generated semiconductor routes, public training routes, validator rules, and retrieval-style matching.</li>
+        <li><strong>Risk reporting:</strong> report whether each prediction came from exact route evidence or from fallback logic.</li>
+      </ul>
+
+      <div class="flow-diagram" aria-label="Final inference cascade diagram">
+        <div class="flow-row">
+          <div class="flow-node good">
+            <strong>1. Visible files</strong>
+            <span>Read partial routes, full anomaly routes, family names, and exact step strings.</span>
+          </div>
+          <div class="flow-node good">
+            <strong>2. Exact route</strong>
+            <span>Use validator-valid full routes when a partial is an exact prefix.</span>
+          </div>
+          <div class="flow-node good">
+            <strong>3. Valid lattice</strong>
+            <span>Use longer visible partials to answer shorter visible partials from the same route.</span>
+          </div>
+          <div class="flow-node">
+            <strong>4. Paired length</strong>
+            <span>Use 60%/80% prefix lengths as a completion-only consistency guard.</span>
+          </div>
+          <div class="flow-node">
+            <strong>5. Template fallback</strong>
+            <span>Rewrite <code>__FAMILY__ ...</code> templates to the visible hidden-family name.</span>
+          </div>
+          <div class="flow-node warn">
+            <strong>6. Risk report</strong>
+            <span>Tell judges which layer answered each row and where uncertainty remains.</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>Submission legality and scorer safety</h3>
+      <p>
+        A winning system still loses if the package is not reviewable or the
+        scorer files have the wrong shape. The final bundle is designed around
+        the official submission contract rather than around our internal
+        experiments.
+      </p>
+      <div class="check-grid">
+        <div class="check-item"><strong>Scored files are isolated</strong><span>Only <code>scored_csvs/nextstep.csv</code>, <code>completion.csv</code>, and <code>anomaly.csv</code> are intended for the scorer.</span></div>
+        <div class="check-item"><strong>Headers and rows match</strong><span>The verifier checks exact Section 5 headers plus 600, 600, and 987 rows.</span></div>
+        <div class="check-item"><strong>No hidden labels claimed</strong><span>All reported hidden-score language is framed as local stress testing, not official ground truth.</span></div>
+        <div class="check-item"><strong>MIT and reproducible repo</strong><span>The repo has a root license, README, REPORT, requirements, and runnable commands.</span></div>
+        <div class="check-item"><strong>Training artifacts included</strong><span>XGBoost checkpoints, training logloss, Tree SHAP, metrics, and package reports are included as evidence.</span></div>
+        <div class="check-item"><strong>Manual external items remain</strong><span>The team still must make the repo public and upload the PDF slides plus under-2-minute demo video in the Tally form.</span></div>
+      </div>
+
+      <h3>Why the learned bridge matters</h3>
+      <div class="method-synthesis">
+        <div class="method-card learned">
+          <h4>Trained-model strength</h4>
+          <p>
+            A trained model is valuable because it gives us a measurable fallback
+            beyond exact lookup. The useful question is whether the model can
+            represent the exact strings required for a hidden family.
+          </p>
+        </div>
+        <div class="method-card evidence">
+          <h4>Evidence-cascade strength</h4>
+          <p>
+            Direct route evidence, valid-partial lattice matching,
+            <code>__FAMILY__</code> template transfer, and the 110-family scaling
+            probe explain exactly when new-family strings are recoverable.
+          </p>
+        </div>
+      </div>
+      <div class="callout">
+        <strong>Final implementation decision:</strong>
+        the final implementation keeps the strongest direct-evidence cascade for
+        the official submission CSVs and adds a trained raw-vs-template XGBoost
+        diagnostic. The diagnostic proves the hybrid story: a learned model is useful, but
+        it must use the same template-normalized label space as the OOD cascade.
+      </div>
+
+      <h3>Explainability for the XGBoost bridge</h3>
+      <p>
+        We did not stop at "XGBoost improved the metric." We used XGBoost's
+        built-in Tree SHAP contribution calculation to inspect the template
+        model. Tree SHAP is a Shapley-value method for tree ensembles: it
+        estimates how much each feature moved the model score, averaged here
+        over held-out validation rows and classes. The main finding is healthy:
+        the model relies on recent process steps, route progress, and recent
+        process blocks, not on memorizing a hidden family ID.
+      </p>
+      <div class="shap-panel" aria-label="Template XGBoost Tree SHAP feature contribution chart">
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_step_1</strong><span>Most recent visible process step.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 100%"></div></div>
+          <div class="shap-value">0.34838</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>prefix_len</strong><span>How far into the process route the partial sequence already is.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 64.7%"></div></div>
+          <div class="shap-value">0.22532</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_step_4</strong><span>Fourth most recent visible step, useful for local process context.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 37.2%"></div></div>
+          <div class="shap-value">0.12946</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_step_2</strong><span>Second most recent visible process step.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 36.1%"></div></div>
+          <div class="shap-value">0.12581</div>
+        </div>
+        <div class="shap-row">
+          <div class="shap-label"><strong>lag_block_3</strong><span>Recent high-level block, such as clean, lithography, etch, implant, metal, or test.</span></div>
+          <div class="shap-track"><div class="shap-fill" style="--bar-width: 35.2%"></div></div>
+          <div class="shap-value">0.12269</div>
+        </div>
+      </div>
+
+      <h3>Why we tested two hidden families</h3>
+      <p>
+        To stress-test OOD behavior, we created two local hidden families named
+        exactly <code>THEFOURTHFAMILY</code> and <code>THEFIFTHFAMILY</code>.
+        They are not official families. They are realistic probes with new exact
+        strings such as <code>THEFOURTHFAMILY SUBSTRATE ORIENTATION CHECK</code>,
+        <code>THEFIFTHFAMILY JTE DOSE VERIFICATION</code>, and
+        <code>THEFIFTHFAMILY GATE TRENCH CORNER ROUNDING</code>. They intentionally
+        share a broad architecture so the test focuses on new family names,
+        exact strings, and family-specific blocks rather than on two unrelated
+        tasks.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Exact route coverage</th>
+            <th>Task 1 Top-1</th>
+            <th>Task 2 edit distance</th>
+            <th>Task 3 accuracy</th>
+            <th>Junior-friendly meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>coupled_exact_route_memory</code></td>
+            <td class="metric">1.0000</td>
+            <td class="metric">1.0000</td>
+            <td class="metric">0.0000</td>
+            <td class="metric">1.0000</td>
+            <td>If the full valid route is visible, we can read the missing answer directly, even with new strings.</td>
+          </tr>
+          <tr>
+            <td><code>decoupled_known_fallback_only</code></td>
+            <td>0.0000</td>
+            <td>0.4020</td>
+            <td>0.5929</td>
+            <td class="metric">1.0000</td>
+            <td>If the new family strings are not visible, exact-string prediction becomes very hard.</td>
+          </tr>
+          <tr>
+            <td><code>decoupled_visible_family_routes</code></td>
+            <td>0.0000</td>
+            <td class="metric">0.7625</td>
+            <td class="metric">0.1559</td>
+            <td class="metric">1.0000</td>
+            <td>If related new-family routes are visible, even without exact matches, harvesting their strings and contexts helps a lot.</td>
+          </tr>
+          <tr>
+            <td><code>oracle_hidden_family_generator_training</code></td>
+            <td>0.0000</td>
+            <td class="metric">0.7738</td>
+            <td class="metric">0.1537</td>
+            <td class="metric">1.0000</td>
+            <td>If the hidden-family generator spec were known, generated training data would help a lot, but still would not equal exact route memory.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>The practical conclusion</h3>
+      <p>
+        The core OOD question is not "can we guess the random seed?"
+        It is "can we see or infer the new exact strings and new family blocks?"
+        If new exact strings are visible in unlabeled full routes, our strategy can use them.
+        If they are never visible anywhere, exact-string scoring has a real information limit.
+      </p>
+
+      <div class="callout warning">
+        <strong>Honest caveat:</strong>
+        we can claim 100% on the released coupled structure and on our coupled hidden-family probe.
+        We should not claim guaranteed 100% on hidden decoupled families.
+        The new two-family probe shows that no-coupling fallback is much lower, while visible related hidden-family routes recover a strong score.
+        A separate 110-family scaling probe shows the same pattern: raw exact
+        retrieval cannot invent unseen family-specific strings, while a
+        template-adapted fallback improves quickly and then mostly plateaus.
+      </div>
+
+      <h3>What to say to judges</h3>
+      <p>
+        "We built and measured 21 solution attempts, found that exact visible
+        route evidence is the decisive signal for exact-string scoring, and
+        wrapped that finding in a valid-partial lattice and normalized family-template
+        fallback for harder OOD cases. We also tested the trained-model version:
+        raw XGBoost cannot emit unseen family-specific labels, while
+        template-normalized XGBoost can. The final system is perfect when exact
+        route evidence is visible, strong when longer hidden-family partials or
+        derivable family-specific strings are visible, uses paired length to
+        improve fallback completion, and is honest about the information limit
+        when hidden-family strings are completely unseen."
+      </p>
+    </section>
+
+    <section id="details">
+      <h2>2. Detailed Explanation</h2>
+
+      <h3>A. What the scoring rewards</h3>
+      <p>
+        The judging setup rewards concrete, measurable outputs: CSV files for
+        next-step prediction, route completion, and anomaly detection. Task 1 is
+        especially strict because it scores the exact predicted step string.
+        This is why "almost the same manufacturing action" is not always enough:
+        <code>STRIP PHOTORESIST</code> and <code>STRIP RESIST</code> may be
+        semantically close, but exact-string scoring treats them as different
+        predictions.
+      </p>
+
+      <p>
+        Task 2 also has an exact route-completion component, so exact suffix
+        strings matter there as well. Task 3 is different: it is mostly about
+        whether a route violates the process rules, so the public validator and
+        rule checks are very useful.
+      </p>
+
+      <h3>B. Why OOD is hard</h3>
+      <p>
+        OOD means out-of-distribution. In this track, the likely OOD test is one or more product families that were not part of the MOSFET, IGBT, and IC training families.
+        The hard part is not just a different random seed.
+        A new seed changes sampled variants, but a new family can change the vocabulary, the local block order, and the exact step labels.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>OOD difficulty</th>
+            <th>Why it matters</th>
+            <th>Our defense</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>New exact strings</td>
+            <td>Official Task 1 is exact-string scored. A model cannot reliably output a string it has never seen or derived.</td>
+            <td>Harvest exact strings from released partial and anomaly inputs; use exact route memory when possible.</td>
+          </tr>
+          <tr>
+            <td>New family-specific blocks</td>
+            <td>A hidden family may contain route phases that are not in MOSFET, IGBT, or IC.</td>
+            <td>Use process-rule validation, block-level reasoning, and generated-data fallbacks rather than one family template.</td>
+          </tr>
+          <tr>
+            <td>Different optional-step probabilities</td>
+            <td>The correct operation may be predictable, but the exact variant can differ.</td>
+            <td>Use ranked next-step predictions, context backoff, canonical diagnostics, and MBR-style suffix selection.</td>
+          </tr>
+          <tr>
+            <td>No visible full-route coupling</td>
+            <td>Route-memory methods are perfect only when the full valid route needed for completion is visible.</td>
+            <td>Report exact-route coverage and calibrated fallback risk instead of hiding the failure mode.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>C. What our experiments taught us</h3>
+      <p>
+        We do not need the reader to study every intermediate solution. The
+        important summary is that we ran 21 experiments covering several families
+        of methods:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Experiment family</th>
+            <th>What it tested</th>
+            <th>What mattered for the final pitch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Rule and validator baselines</td>
+            <td>Can the public process rules identify invalid routes and provide a simple fallback?</td>
+            <td>Very useful for Task 3 and for preventing invalid completions, but not enough for exact hidden-family strings.</td>
+          </tr>
+          <tr>
+            <td>Statistical sequence and retrieval models</td>
+            <td>Can n-gram/context matching, similar-route retrieval, and suffix reuse predict the next step and completion?</td>
+            <td>Strong when the test route resembles known routes; weak when the exact hidden-family strings never appear.</td>
+          </tr>
+          <tr>
+            <td>Generated-data augmentation</td>
+            <td>Can many synthetic valid routes improve the model's process knowledge?</td>
+            <td>Good for learning process structure, but generated data still cannot magically recover exact unseen strings.</td>
+          </tr>
+          <tr>
+            <td>Consensus, MBR, and OOD-guarded variants</td>
+            <td>Can ensembles, central suffix selection, and confidence gates make fallback predictions safer?</td>
+            <td>They improve fallback behavior and reporting, but do not remove the exact-string information limit.</td>
+          </tr>
+          <tr>
+            <td>Transductive route-memory systems</td>
+            <td>Can unlabeled full routes in the evaluation inputs directly complete partial routes?</td>
+            <td>This was the decisive finding: when exact full-route evidence is visible, Tasks 1 and 2 can be solved exactly.</td>
+          </tr>
+          <tr>
+            <td>Two-family OOD stress test</td>
+            <td>What happens if there are new hidden family names and new exact strings?</td>
+            <td>Exact route mode stays perfect if the matching full routes are visible; fallback is strong only when related hidden-family evidence is visible.</td>
+          </tr>
+          <tr>
+            <td>110-family scaling curve</td>
+            <td>What happens if the same 10 validation families are held out while training grows from 2 to 100 related families?</td>
+            <td>Raw exact retrieval hits a hard exact-string limit; template adaptation learns transferable suffixes early, then block-level completion improves more gradually.</td>
+          </tr>
+          <tr>
+            <td>Family-template grammar fallback</td>
+            <td>Can the winning route-memory system still emit exact hidden-family strings when no exact route match is available, but the string is derivable from the visible family name?</td>
+            <td>Yes for derivable family-prefixed strings: the template fallback learns <code>__FAMILY__ ...</code> patterns and rewrites them to the current eval family.</td>
+          </tr>
+          <tr>
+            <td>Valid-partial lattice fallback</td>
+            <td>Can longer partials inside the same eval input reveal exact hidden-family strings for shorter partials?</td>
+            <td>Yes: valid-partial lattice matching raises the 100-family OOD probe from template-only Top-1 <code>0.7688</code> to lattice-template Top-1 <code>0.8938</code>.</td>
+          </tr>
+          <tr>
+            <td>Paired-length completion guard</td>
+            <td>Can paired 60%/80% prefixes improve fallback completions without risking exact next-step ranking?</td>
+            <td>Yes: the paired-length guard preserves Task 1 Top-1 <code>0.8938</code> and improves 100-family Task 2 block accuracy from <code>0.9338</code> to <code>0.9533</code>.</td>
+          </tr>
+          <tr>
+            <td>Template-boosted learned bridge</td>
+            <td>Does exact-string XGBoost become OOD-useful if the labels are normalized through <code>__FAMILY__</code>?</td>
+            <td>Yes: the trained bridge shows raw XGBoost 10-seed Top-1 <code>0.5806</code> with <code>0.0000</code> family-specific label coverage, while template XGBoost reaches Top-1 <code>0.7531</code>, Top-3 <code>1.0000</code>, and <code>1.0000</code> family-specific label coverage.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>D. The final strategy as an inference cascade</h3>
+      <p>
+        A cascade means we try the strongest, safest evidence first.
+        If that evidence is missing, we fall back to weaker but still measurable methods.
+      </p>
+
+      <div class="stage">
+        <h4>Layer 1: Input audit and vocabulary harvesting</h4>
+        <p>
+          Read every released inference file and collect all step strings.
+          This is crucial for hidden-family exact strings because exact-string scoring cannot reward a string we never emit.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 2: Validator-valid route memory</h4>
+        <p>
+          Run the public validator over full anomaly routes.
+          Keep validator-valid full routes.
+          If a partial sequence is the prefix of one of those full routes, read the next step and suffix directly.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 3: Valid-partial lattice fallback</h4>
+        <p>
+          If no full route exists, compare all visible valid-input partials.
+          When a shorter partial is an exact prefix of a longer partial from the
+          same hidden route, the longer partial reveals the exact next step and
+          a known bridge for completion.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 4: Paired-length completion guard</h4>
+        <p>
+          If no full route exists, paired 60% and 80% prefixes from the same route
+          constrain the route's total length. The final system uses that only for
+          Task 2 completion fallback. We tested using it for Task 1 reranking,
+          but the 110-family probe showed that optional-step exact strings became
+          less reliable, so the final strategy keeps Task 1 unchanged.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 5: Normalized family-template fallback</h4>
+        <p>
+          If no exact route match exists, normalize family-specific step names
+          into templates such as <code>__FAMILY__ JTE DOSE VERIFICATION</code>.
+          A junior way to think about this is: learn the reusable part of the
+          step string once, then paste in the visible family name at prediction time.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 6: Generated-data and retrieval fallback</h4>
+        <p>
+          If no exact route match exists, use generated valid routes and public training routes to rank likely next steps and suffixes.
+          This is where generated-data prefix/context modeling matters.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 7: Canonical and block-level reasoning</h4>
+        <p>
+          Use canonical operation IDs and block-level process phases to understand whether a prediction is process-plausible even when exact strings differ.
+          These are diagnostics and fallback signals, not official metric replacements.
+        </p>
+      </div>
+
+      <div class="stage">
+        <h4>Layer 7: MBR completion and conformal guard</h4>
+        <p>
+          For completion, choose suffixes that are central under edit-distance-like risk.
+          For reporting, mark whether each row used exact route memory or fallback, and quantify fallback risk.
+        </p>
+      </div>
+
+      <h3>E. The two-family hidden OOD probe</h3>
+      <p>
+        To make the OOD story concrete, we created a local stress test that
+        generates two plausible hidden families called <code>THEFOURTHFAMILY</code>
+        and <code>THEFIFTHFAMILY</code>.
+        These families have new exact strings and new family-specific power-device blocks, but they still follow the same broad semiconductor process-grammar philosophy.
+        They are not official families; they are local stress tests for the strategy.
+      </p>
+
+      <p>
+        We evaluated four scenarios across seeds <code>0</code> through <code>9</code> for both families.
+        That means the aggregate row below is based on 20 family-seed evaluations.
+        The detailed output is in <a href="solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Family</th>
+            <th>Scenario</th>
+            <th>Exact route coverage</th>
+            <th>Task 1 Top-1</th>
+            <th>Task 1 Top-3</th>
+            <th>Task 2 exact</th>
+            <th>Task 2 edit</th>
+            <th>Task 2 block</th>
+            <th>Task 3 acc</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
+            <td><code>coupled_exact_route_memory</code></td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>0.0000</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
+            <td><code>decoupled_known_fallback_only</code></td>
+            <td>0.0000</td>
+            <td>0.4020</td>
+            <td>0.4835</td>
+            <td>0.0000</td>
+            <td>0.5929</td>
+            <td>0.2435</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
+            <td><code>decoupled_visible_family_routes</code></td>
+            <td>0.0000</td>
+            <td>0.7625</td>
+            <td>1.0000</td>
+            <td>0.0005</td>
+            <td>0.1559</td>
+            <td>0.7309</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>ALL_HIDDEN_FAMILIES</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
+            <td>0.0000</td>
+            <td>0.7738</td>
+            <td>1.0000</td>
+            <td>0.0013</td>
+            <td>0.1537</td>
+            <td>0.7675</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFOURTHFAMILY</code></td>
+            <td><code>decoupled_visible_family_routes</code></td>
+            <td>0.0000</td>
+            <td>0.7775</td>
+            <td>1.0000</td>
+            <td>0.0005</td>
+            <td>0.1565</td>
+            <td>0.7337</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFIFTHFAMILY</code></td>
+            <td><code>decoupled_visible_family_routes</code></td>
+            <td>0.0000</td>
+            <td>0.7475</td>
+            <td>1.0000</td>
+            <td>0.0005</td>
+            <td>0.1552</td>
+            <td>0.7281</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFOURTHFAMILY</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
+            <td>0.0000</td>
+            <td>0.7760</td>
+            <td>1.0000</td>
+            <td>0.0010</td>
+            <td>0.1539</td>
+            <td>0.7728</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td><code>THEFIFTHFAMILY</code></td>
+            <td><code>oracle_hidden_family_generator_training</code></td>
+            <td>0.0000</td>
+            <td>0.7715</td>
+            <td>1.0000</td>
+            <td>0.0015</td>
+            <td>0.1536</td>
+            <td>0.7623</td>
+            <td>1.0000</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>F. How to interpret the probe</h3>
+      <p>
+        The coupled scenario proves that exact route memory is robust to new strings and new blocks as long as the full valid route is visible.
+        It does not need to "understand" the new string in a semantic way; it can read the exact new string from the matching route.
+      </p>
+
+      <p>
+        The no-coupling known-fallback scenario shows the information limit.
+        If the hidden family introduces exact strings that never appear in training or visible inference files, the model cannot reliably output them.
+        Across both hidden families, this is why Top-1 falls to <code>0.4020</code> and Task 2 edit distance worsens to <code>0.5929</code>.
+      </p>
+
+      <p>
+        The visible-family-routes scenario is the most important middle case.
+        It has no exact route matches, but it does expose related hidden-family routes.
+        Aggregate Top-1 rises to <code>0.7625</code> and Top-3 reaches <code>1.0000</code>.
+        The per-family Top-1 scores are <code>0.7775</code> for <code>THEFOURTHFAMILY</code> and <code>0.7475</code> for <code>THEFIFTHFAMILY</code>.
+        This validates our "harvest visible new-family strings and contexts" strategy.
+      </p>
+
+      <p>
+        The oracle generator scenario shows what happens if the hidden-family generator architecture is known.
+        Synthetic family-specific training improves fallback performance, but it still does not equal exact route memory because the exact test suffix is not visible.
+        Across both hidden families, oracle-generator Top-1 is <code>0.7738</code> with Task 2 edit distance <code>0.1537</code>.
+      </p>
+
+      <h3>G. The 110-family scaling curve</h3>
+      <p>
+        We also built a larger synthetic scaling probe with 110 total families.
+        The first 100 families are the training pool. The same last 10 families
+        are always held out for validation. We then train on 2, 5, 10, 20, 40,
+        60, 80, and 100 families and evaluate on the average of those same 10
+        validation families each time.
+      </p>
+
+      <p>
+        This probe now compares four fallback variants. Raw exact retrieval uses only
+        exact strings seen in training. Template-adapted retrieval learns a
+        placeholder such as <code>__FAMILY__ JTE DOSE VERIFICATION</code> and
+        rewrites it to the visible validation family name. At 100 training
+        families, raw Task 1 Top-1 is <code>0.6188</code>, while template-adapted
+        Task 1 Top-1 is <code>0.7688</code>. On the hard slice where the true
+        next step starts with the held-out validation family name, raw Top-1 is
+        <code>0.0000</code> and template-adapted Top-1 is <code>1.0000</code>.
+      </p>
+      <p>
+        We then added valid-partial lattice matching to the same curve.
+        At 100 training families it reaches Task 1 Top-1 <code>0.8938</code>,
+        Task 1 Top-3 <code>1.0000</code>, Task 2 edit distance <code>0.1066</code>,
+        and Task 2 block accuracy <code>0.9338</code>. The lattice coverage is
+        <code>0.5000</code> because in this probe every route has a 60% and 80%
+        partial, so the shorter half can use a longer visible partial.
+      </p>
+
+      <p>
+        The paired-length completion guard adds one more completion-only check.
+        It deliberately keeps the lattice model's Task 1 ranking, so the 100-family
+        Task 1 Top-1 remains <code>0.8938</code> and Top-3 remains <code>1.0000</code>.
+        The gain is in completion: Task 2 edit distance improves slightly to
+        <code>0.1065</code>, and Task 2 block accuracy improves to
+        <code>0.9533</code>. This is why our final pitch calls paired length a
+        completion guard, not a magic next-step predictor.
+      </p>
+
+      <p>
+        The final trained-model bridge adds the learned-model evidence needed
+        for the final hybrid strategy. On the same held-out 10-family setup,
+        raw XGBoost gets 10-seed Top-1 <code>0.5806</code> and has
+        <code>0.0000</code> family-specific label coverage. The template-normalized
+        XGBoost bridge gets Top-1 <code>0.7531</code>, Top-3 <code>1.0000</code>,
+        and <code>1.0000</code> family-specific label coverage. That is the
+        practical learned-model lesson: train in the transferable
+        <code>__FAMILY__</code> label space, then rewrite to the visible eval
+        family name.
+      </p>
+
+      <p>
+        The curve is useful because it shows the limit clearly. More families
+        help if there is a derivation rule for exact strings. More families do
+        not help raw memorization invent a validation-family exact string that
+        never appeared in training. The full curve page is
+        <a href="solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
+      </p>
+
+      <h3>H. Final judge-facing claim</h3>
+      <div class="callout good">
+        Our system is strongest because it separates three cases clearly:
+        exact route evidence available, related OOD family evidence available, and no OOD family evidence available.
+        It is perfect in the first case, strong in the second case, and honest about the information limit in the third case.
+      </div>
+
+      <h3>I. Reproducibility</h3>
+      <p>
+        The reader does not need these paths to understand the pitch, but they
+        make the claims reproducible. The final implementation and its standalone
+        explanation are in
+        <a href="solutions/solution_21_template_boosted_bridge/explanation.html">solution_21_template_boosted_bridge</a>.
+        The final scorer bundle is in
+        <a href="final_submission/industrial_ai_infineon_solution_21/README.md">final_submission/industrial_ai_infineon_solution_21</a>.
+        The two-family OOD probe results are in
+        <a href="solutions/ood_fourth_family_probe/outputs/README.md">solutions/ood_fourth_family_probe/outputs/README.md</a>.
+        The 110-family scaling probe is in
+        <a href="solutions/many_family_scaling_probe/analysis.html">solutions/many_family_scaling_probe/analysis.html</a>.
+      </p>
+      <pre><code>python -B solutions/solution_21_template_boosted_bridge/solution.py
+python -B solutions/prepare_submission_packages.py
+python -B final_submission/industrial_ai_infineon_solution_21/VERIFY_FINAL_SUBMISSION.py
+python -B solutions/ood_fourth_family_probe/fourth_family_probe.py
+python -B solutions/many_family_scaling_probe/family_scaling_probe.py
+open FINAL_PITCH_OOD_STRATEGY.html
+open final_submission/industrial_ai_infineon_solution_21/README.md
+open solutions/many_family_scaling_probe/analysis.html</code></pre>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Final OOD strategy pitch generated from the current Industrial AI solution suite.
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 5 Explanation - Tuned Rank Ensemble</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5c6878;
+      --line: #d8dee8;
+      --paper: #ffffff;
+      --soft: #f5f7fb;
+      --accent-soft: #dff4f2;
+      --warn-soft: #fff2d8;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--ink); background: var(--soft); }
+    header { background: var(--paper); border-bottom: 1px solid var(--line); padding: 32px max(24px, calc((100vw - 1050px) / 2)); }
+    main { max-width: 1050px; margin: 0 auto; padding: 28px 24px 64px; }
+    section { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; }
+    h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
+    h1 { font-size: 34px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; margin-top: 22px; }
+    p { margin: 0 0 14px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #edf2f7; padding: 2px 5px; border-radius: 5px; font-size: 0.92em; }
+    pre { margin: 14px 0; overflow: auto; padding: 16px; border-radius: 8px; background: var(--code); color: #eef2ff; font-size: 14px; line-height: 1.45; }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #edf3f8; }
+    .callout { background: var(--accent-soft); border-color: #a8d7d4; }
+    .warn { background: var(--warn-soft); border-color: #f0d197; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fbfcfe; }
+    .metric strong { display: block; font-size: 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Solution 5: Tuned Rank Ensemble</h1>
+    <p class="muted">A standalone explanation of the retrieval plus multi-n-gram ranking attempt.</p>
+  </header>
+
+  <main>
+    <section class="callout">
+      <h2>Read This First</h2>
+      <p>
+        This report is standalone. The industrial track gives process routes
+        for semiconductor products. We must predict the next step, complete the
+        remaining suffix, and detect rule violations. Solution 5 focuses mainly
+        on Task 1: the quality of the ranked next-step list.
+      </p>
+      <p>
+        It does not require knowing any previous solution. The entire idea is:
+        combine a retrieval model with several simple statistical models, then
+        rank next-step candidates by their combined score.
+      </p>
+    </section>
+
+    <section>
+      <h2>What Is A Rank Ensemble?</h2>
+      <p>
+        A rank ensemble means multiple predictors vote on the same ranked list.
+        Here, the predictors are:
+      </p>
+      <ul>
+        <li>A retrieval model that finds similar historical contexts.</li>
+        <li>A 3-gram model that looks at the previous two steps.</li>
+        <li>A 4-gram model that looks at the previous three steps.</li>
+        <li>A 5-gram model that looks at the previous four steps.</li>
+      </ul>
+      <p>
+        Each predictor gives candidate next steps. The solution turns those
+        candidate rankings into scores and sorts by total score.
+      </p>
+    </section>
+
+    <section>
+      <h2>N-Grams Explained Without Jargon</h2>
+      <p>
+        An n-gram model is a count table. It looks at recent history and asks
+        what usually came next in the training data.
+      </p>
+      <table>
+        <thead><tr><th>Model</th><th>Recent context used</th><th>Example question</th></tr></thead>
+        <tbody>
+          <tr><td>3-gram</td><td>Previous 2 steps</td><td>"After these two steps, what usually follows?"</td></tr>
+          <tr><td>4-gram</td><td>Previous 3 steps</td><td>"After this three-step pattern, what usually follows?"</td></tr>
+          <tr><td>5-gram</td><td>Previous 4 steps</td><td>"After this longer four-step pattern, what usually follows?"</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Shorter contexts are less specific but more robust. Longer contexts are
+        more specific but can fail if the exact pattern was rare. Combining
+        several orders tries to get both kinds of evidence.
+      </p>
+    </section>
+
+    <section>
+      <h2>How The Retrieval Part Works</h2>
+      <p>
+        The retrieval model indexes contexts near the expected 60% and 80% cut
+        points in training sequences. When a new prefix arrives, it searches for
+        similar recent contexts and lets those historical contexts vote for the
+        next step.
+      </p>
+      <p>
+        Retrieval is useful because semiconductor routes are highly structured.
+        If two lots are both near a via-etch block or passivation block, their
+        next steps are likely to be similar.
+      </p>
+    </section>
+
+    <section>
+      <h2>How The Scores Are Combined</h2>
+      <p>
+        Retrieval candidates receive scores based on match quality and retrieval
+        rank. N-gram candidates receive reciprocal-rank scores: rank 1 gets more
+        weight than rank 2, rank 2 gets more than rank 3, and so on.
+      </p>
+      <pre><code>for model in self.ngrams.values():
+    for rank, step in enumerate(model.next_step_ranking(prefix, k=20)):
+        scores[step] += NGRAM_WEIGHT / (rank + 1) / len(self.ngrams)</code></pre>
+      <p>
+        The fixed configuration in this solution is:
+      </p>
+      <ul>
+        <li><code>NGRAM_ORDERS = (3, 4, 5)</code></li>
+        <li><code>RETRIEVAL_WEIGHT = 1.0</code></li>
+        <li><code>RETRIEVAL_RANK_DECAY = 0.2</code></li>
+        <li><code>NGRAM_WEIGHT = 20.0</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>How Each Task Is Handled</h2>
+      <table>
+        <thead><tr><th>Task</th><th>Solution 5 behavior</th><th>Reason</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Task 1</td>
+            <td>Use the tuned retrieval plus multi-n-gram ensemble.</td>
+            <td>This is the main experiment.</td>
+          </tr>
+          <tr>
+            <td>Task 2</td>
+            <td>Reuse the retrieval suffix completion path.</td>
+            <td>The rank ensemble is for next-step ranking, not long suffix generation.</td>
+          </tr>
+          <tr>
+            <td>Task 3</td>
+            <td>Call the public rule validator.</td>
+            <td>This keeps anomaly output valid but is not learned anomaly detection.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Current Local Results</h2>
+      <div class="grid">
+        <div class="metric"><span>Task 1 Top-1</span><strong>0.7300</strong></div>
+        <div class="metric"><span>Task 1 MRR</span><strong>0.8642</strong></div>
+        <div class="metric"><span>Diagnostic-only canonical Top-1</span><strong>0.9750</strong></div>
+        <div class="metric"><span>Task 2 block accuracy</span><strong>0.7167</strong></div>
+      </div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Task 1 Top-3</td><td>1.0000</td><td>The true next step is always in the top three local guesses.</td></tr>
+          <tr><td>Task 2 normalized edit distance</td><td>0.2420</td><td>Same completion behavior as the retrieval baseline.</td></tr>
+          <tr><td>Task 2 token accuracy</td><td>0.4485</td><td>Position-level suffix match rate.</td></tr>
+          <tr><td>Task 3 accuracy</td><td>1.0000</td><td>Perfect because this uses the public validator.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Leave-One-Family-Out Proxy</h2>
+      <p>
+        In LOFO, one known family is removed from training. The model trains on
+        the other two known families and is tested on the held-out family. This
+        is a local proxy for the hidden fourth-family generalization check, not
+        the official hidden evaluation.
+      </p>
+      <table>
+        <thead><tr><th>Held-out family</th><th>Top-1</th><th>MRR</th></tr></thead>
+        <tbody>
+          <tr><td>MOSFET</td><td>0.7600</td><td>0.8800</td></tr>
+          <tr><td>IGBT</td><td>0.7150</td><td>0.8367</td></tr>
+          <tr><td>IC</td><td>0.6150</td><td>0.7887</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="warn">
+      <h2>Limitations</h2>
+      <p>
+        This solution is a useful ablation, but it is not the strongest current
+        result. It nearly matches the eval-aware retrieval approach on seed 42,
+        but the separate synthetic-augmentation approach performs better on the
+        main in-distribution metrics by adding generated valid routes to the
+        training evidence.
+      </p>
+      <p>
+        It also does not solve exact-label randomness. If the generator randomly
+        chooses between equivalent step labels, a ranker can know the right
+        operation and still miss exact Top-1.
+      </p>
+    </section>
+
+    <section>
+      <h2>Files Produced</h2>
+      <ul>
+        <li><code>solution.py</code>: runnable implementation.</li>
+        <li><code>outputs/nextstep.csv</code>: Task 1 rank ensemble output.</li>
+        <li><code>outputs/completion.csv</code>: Task 2 retrieval completion output.</li>
+        <li><code>outputs/anomaly.csv</code>: Task 3 validator output.</li>
+        <li><code>outputs/metrics.json</code> and <code>outputs/metrics.md</code>: local metrics.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

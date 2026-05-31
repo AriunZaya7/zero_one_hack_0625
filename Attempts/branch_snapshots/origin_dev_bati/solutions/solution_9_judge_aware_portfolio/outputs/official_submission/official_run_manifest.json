@@ -1,0 +1,9 @@
+{
+  "anomaly_rows": 987,
+  "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+  "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+  "mode": "official_participant_input_prediction",
+  "solution": "solution_9_judge_aware_portfolio",
+  "train_sequences": 7009,
+  "valid_rows": 600
+}

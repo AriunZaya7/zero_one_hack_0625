@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 7 Explanation - Monte Carlo Suffix Ensemble</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #1c2530;
+      --muted: #596779;
+      --line: #d9e0e8;
+      --panel: #f6f8fb;
+      --accent: #176b87;
+      --accent-2: #8a4f12;
+      --good: #17613a;
+      --warn: #875c13;
+      --bad: #8a2630;
+      --code: #13202d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: #ffffff;
+      line-height: 1.58;
+    }
+    main {
+      width: min(1080px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 72px;
+    }
+    header {
+      padding: 32px 0 22px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 28px;
+    }
+    h1 {
+      font-size: 2rem;
+      line-height: 1.15;
+      margin: 0 0 12px;
+      letter-spacing: 0;
+    }
+    h2 {
+      margin: 34px 0 12px;
+      padding-top: 10px;
+      font-size: 1.35rem;
+      border-top: 1px solid var(--line);
+      letter-spacing: 0;
+    }
+    h3 {
+      margin: 24px 0 8px;
+      font-size: 1.08rem;
+      letter-spacing: 0;
+    }
+    p { margin: 10px 0; }
+    ul, ol { padding-left: 24px; }
+    li { margin: 6px 0; }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--code);
+      background: #eef2f6;
+      border: 1px solid #dbe3ec;
+      border-radius: 4px;
+      padding: 1px 4px;
+      font-size: 0.93em;
+    }
+    pre {
+      overflow-x: auto;
+      background: #0f1b26;
+      color: #edf4fb;
+      border-radius: 6px;
+      padding: 14px 16px;
+      line-height: 1.45;
+      font-size: 0.91rem;
+    }
+    pre code {
+      color: inherit;
+      background: transparent;
+      border: 0;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 22px;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+    }
+    th {
+      text-align: left;
+      background: #eef3f7;
+    }
+    .note {
+      background: var(--panel);
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      margin: 14px 0;
+    }
+    .warning {
+      background: #fff8eb;
+      border-left: 4px solid var(--warn);
+      padding: 12px 14px;
+      margin: 14px 0;
+    }
+    .metric-good { color: var(--good); font-weight: 650; }
+    .metric-warn { color: var(--warn); font-weight: 650; }
+    .metric-bad { color: var(--bad); font-weight: 650; }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Solution 7: Monte Carlo Suffix Ensemble</h1>
+    <p>
+      This page explains the seventh solution attempt for the Industrial AI track.
+      It is written as a standalone explanation, so you do not need to read the
+      previous solution folders first.
+    </p>
+    <p>
+      The short version: Solution 7 uses one model for next-step ranking and a
+      different model for full completion. That is intentional. The best strategy
+      for picking one exact next step is not necessarily the best strategy for
+      producing a whole remaining manufacturing route.
+    </p>
+  </header>
+
+  <section>
+    <h2>The Problem This Solution Is Solving</h2>
+    <p>
+      The Industrial AI track gives process sequences for semiconductor product
+      families such as MOSFET, IGBT, and IC. A process sequence is a list of
+      manufacturing steps, for example wafer receive, cleaning, oxidation,
+      lithography, etching, metal deposition, passivation, testing, release, and
+      shipping.
+    </p>
+    <p>
+      The local solution scripts evaluate three visible tasks:
+    </p>
+    <ol>
+      <li>
+        <strong>Task 1, next-step prediction:</strong> given a partial sequence,
+        output the top five guesses for the next manufacturing step.
+      </li>
+      <li>
+        <strong>Task 2, completion:</strong> given the same partial sequence,
+        output the whole remaining suffix until the lot is finished.
+      </li>
+      <li>
+        <strong>Task 3, anomaly detection:</strong> decide if a complete
+        sequence is valid, and if it is invalid, name the rule that was broken.
+      </li>
+    </ol>
+    <p>
+      The hidden fourth-family evaluation is not available in this checkout. We
+      therefore keep reporting a local leave-one-family-out proxy. That proxy
+      trains on two known families and evaluates on the third known family.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why A New Solution Was Needed</h2>
+    <p>
+      Earlier solutions taught us two important things.
+    </p>
+    <p>
+      First, exact next-step Top-1 is partly limited by label aliases. For
+      example, <code>STRIP PHOTORESIST</code> and <code>STRIP RESIST</code> can
+      mean the same process operation, but exact scoring treats them as different
+      strings. That is why the canonical process-step diagnostic is much higher
+      than exact Top-1.
+    </p>
+    <p>
+      Second, full completion is a different kind of problem. Task 2 does not ask
+      only for the next operation. It asks for a long continuation, often dozens
+      of steps. A model can be good at ranking the next step and still choose a
+      future suffix that drifts away from the target route.
+    </p>
+    <div class="note">
+      <p>
+        For a junior engineer: a <strong>suffix</strong> is simply the part of a
+        sequence that comes after the visible prefix. If the full sequence is
+        <code>A | B | C | D | E</code> and the visible prefix is
+        <code>A | B</code>, then the suffix is <code>C | D | E</code>.
+      </p>
+    </div>
+    <p>
+      Solution 7 focuses on improving Task 2 without damaging Task 1. It does
+      that by using two specialists.
+    </p>
+  </section>
+
+  <section>
+    <h2>The Main Idea</h2>
+    <p>
+      Solution 7 is a task-specialized ensemble:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Specialist Used</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 next-step ranking</td>
+          <td>Solution 2 eval-aware retrieval</td>
+          <td>It preserves strong Top-k coverage and the best leave-one-family-out behavior among the deterministic attempts.</td>
+        </tr>
+        <tr>
+          <td>Task 2 completion</td>
+          <td>Hybrid retrieval trained on a larger generated suffix library</td>
+          <td>A bigger library gives more full future routes to retrieve from, which helps edit distance, token accuracy, and block accuracy.</td>
+        </tr>
+        <tr>
+          <td>Task 3 anomaly detection</td>
+          <td>Public symbolic validator oracle</td>
+          <td>The repo already contains the process-rule validator, so this remains the deterministic upper-bound baseline for anomaly labels.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      The key phrase is <strong>Monte Carlo suffix library</strong>. Here,
+      "Monte Carlo" just means we sample many random valid sequences from the
+      public grammar. The generator already knows how to create valid MOSFET,
+      IGBT, and IC process routes. Solution 7 asks it for 10,000 extra valid
+      sequences per family and uses those routes as extra completion candidates.
+    </p>
+    <p>
+      The solution does not write those 30,000 generated sequences as separate
+      training CSVs. It creates them in memory when <code>solution.py</code> runs.
+      That keeps the repository clean and avoids committing huge generated data
+      files.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why Not Use The Big Generated Library For Task 1?</h2>
+    <p>
+      We tested that. More generated data helped completion but slightly hurt
+      exact next-step Top-1. That sounds surprising at first, but it makes sense
+      once you remember the alias issue.
+    </p>
+    <p>
+      The generated grammar can produce multiple exact strings for the same
+      manufacturing operation. For full suffix completion, this variety is useful
+      because the retrieved future route is structurally closer to many possible
+      targets. For exact next-step prediction, that same variety can split votes
+      across equivalent strings.
+    </p>
+    <p>
+      Example idea:
+    </p>
+    <ul>
+      <li>The correct operation may be "strip the resist".</li>
+      <li>Some generated traces say <code>STRIP PHOTORESIST</code>.</li>
+      <li>Some generated traces say <code>STRIP RESIST</code>.</li>
+      <li>The process operation is basically the same, but exact Top-1 only accepts one exact string.</li>
+    </ul>
+    <p>
+      So Solution 7 is deliberately not a single unified model. It uses a
+      conservative next-step model and a more expansive completion model.
+    </p>
+  </section>
+
+  <section>
+    <h2>Important Code Walkthrough</h2>
+    <p>
+      The constants at the top of
+      <code>solutions/solution_7_monte_carlo_suffix_ensemble/solution.py</code>
+      define the size and seed of the generated suffix library:
+    </p>
+    <pre><code>SEED = 42
+COMPLETION_SYNTHETIC_PER_FAMILY = 10_000
+COMPLETION_SYNTHETIC_SEED_BASE = 18_000</code></pre>
+    <p>
+      <code>SEED = 42</code> is the local evaluation seed. The generated library
+      uses a separate base seed of <code>18_000</code> so it does not accidentally
+      reuse the same generated samples as earlier solutions.
+    </p>
+    <p>
+      The library is built here:
+    </p>
+    <pre><code>def augment_completion_library(
+    train_sequences: dict[str, list[str]],
+    count_per_family: int = COMPLETION_SYNTHETIC_PER_FAMILY,
+    seed_base: int = COMPLETION_SYNTHETIC_SEED_BASE,
+) -&gt; dict[str, list[str]]:
+    """Add many valid public-grammar samples for suffix retrieval only."""
+    augmented = dict(train_sequences)
+    for family_index, family in enumerate(base.FAMILIES):
+        generated = generate_dataset(
+            family,
+            count=count_per_family,
+            seed=seed_base + family_index,
+            validate=True,
+        )
+        for i, sequence in enumerate(generated):
+            augmented[f"{family}:solution7_completion_mc:{i:05d}"] = sequence
+    return augmented</code></pre>
+    <p>
+      Read it line by line:
+    </p>
+    <ul>
+      <li><code>augmented = dict(train_sequences)</code> starts with the normal training split.</li>
+      <li>The loop goes through <code>mosfet</code>, <code>igbt</code>, and <code>ic</code>.</li>
+      <li><code>generate_dataset(...)</code> asks the public generator for valid synthetic routes.</li>
+      <li><code>validate=True</code> means each generated route is checked by the validator.</li>
+      <li>The generated routes are named with keys like <code>mosfet:solution7_completion_mc:00042</code>.</li>
+      <li>The function returns one bigger dictionary of training routes.</li>
+    </ul>
+    <p>
+      The ensemble is built here:
+    </p>
+    <pre><code>class TaskSpecializedMonteCarloModel:
+    """Use separate specialists for ranking and full-suffix completion."""
+
+    def __init__(self, train_sequences: dict[str, list[str]]) -&gt; None:
+        self.next_step_model = sol2.EvalAwareRetrievalModel(train_sequences, train_sequences)
+        completion_library = augment_completion_library(train_sequences)
+        self.completion_model = sol1.HybridRetrievalModel(completion_library)
+        self.completion_library_size = len(completion_library)</code></pre>
+    <p>
+      There are two model objects inside:
+    </p>
+    <ul>
+      <li><code>next_step_model</code> is Solution 2's model.</li>
+      <li><code>completion_model</code> is Solution 1's hybrid retriever, but trained on the bigger completion library.</li>
+    </ul>
+    <p>
+      Then the public methods route each task to the right specialist:
+    </p>
+    <pre><code>def next_step_ranking(...):
+    return self.next_step_model.next_step_ranking(...)
+
+def complete(...):
+    return self.completion_model.complete(...)</code></pre>
+    <p>
+      This is not complicated architecture. The value is in choosing which
+      evidence source should be trusted for which evaluation task.
+    </p>
+  </section>
+
+  <section>
+    <h2>How The Completion Retrieval Works</h2>
+    <p>
+      Solution 7 reuses Solution 1's <code>HybridRetrievalModel</code> for
+      completion. That model indexes historical contexts near the official
+      <code>60%</code> and <code>80%</code> cut points. When it sees a partial
+      sequence, it searches for training routes with similar recent context and
+      returns the suffix from the best matching route.
+    </p>
+    <p>
+      In plain language:
+    </p>
+    <ol>
+      <li>Look at the last several steps of the visible prefix.</li>
+      <li>Find generated or public routes that had the same recent steps at a similar progress point.</li>
+      <li>Prefer same-family routes.</li>
+      <li>Prefer suffixes that end cleanly with <code>SHIP LOT</code>.</li>
+      <li>Return the selected future steps as the completion.</li>
+    </ol>
+    <p>
+      The model does not use the hidden true suffix length. It only uses the
+      visible prefix, the family, and the completion fraction.
+    </p>
+  </section>
+
+  <section>
+    <h2>Judging Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+          <th>Interpretation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 Top-1</td>
+          <td><span class="metric-warn">0.7317</span></td>
+          <td>Same as Solution 2, because Solution 7 intentionally keeps Solution 2's next-step specialist.</td>
+        </tr>
+        <tr>
+          <td>Task 1 Top-3 / Top-5</td>
+          <td><span class="metric-good">1.0000 / 1.0000</span></td>
+          <td>The true next step appears somewhere in the top ranks on all local rows.</td>
+        </tr>
+        <tr>
+          <td>Diagnostic-only canonical process-step Top-1</td>
+          <td><span class="metric-good">0.9783</span></td>
+          <td>Most exact Top-1 misses are alias misses, not wrong process-order predictions.</td>
+        </tr>
+        <tr>
+          <td>Task 2 exact match</td>
+          <td><span class="metric-bad">0.0067</span></td>
+          <td>Full exact suffix match is still very hard because many route variants and aliases are possible.</td>
+        </tr>
+        <tr>
+          <td>Task 2 normalized edit distance</td>
+          <td><span class="metric-good">0.2333</span></td>
+          <td>Lower is better. This is the best local normalized edit distance among the committed deterministic attempts so far.</td>
+        </tr>
+        <tr>
+          <td>Task 2 token accuracy</td>
+          <td><span class="metric-good">0.4737</span></td>
+          <td>Higher is better. More generated suffix candidates improved exact positional token matches.</td>
+        </tr>
+        <tr>
+          <td>Task 2 block accuracy</td>
+          <td><span class="metric-good">0.7367</span></td>
+          <td>Higher is better. The predicted suffix usually follows the correct coarse manufacturing phase structure.</td>
+        </tr>
+        <tr>
+          <td>Task 3 accuracy and rule attribution</td>
+          <td><span class="metric-good">1.0000 / 1.0000</span></td>
+          <td>This is because Task 3 still uses the public validator oracle.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Leave-One-Family-Out Proxy</h2>
+    <p>
+      Solution 7 uses Solution 2 for Task 1, so its leave-one-family-out Task 1
+      proxy is the same as Solution 2:
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>Held-out family</th>
+          <th>Top-1</th>
+          <th>MRR</th>
+          <th>Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>MOSFET</td>
+          <td>0.7800</td>
+          <td>0.8900</td>
+          <td>Train on IGBT and IC, then evaluate on MOSFET.</td>
+        </tr>
+        <tr>
+          <td>IGBT</td>
+          <td>0.7200</td>
+          <td>0.8392</td>
+          <td>Train on MOSFET and IC, then evaluate on IGBT.</td>
+        </tr>
+        <tr>
+          <td>IC</td>
+          <td>0.6400</td>
+          <td>0.8138</td>
+          <td>Train on MOSFET and IGBT, then evaluate on IC.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      This does not prove hidden fourth-family performance. It is just the
+      closest local proxy we have because the real hidden family is not in the
+      repo.
+    </p>
+  </section>
+
+  <section>
+    <h2>What This Solution Does Better</h2>
+    <ul>
+      <li>
+        It improves Task 2 completion quality compared with the earlier
+        deterministic submissions.
+      </li>
+      <li>
+        It keeps Task 1 Top-3 and Top-5 at perfect local coverage.
+      </li>
+      <li>
+        It keeps the stronger Solution 2 leave-one-family-out behavior for
+        next-step prediction.
+      </li>
+      <li>
+        It is still reproducible and open: no external model download, no API
+        call, and no hidden training files.
+      </li>
+      <li>
+        It is honest about the source of the gain: the gain is from denser
+        public-grammar suffix coverage, not from a learned neural representation.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What This Solution Still Does Not Solve</h2>
+    <ul>
+      <li>
+        Exact Task 1 Top-1 still does not reach the desired <code>0.85</code>.
+        The canonical diagnostic suggests the reason is mostly exact-string alias
+        randomness.
+      </li>
+      <li>
+        Task 2 exact full-suffix match remains very low. That metric is harsh
+        because one different optional measurement or synonym makes the entire
+        suffix non-identical.
+      </li>
+      <li>
+        Task 3 is still the validator oracle, not a learned anomaly detector.
+      </li>
+      <li>
+        This is not yet the transformer or online reinforcement learning solution
+        discussed in the larger research plan.
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Why This Is Still Useful For A Winning Submission</h2>
+    <p>
+      A jury is unlikely to care only about one local exact Top-1 number. They
+      will also care whether we understand the problem, whether we can measure
+      tradeoffs, whether we can generate valid submission files, and whether our
+      model is credible on hidden data.
+    </p>
+    <p>
+      Solution 7 gives us a stronger deterministic completion baseline. That
+      matters even if the final hero solution becomes a trained transformer,
+      because the transformer should beat a serious suffix-retrieval baseline,
+      not only a toy n-gram model.
+    </p>
+    <p>
+      In the pitch, this solution can support a clear point: process completion
+      is best evaluated as full-route retrieval or full-route generation, not as
+      repeated greedy next-step prediction.
+    </p>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,1736 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Is Semiconductor Step Prediction Real?</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17221f;
+      --muted: #5f6f69;
+      --line: #d7ded9;
+      --paper: #f7f8f4;
+      --panel: #ffffff;
+      --green: #126b57;
+      --green-2: #dff2e8;
+      --amber: #b46a16;
+      --amber-2: #fff0d8;
+      --red: #ad3434;
+      --red-2: #ffe4e4;
+      --blue: #285f95;
+      --blue-2: #dcebf8;
+      --violet: #604b8e;
+      --violet-2: #ebe6f6;
+      --shadow: 0 18px 50px rgba(38, 47, 43, 0.11);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 92px;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    a {
+      color: var(--blue);
+      text-underline-offset: 3px;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid rgba(23, 34, 31, 0.1);
+      background: rgba(247, 248, 244, 0.92);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 760;
+      letter-spacing: 0;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      position: relative;
+      flex: 0 0 auto;
+      background: conic-gradient(from 90deg, var(--green-2), var(--blue-2), var(--amber-2), var(--green-2));
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border: 1px solid rgba(23, 34, 31, 0.45);
+      border-radius: 50%;
+    }
+
+    .brand-mark::after {
+      inset: 13px;
+      background: var(--ink);
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--ink);
+      border-color: var(--line);
+      background: #fff;
+      outline: none;
+    }
+
+    .hero {
+      min-height: calc(100svh - 58px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+      gap: clamp(24px, 5vw, 70px);
+      align-items: center;
+      padding: clamp(34px, 6vw, 76px) clamp(16px, 5vw, 76px) 42px;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .eyebrow span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 0 5px rgba(18, 107, 87, 0.12);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin-top: 18px;
+      font-size: clamp(42px, 7vw, 92px);
+    }
+
+    .lede {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #3e4e48;
+      font-size: clamp(18px, 2.1vw, 24px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 760;
+      cursor: pointer;
+      transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(23, 34, 31, 0.28);
+      outline: none;
+    }
+
+    .btn.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: min(64svh, 620px);
+      border: 1px solid rgba(23, 34, 31, 0.13);
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(23, 34, 31, 0.055) 1px, transparent 1px),
+        linear-gradient(rgba(23, 34, 31, 0.055) 1px, transparent 1px),
+        #ffffff;
+      background-size: 34px 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .fab-map {
+      position: absolute;
+      inset: 24px;
+    }
+
+    .fab-node {
+      position: absolute;
+      width: 116px;
+      min-height: 64px;
+      display: grid;
+      place-items: center;
+      padding: 8px;
+      border: 1px solid rgba(23, 34, 31, 0.16);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 12px 24px rgba(23, 34, 31, 0.08);
+      text-align: center;
+      font-size: 13px;
+      font-weight: 790;
+    }
+
+    .node-clean { left: 8%; top: 15%; border-top: 4px solid var(--green); }
+    .node-litho { left: 42%; top: 8%; border-top: 4px solid var(--blue); }
+    .node-etch { right: 8%; top: 23%; border-top: 4px solid var(--amber); }
+    .node-metrology { left: 11%; top: 52%; border-top: 4px solid var(--violet); }
+    .node-deposition { left: 44%; top: 43%; border-top: 4px solid var(--green); }
+    .node-test { right: 10%; bottom: 9%; border-top: 4px solid var(--red); }
+
+    .fab-lines {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .fab-lines path {
+      fill: none;
+      stroke: rgba(23, 34, 31, 0.24);
+      stroke-width: 2.2;
+      stroke-dasharray: 8 9;
+      animation: dash 4s linear infinite;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -68; }
+    }
+
+    .wafer-dot {
+      position: absolute;
+      left: 14%;
+      top: 24%;
+      width: 34px;
+      height: 34px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 35%, #ffffff 0 11%, transparent 12%),
+        repeating-conic-gradient(from 18deg, #cfe3f7 0 7deg, #f9fbff 7deg 14deg);
+      box-shadow: 0 8px 22px rgba(40, 95, 149, 0.28);
+      animation: reentrant 11s cubic-bezier(.55, .05, .28, .96) infinite;
+    }
+
+    .wafer-dot.two {
+      animation-delay: -4.3s;
+      transform: scale(.78);
+      opacity: .75;
+    }
+
+    .wafer-dot.three {
+      animation-delay: -7.1s;
+      transform: scale(.62);
+      opacity: .6;
+    }
+
+    @keyframes reentrant {
+      0% { left: 13%; top: 24%; }
+      13% { left: 49%; top: 18%; }
+      27% { left: 77%; top: 32%; }
+      41% { left: 51%; top: 53%; }
+      55% { left: 19%; top: 61%; }
+      70% { left: 50%; top: 19%; }
+      84% { left: 77%; top: 70%; }
+      100% { left: 13%; top: 24%; }
+    }
+
+    .hero-caption {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px;
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .hero-caption strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .hero-caption span {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    main {
+      padding-bottom: 72px;
+    }
+
+    section {
+      padding: 70px clamp(16px, 5vw, 76px);
+      border-top: 1px solid rgba(23, 34, 31, 0.08);
+    }
+
+    .section-head {
+      max-width: 920px;
+      margin-bottom: 28px;
+    }
+
+    .section-head h2 {
+      font-size: clamp(30px, 4vw, 52px);
+    }
+
+    .section-head p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .panel {
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(23, 34, 31, 0.06);
+      overflow: hidden;
+    }
+
+    .panel.pad {
+      padding: 22px;
+    }
+
+    .panel h3 {
+      font-size: 21px;
+    }
+
+    .panel p {
+      margin: 10px 0 0;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      background: var(--green-2);
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .tag.amber { background: var(--amber-2); color: var(--amber); }
+    .tag.red { background: var(--red-2); color: var(--red); }
+    .tag.blue { background: var(--blue-2); color: var(--blue); }
+    .tag.violet { background: var(--violet-2); color: var(--violet); }
+
+    .compare {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .compare-side {
+      min-height: 420px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .compare-side + .compare-side {
+      border-left: 1px solid var(--line);
+    }
+
+    .conveyor {
+      height: 210px;
+      position: relative;
+      margin-top: 26px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, transparent 0 74px, rgba(23, 34, 31, 0.1) 74px 138px, transparent 138px),
+        repeating-linear-gradient(90deg, rgba(23, 34, 31, 0.12) 0 18px, transparent 18px 36px),
+        #fff;
+      overflow: hidden;
+    }
+
+    .station {
+      position: absolute;
+      top: 28px;
+      width: 70px;
+      min-height: 44px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(23, 34, 31, 0.18);
+      border-radius: var(--radius);
+      background: var(--panel);
+      font-size: 12px;
+      font-weight: 780;
+    }
+
+    .station.a { left: 7%; }
+    .station.b { left: 39%; }
+    .station.c { right: 7%; }
+
+    .box {
+      position: absolute;
+      left: 7%;
+      top: 101px;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      background: var(--amber);
+      box-shadow: 0 8px 20px rgba(180, 106, 22, 0.26);
+      animation: conveyor 5s linear infinite;
+    }
+
+    @keyframes conveyor {
+      0% { left: 7%; }
+      45% { left: 43%; }
+      100% { left: 82%; }
+    }
+
+    .mini-fab {
+      height: 210px;
+      position: relative;
+      margin-top: 26px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 18% 26%, rgba(18, 107, 87, 0.12), transparent 25%),
+        radial-gradient(circle at 76% 35%, rgba(180, 106, 22, 0.14), transparent 22%),
+        #fff;
+      overflow: hidden;
+    }
+
+    .mini-fab .node {
+      position: absolute;
+      width: 76px;
+      min-height: 38px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(23, 34, 31, 0.16);
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.96);
+      font-size: 11px;
+      font-weight: 790;
+      text-align: center;
+    }
+
+    .mini-fab .n1 { left: 8%; top: 30px; }
+    .mini-fab .n2 { left: 39%; top: 18px; }
+    .mini-fab .n3 { right: 8%; top: 54px; }
+    .mini-fab .n4 { left: 15%; bottom: 28px; }
+    .mini-fab .n5 { right: 26%; bottom: 24px; }
+
+    .mini-wafer {
+      position: absolute;
+      left: 12%;
+      top: 42px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: repeating-conic-gradient(#dcebf8 0 12deg, #ffffff 12deg 24deg);
+      border: 1px solid rgba(40, 95, 149, 0.45);
+      animation: miniLoop 7.5s ease-in-out infinite;
+    }
+
+    @keyframes miniLoop {
+      0% { left: 12%; top: 45px; }
+      20% { left: 44%; top: 32px; }
+      42% { left: 75%; top: 72px; }
+      58% { left: 52%; top: 150px; }
+      77% { left: 18%; top: 146px; }
+      100% { left: 44%; top: 32px; }
+    }
+
+    .callout {
+      padding: 18px;
+      border: 1px solid rgba(18, 107, 87, 0.22);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(223, 242, 232, 0.92), rgba(255, 255, 255, 0.96));
+    }
+
+    .callout strong {
+      color: var(--green);
+    }
+
+    .flow {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .flow-step {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 760;
+    }
+
+    .flow-step.muted {
+      color: var(--muted);
+      background: #f8faf7;
+    }
+
+    .flow-step.next-a { border-color: rgba(40, 95, 149, 0.36); background: var(--blue-2); color: var(--blue); }
+    .flow-step.next-b { border-color: rgba(180, 106, 22, 0.36); background: var(--amber-2); color: var(--amber); }
+
+    .arrow {
+      align-self: center;
+      color: var(--muted);
+      font-weight: 800;
+    }
+
+    .decision {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .scenario-list {
+      border-right: 1px solid var(--line);
+      background: #f9fbf8;
+    }
+
+    .scenario-button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-height: 54px;
+      padding: 12px 14px;
+      border: 0;
+      border-bottom: 1px solid var(--line);
+      background: transparent;
+      color: var(--muted);
+      text-align: left;
+      font-weight: 760;
+      cursor: pointer;
+    }
+
+    .scenario-button.active {
+      background: #fff;
+      color: var(--ink);
+      box-shadow: inset 4px 0 0 var(--green);
+    }
+
+    .scenario-output {
+      padding: 22px;
+      min-height: 280px;
+    }
+
+    .meter {
+      height: 14px;
+      margin: 18px 0 8px;
+      border-radius: 999px;
+      background: #e8ede9;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      width: 50%;
+      border-radius: 999px;
+      background: var(--green);
+      transition: width 220ms ease, background 220ms ease;
+    }
+
+    .meter-label {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .matrix {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      overflow: hidden;
+      background: #fff;
+    }
+
+    .matrix th,
+    .matrix td {
+      padding: 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .matrix th {
+      background: #f4f7f3;
+      font-size: 13px;
+      color: #3f4d48;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .matrix tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .score {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 84px;
+      min-height: 30px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-weight: 850;
+      font-size: 13px;
+    }
+
+    .score.low { background: var(--red-2); color: var(--red); }
+    .score.mid { background: var(--amber-2); color: var(--amber); }
+    .score.high { background: var(--green-2); color: var(--green); }
+    .score.blue { background: var(--blue-2); color: var(--blue); }
+
+    .timeline {
+      display: grid;
+      gap: 14px;
+      counter-reset: step;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .timeline-item::before {
+      counter-increment: step;
+      content: counter(step);
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 820;
+    }
+
+    .timeline-item h3 {
+      font-size: 18px;
+    }
+
+    .timeline-item p {
+      margin: 6px 0 0;
+      color: var(--muted);
+    }
+
+    .code-box {
+      margin: 14px 0 0;
+      padding: 14px;
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: #111917;
+      color: #eaf4ef;
+      overflow-x: auto;
+      font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .task-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .task-card {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr);
+      gap: 16px;
+      padding: 20px;
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(23, 34, 31, 0.06);
+    }
+
+    .task-num {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 860;
+    }
+
+    .task-card h3 {
+      font-size: 22px;
+    }
+
+    .task-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .io-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .io-box {
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #f9fbf8;
+    }
+
+    .io-label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .io-box code {
+      display: block;
+      color: var(--ink);
+      white-space: normal;
+      word-break: break-word;
+      font: 12px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+
+    .process-strip {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .strip-step {
+      min-height: 92px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .strip-step::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 4px;
+      background: var(--green);
+    }
+
+    .strip-step:nth-child(2)::before { background: var(--blue); }
+    .strip-step:nth-child(3)::before { background: var(--amber); }
+    .strip-step:nth-child(4)::before { background: var(--violet); }
+    .strip-step:nth-child(5)::before { background: var(--red); }
+
+    .strip-step strong {
+      display: block;
+      font-size: 14px;
+    }
+
+    .strip-step span {
+      display: block;
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .method-card {
+      padding: 20px;
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(23, 34, 31, 0.06);
+    }
+
+    .method-card h3 {
+      margin-top: 12px;
+      font-size: 20px;
+    }
+
+    .method-card p {
+      margin: 8px 0 0;
+      color: var(--muted);
+    }
+
+    .method-card ul {
+      margin: 12px 0 0;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .method-card li + li {
+      margin-top: 6px;
+    }
+
+    .fit-bar {
+      display: grid;
+      grid-template-columns: 86px minmax(0, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 14px;
+      font-size: 12px;
+      font-weight: 820;
+      color: var(--muted);
+    }
+
+    .fit-track {
+      height: 10px;
+      border-radius: 999px;
+      background: #e8ede9;
+      overflow: hidden;
+    }
+
+    .fit-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: var(--green);
+    }
+
+    .takeaway-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .takeaway {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .takeaway strong {
+      display: block;
+    }
+
+    .takeaway span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sources {
+      display: grid;
+      gap: 10px;
+      padding-left: 18px;
+      color: var(--muted);
+    }
+
+    .footer-note {
+      max-width: 980px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 940px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-visual {
+        min-height: 470px;
+      }
+
+      .grid.two,
+      .grid.three,
+      .compare,
+      .decision,
+      .task-grid,
+      .method-grid,
+      .takeaway-list {
+        grid-template-columns: 1fr;
+      }
+
+      .io-grid,
+      .process-strip {
+        grid-template-columns: 1fr;
+      }
+
+      .compare-side + .compare-side,
+      .scenario-list {
+        border-left: 0;
+        border-right: 0;
+        border-top: 1px solid var(--line);
+      }
+
+      .scenario-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-bottom: 1px solid var(--line);
+      }
+
+      .scenario-button {
+        border-right: 1px solid var(--line);
+      }
+    }
+
+    @media (max-width: 640px) {
+      html {
+        scroll-padding-top: 176px;
+      }
+
+      .brand {
+        white-space: normal;
+      }
+
+      h1 {
+        font-size: clamp(36px, 12vw, 54px);
+      }
+
+      section {
+        padding: 48px 16px;
+      }
+
+      .hero {
+        padding: 30px 16px 38px;
+      }
+
+      .hero-visual {
+        min-height: 420px;
+      }
+
+      .fab-node {
+        width: 92px;
+        min-height: 54px;
+        font-size: 11px;
+      }
+
+      .hero-caption {
+        flex-direction: column;
+      }
+
+      .scenario-list {
+        grid-template-columns: 1fr;
+      }
+
+      .matrix {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 1ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span>Semiconductor Process Prediction</span>
+    </div>
+    <nav class="nav" aria-label="Page sections">
+      <a href="#answer">Answer</a>
+      <a href="#tasks">Tasks</a>
+      <a href="#modeling">Models</a>
+      <a href="#factory">Factory Reality</a>
+      <a href="#usefulness">Usefulness</a>
+      <a href="#repo">Repo</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div>
+        <div class="eyebrow"><span aria-hidden="true"></span>Built for a junior software engineer</div>
+        <h1>Is "next step prediction" real, or just a hackathon trick?</h1>
+        <p class="lede">
+          The honest answer: a real fab usually knows the planned route, but prediction can still matter when your model sees only partial state, noisy logs, exceptions, or dynamic factory conditions.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#answer">Start with the answer</a>
+          <a class="btn" href="#usefulness">Show where ML helps</a>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Animated wafer fab routing map">
+        <svg class="fab-lines" viewBox="0 0 720 520" role="img" aria-label="Re-entrant flow between fab areas">
+          <path d="M120 120 C230 40, 320 40, 390 92 S580 104, 585 190 C590 275, 445 300, 350 250 S150 235, 145 335 C140 430, 300 455, 450 390 S615 346, 595 430" />
+          <path d="M585 190 C480 170, 405 120, 390 92" />
+          <path d="M350 250 C405 165, 500 145, 585 190" />
+        </svg>
+        <div class="fab-map">
+          <div class="fab-node node-clean">Clean</div>
+          <div class="fab-node node-litho">Lithography</div>
+          <div class="fab-node node-etch">Etch</div>
+          <div class="fab-node node-metrology">Metrology</div>
+          <div class="fab-node node-deposition">Deposition</div>
+          <div class="fab-node node-test">Sort / Test</div>
+          <div class="wafer-dot" aria-hidden="true"></div>
+          <div class="wafer-dot two" aria-hidden="true"></div>
+          <div class="wafer-dot three" aria-hidden="true"></div>
+        </div>
+        <div class="hero-caption">
+          <div>
+            <strong>Not a single conveyor belt</strong>
+            <span>Lots revisit similar tool groups many times.</span>
+          </div>
+          <div>
+            <strong>Route planned, execution dynamic</strong>
+            <span>The hidden state changes what you can infer.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="answer">
+      <div class="section-head">
+        <h2>The crisp answer</h2>
+        <p>Separate "what the factory control system knows" from "what a model can infer from partial data."</p>
+      </div>
+
+      <div class="grid three">
+        <article class="panel pad">
+          <span class="tag red">Low value</span>
+          <h3>Authoritative next step inside the MES</h3>
+          <p>
+            If the factory MES has the lot ID, route revision, product family, recipe, hold state, and quality decisions, a generic model should not be the source of truth. The route table already knows what operation should be next.
+          </p>
+        </article>
+        <article class="panel pad">
+          <span class="tag amber">Medium value</span>
+          <h3>Prediction from partial logs</h3>
+          <p>
+            If you only see event history, the next operation can be ambiguous. The deterministic state exists somewhere, but your model may not have it.
+          </p>
+        </article>
+        <article class="panel pad">
+          <span class="tag">High value</span>
+          <h3>Anomaly, route mining, and scheduling</h3>
+          <p>
+            ML can help detect route violations, stale documentation, unexpected rework, likely completion time, bottlenecks, and whether observed behavior matches the process of record.
+          </p>
+        </article>
+      </div>
+
+      <div class="callout" style="margin-top: 20px;">
+        <strong>My confidence:</strong> I am highly confident that "replace the MES route engine with a next-step predictor" is not the serious real-world product. I am also confident that "learn patterns from process traces to monitor, explain, benchmark, or forecast execution" can be a serious real-world product.
+      </div>
+    </section>
+
+    <section id="tasks">
+      <div class="section-head">
+        <h2>The actual tasks</h2>
+        <p>The repo turns one industrial idea into four measurable exercises. Each task asks a different question about process understanding.</p>
+      </div>
+
+      <div class="panel pad" style="margin-bottom: 18px;">
+        <span class="tag amber">Data reality</span>
+        <h3>For scoring, you mostly get step traces, not sensor time series</h3>
+        <p>
+          The generated training sequences are long CSV traces: <code>SEQUENCE_ID, STEP</code>. The eval inputs are also step-sequence strings plus metadata such as family and completion fraction. The repo does include <code>DESCRIPTION</code> and <code>REALISTIC FAB-LEVEL PARAMETERS</code> files, but those are reference annotations for step types, not live measured values for each individual lot.
+        </p>
+        <div class="io-grid">
+          <div class="io-box">
+            <span class="io-label">Scored task input</span>
+            <code>FAMILY + PARTIAL_SEQUENCE or SEQUENCE</code>
+          </div>
+          <div class="io-box">
+            <span class="io-label">Extra context files</span>
+            <code>STEP -> DESCRIPTION<br>STEP -> generic parameter examples</code>
+          </div>
+          <div class="io-box">
+            <span class="io-label">Not provided</span>
+            <code>Per-lot sensor curves, timestamps, actual measurement results, tool IDs, queue state</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel pad" style="margin-bottom: 18px;">
+        <span class="tag blue">Usable context</span>
+        <h3>But we can still derive useful information for each step occurrence</h3>
+        <p>
+          "Only traces" does not mean "no features." Each occurrence can be enriched using its family, position, neighboring steps, inferred block, lithography level, and the public process grammar. You can also join descriptions and parameter hints by family plus step name, but treat them as generic process knowledge rather than measured values from that specific lot.
+        </p>
+        <div class="io-grid">
+          <div class="io-box">
+            <span class="io-label">From the sequence</span>
+            <code>step index, normalized progress, previous/next context, repeated cycle count, last clean distance</code>
+          </div>
+          <div class="io-box">
+            <span class="io-label">From the step string</span>
+            <code>DEPOSIT vs ETCH vs MEASURE, litho LEVEL N, TEST stage, family-specific keywords</code>
+          </div>
+          <div class="io-box">
+            <span class="io-label">From references</span>
+            <code>description, typical recipe parameters, rule prerequisites, allowed/forbidden ordering</code>
+          </div>
+        </div>
+        <p>
+          One caveat: some reference parameter rows reuse the same <code>STEP</code> name in different blocks, such as repeated lithography or different thickness measurements. A robust join should use local context too, not just the raw step string.
+        </p>
+      </div>
+
+      <div class="task-grid">
+        <article class="task-card">
+          <div class="task-num">1</div>
+          <div>
+            <span class="tag blue">Rank next step</span>
+            <h3>Next-step prediction</h3>
+            <p>
+              Given a partial sequence, output the five most likely next steps. This makes sense when the model sees only the trace prefix, not the full route table, product subtype, or hidden state.
+            </p>
+            <div class="io-grid">
+              <div class="io-box">
+                <span class="io-label">Input</span>
+                <code>RECEIVE WAFER LOT | LOT IDENTIFICATION</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Output</span>
+                <code>1. PRE CLEAN INSPECTION<br>2. INITIAL WAFER INSPECTION<br>3. MEASURE THICKNESS</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Tests</span>
+                <code>Local order, family context, common route variants</code>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-card">
+          <div class="task-num">2</div>
+          <div>
+            <span class="tag">Complete route</span>
+            <h3>Sequence completion</h3>
+            <p>
+              Given a sequence cut at 60% or 80%, predict the remaining steps only. This is route autocomplete: recover what should plausibly happen next without repeating the given prefix.
+            </p>
+            <div class="io-grid">
+              <div class="io-box">
+                <span class="io-label">Input</span>
+                <code>... DEPOSIT PASSIVATION | CURE PASSIVATION</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Output</span>
+                <code>MEASURE PASSIVATION QUALITY | OPEN PAD WINDOW | PAD WINDOW LITHO | ... | SHIP LOT</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Tests</span>
+                <code>Long-range structure and full route consistency</code>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-card">
+          <div class="task-num">3</div>
+          <div>
+            <span class="tag red">Find violations</span>
+            <h3>Anomaly detection</h3>
+            <p>
+              Given a full sequence, decide whether it is valid. If invalid, name the likely rule. This is the most realistic factory-style task: flag traces that break process logic.
+            </p>
+            <div class="io-grid">
+              <div class="io-box">
+                <span class="io-label">Bad trace</span>
+                <code>DEPOSIT METAL 1 | ANNEAL METAL | METAL ETCH</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Output</span>
+                <code>IS_VALID=0<br>SCORE=0.08<br>RULE_METAL_ETCH_NO_LITHO</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Tests</span>
+                <code>Constraints like mask-before-etch and clean-before-deposit</code>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="task-card">
+          <div class="task-num">4</div>
+          <div>
+            <span class="tag violet">Hidden family</span>
+            <h3>OOD generalization</h3>
+            <p>
+              Organizers test submitted models on an unseen fourth product family. The goal is to see whether the model learned transferable rules, not just the exact MOSFET/IGBT/IC templates.
+            </p>
+            <div class="io-grid">
+              <div class="io-box">
+                <span class="io-label">Known</span>
+                <code>MOSFET, IGBT, IC traces</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Hidden</span>
+                <code>New family with similar process principles but different blocks</code>
+              </div>
+              <div class="io-box">
+                <span class="io-label">Tests</span>
+                <code>Transfer: etch needs mask, tests after passivation, ship after sort</code>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="panel pad" style="margin-top: 18px;">
+        <h3>What the artifact would actually do</h3>
+        <div class="process-strip" aria-label="End to end task pipeline">
+          <div class="strip-step">
+            <strong>Read CSV traces</strong>
+            <span>Group rows by sequence ID and turn each step string into one token.</span>
+          </div>
+          <div class="strip-step">
+            <strong>Learn patterns</strong>
+            <span>Fit rules, n-grams, templates, or a sequence model on valid traces.</span>
+          </div>
+          <div class="strip-step">
+            <strong>Predict or complete</strong>
+            <span>Given a prefix, rank next steps or generate the remaining route.</span>
+          </div>
+          <div class="strip-step">
+            <strong>Validate</strong>
+            <span>Check hard constraints such as lithography before etch.</span>
+          </div>
+          <div class="strip-step">
+            <strong>Submit CSVs</strong>
+            <span>Write next-step, completion, and anomaly outputs for scoring.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="modeling">
+      <div class="section-head">
+        <h2>Where different techniques fit</h2>
+        <p>Not every AI method is equally sensible here. The strongest approach is probably hybrid: deterministic rules for safety, statistical models for ranking ambiguous valid options.</p>
+      </div>
+
+      <div class="method-grid">
+        <article class="method-card">
+          <span class="tag">Rule engine</span>
+          <h3>Validator / grammar checker</h3>
+          <p>Best when the rules are known. It can catch impossible traces with explainable rule IDs.</p>
+          <ul>
+            <li>Great for anomaly detection.</li>
+            <li>Great for constrained decoding.</li>
+            <li>Weak for ranking which valid option is most likely.</li>
+          </ul>
+          <div class="fit-bar"><span>Fit here</span><div class="fit-track"><div class="fit-fill" style="width: 92%;"></div></div></div>
+        </article>
+
+        <article class="method-card">
+          <span class="tag blue">Baseline</span>
+          <h3>N-gram / Markov model</h3>
+          <p>Looks at the last N steps and counts what usually follows. Simple, fast, and surprisingly strong on repetitive process traces.</p>
+          <ul>
+            <li>Good for next-step ranking.</li>
+            <li>Useful baseline for completion.</li>
+            <li>Misses long-range constraints beyond its context window.</li>
+          </ul>
+          <div class="fit-bar"><span>Fit here</span><div class="fit-track"><div class="fit-fill" style="width: 78%; background: var(--blue);"></div></div></div>
+        </article>
+
+        <article class="method-card">
+          <span class="tag amber">Templates</span>
+          <h3>Process mining / alignment</h3>
+          <p>Infer canonical routes and compare a sequence against known route templates. This is close to "reverse engineer the process from logs."</p>
+          <ul>
+            <li>Good for route-variant discovery.</li>
+            <li>Good for noisy logs and audit reports.</li>
+            <li>Less flexible than neural models on unseen families.</li>
+          </ul>
+          <div class="fit-bar"><span>Fit here</span><div class="fit-track"><div class="fit-fill" style="width: 72%; background: var(--amber);"></div></div></div>
+        </article>
+
+        <article class="method-card">
+          <span class="tag violet">Latent state</span>
+          <h3>HMM / CRF style model</h3>
+          <p>Useful if visible steps are noisy and you believe there is a hidden route state, such as "litho cycle 3" or "backside block."</p>
+          <ul>
+            <li>Good for explaining hidden stage.</li>
+            <li>Good when labels are limited.</li>
+            <li>May be too small for complex long dependencies.</li>
+          </ul>
+          <div class="fit-bar"><span>Fit here</span><div class="fit-track"><div class="fit-fill" style="width: 58%; background: var(--violet);"></div></div></div>
+        </article>
+
+        <article class="method-card">
+          <span class="tag">Sequence ML</span>
+          <h3>LSTM / Transformer</h3>
+          <p>Use when you want long-context completion, learned embeddings, family conditioning, and better generalization than n-grams.</p>
+          <ul>
+            <li>Good for Task 1 and Task 2.</li>
+            <li>Can learn long-range dependencies.</li>
+            <li>Needs careful eval to avoid pure memorization.</li>
+          </ul>
+          <div class="fit-bar"><span>Fit here</span><div class="fit-track"><div class="fit-fill" style="width: 82%;"></div></div></div>
+        </article>
+
+        <article class="method-card">
+          <span class="tag red">Use carefully</span>
+          <h3>Reinforcement learning</h3>
+          <p>RL is probably not needed for the repo's basic scoring. It becomes sensible if you define a simulator and optimize decisions over time.</p>
+          <ul>
+            <li>Possible for scheduling: minimize cycle time, WIP, queue violations.</li>
+            <li>Possible for constrained generation with rewards.</li>
+            <li>Overkill for simple next-step prediction.</li>
+          </ul>
+          <div class="fit-bar"><span>Fit here</span><div class="fit-track"><div class="fit-fill" style="width: 38%; background: var(--red);"></div></div></div>
+        </article>
+      </div>
+
+      <div class="takeaway-list">
+        <div class="takeaway">
+          <strong>Most practical repo strategy</strong>
+          <span>N-gram or transformer for ranking, validator for hard process rules.</span>
+        </div>
+        <div class="takeaway">
+          <strong>Most realistic factory strategy</strong>
+          <span>MES remains authoritative; ML monitors traces, forecasts timing, and flags abnormal behavior.</span>
+        </div>
+        <div class="takeaway">
+          <strong>Best demo story</strong>
+          <span>"The model proposes; the rules dispose." Show both prediction and explanation.</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="factory">
+      <div class="section-head">
+        <h2>Why your conveyor-belt intuition is close, but incomplete</h2>
+        <p>Simple assembly often looks linear. Semiconductor wafer fabrication is closer to a controlled graph with loops.</p>
+      </div>
+
+      <div class="panel compare">
+        <div class="compare-side">
+          <span class="tag amber">Assembly line mental model</span>
+          <h3>Mostly linear</h3>
+          <p>A part moves through stations in a visible direction. If it is at Station B, Station C is probably next.</p>
+          <div class="conveyor" aria-label="Animated linear conveyor">
+            <div class="station a">Station A</div>
+            <div class="station b">Station B</div>
+            <div class="station c">Station C</div>
+            <div class="box" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="compare-side">
+          <span class="tag blue">Wafer fab mental model</span>
+          <h3>Re-entrant and stateful</h3>
+          <p>A wafer lot may revisit lithography, etch, deposition, clean, and measurement many times for different layers.</p>
+          <div class="mini-fab" aria-label="Animated re-entrant wafer fab route">
+            <div class="node n1">Clean</div>
+            <div class="node n2">Litho</div>
+            <div class="node n3">Etch</div>
+            <div class="node n4">Measure</div>
+            <div class="node n5">Deposit</div>
+            <div class="mini-wafer" aria-hidden="true"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="uncertainty">
+      <div class="section-head">
+        <h2>Where "unpredictable" enters</h2>
+        <p>The route can be deterministic to the factory and still uncertain to a model that lacks hidden variables.</p>
+      </div>
+
+      <div class="grid two">
+        <article class="panel pad">
+          <span class="tag blue">Software analogy</span>
+          <h3>Same endpoint, hidden request context</h3>
+          <p>
+            If you only see <code>POST /checkout</code>, you cannot know whether the backend will run fraud review, payment retry, inventory hold, or fulfillment. The backend knows because it has the full database state.
+          </p>
+        </article>
+        <article class="panel pad">
+          <span class="tag violet">Fab analogy</span>
+          <h3>Same visible prefix, different valid next step</h3>
+          <p>
+            In this repo's synthetic data, the same prefix can validly continue with different inspections or optional measurements. Real factories also have route variants, sampling, holds, and rework paths.
+          </p>
+        </article>
+      </div>
+
+      <div class="panel pad" style="margin-top: 18px;">
+        <h3>Concrete example from the repo's data</h3>
+        <div class="flow" aria-label="Same visible prefix with two valid possible next steps">
+          <span class="flow-step">RECEIVE WAFER LOT</span>
+          <span class="arrow">-&gt;</span>
+          <span class="flow-step">LOT IDENTIFICATION</span>
+          <span class="arrow">-&gt;</span>
+          <span class="flow-step next-a">INITIAL WAFER INSPECTION</span>
+          <span class="flow-step next-b">PRE CLEAN INSPECTION</span>
+        </div>
+        <p>
+          This is intentionally synthetic, but it demonstrates the modeling issue: with partial context, two continuations can both be valid. A rule system says "allowed or not allowed"; a predictor ranks "which valid continuation is most likely."
+        </p>
+      </div>
+
+      <div class="timeline" style="margin-top: 18px;">
+        <div class="timeline-item">
+          <div>
+            <h3>Route revision</h3>
+            <p>The lot may belong to a product or route version whose exact operation list is not in your input.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div>
+            <h3>Sampling and metrology</h3>
+            <p>Some lots get extra measurements; others skip them based on sampling plans, engineering experiments, or risk.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div>
+            <h3>Tool and queue state</h3>
+            <p>The next planned operation and the next physical machine movement are different questions. Scheduling depends on tool qualification, queue time, maintenance, and WIP.</p>
+          </div>
+        </div>
+        <div class="timeline-item">
+          <div>
+            <h3>Holds, rework, and exceptions</h3>
+            <p>A failed measurement can create a hold or route a lot through a rework path. That is deterministic after the decision, but hard to infer from a truncated trace.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="usefulness">
+      <div class="section-head">
+        <h2>How useful would prediction be in a real factory?</h2>
+        <p>Click each viewpoint. The answer changes depending on who has which state.</p>
+      </div>
+
+      <div class="decision">
+        <div class="scenario-list" role="tablist" aria-label="Prediction usefulness scenarios">
+          <button class="scenario-button active" type="button" data-scenario="mes" role="tab" aria-selected="true">Inside MES</button>
+          <button class="scenario-button" type="button" data-scenario="ops" role="tab" aria-selected="false">Ops analytics</button>
+          <button class="scenario-button" type="button" data-scenario="qa" role="tab" aria-selected="false">Quality / anomaly</button>
+          <button class="scenario-button" type="button" data-scenario="spy" role="tab" aria-selected="false">Outside observer</button>
+        </div>
+        <div class="scenario-output">
+          <span class="tag red" id="scenarioTag">Low value as prediction</span>
+          <h3 id="scenarioTitle">The MES already knows the planned next operation.</h3>
+          <p id="scenarioText">
+            If all master data and lot state are available, next-step ML is mostly redundant and risky as a controller. The better engineering pattern is rule validation, auditability, and deterministic dispatch logic.
+          </p>
+          <div class="meter" aria-label="Usefulness meter">
+            <div class="meter-fill" id="scenarioMeter" style="width: 18%; background: var(--red);"></div>
+          </div>
+          <div class="meter-label">
+            <span>Not the product</span>
+            <span>Strong product</span>
+          </div>
+        </div>
+      </div>
+
+      <table class="matrix" style="margin-top: 20px;">
+        <thead>
+          <tr>
+            <th>Question</th>
+            <th>Realistic answer</th>
+            <th>Usefulness</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>"What should the lot do next?"</td>
+            <td>The MES route/process-of-record should answer this.</td>
+            <td><span class="score low">Low</span></td>
+          </tr>
+          <tr>
+            <td>"Is this trace valid?"</td>
+            <td>Very useful for rule checks, anomaly detection, and data quality.</td>
+            <td><span class="score high">High</span></td>
+          </tr>
+          <tr>
+            <td>"What route variant does this look like?"</td>
+            <td>Useful when logs are incomplete, merged, delayed, or externally observed.</td>
+            <td><span class="score blue">Useful</span></td>
+          </tr>
+          <tr>
+            <td>"When will this lot finish?"</td>
+            <td>Useful, but now the problem is scheduling/forecasting, not pure next-step prediction.</td>
+            <td><span class="score high">High</span></td>
+          </tr>
+          <tr>
+            <td>"Can a second factory infer another factory's route?"</td>
+            <td>Yes, if it sees enough traces. That is process mining / reverse engineering from observations.</td>
+            <td><span class="score mid">Plausible</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="repo">
+      <div class="section-head">
+        <h2>What is happening in this repo</h2>
+        <p>The hackathon problem is not pretending to be a live fab controller. It is a synthetic benchmark for learning process logic.</p>
+      </div>
+
+      <div class="grid two">
+        <article class="panel pad">
+          <span class="tag violet">Synthetic</span>
+          <h3>The data is grammar-generated</h3>
+          <p>
+            The repo provides generated MOSFET, IGBT, and IC sequences. The generator randomly chooses valid options: optional measurements, clean variants, lithography choices, synonyms, and family-specific blocks.
+          </p>
+          <div class="code-box">Route grammar -> generate many valid traces
+Valid trace -> train predictor
+Invalid trace -> detect rule violation</div>
+        </article>
+        <article class="panel pad">
+          <span class="tag">Core lesson</span>
+          <h3>The serious part is "process logic"</h3>
+          <p>
+            The interesting test is not whether a model can memorize a list. It is whether it understands constraints such as "etch requires a lithography mask" or "ship must happen after wafer sort."
+          </p>
+          <div class="code-box">Bad:
+  DEPOSIT METAL -> METAL ETCH
+
+Better:
+  DEPOSIT METAL -> LITHO -> DEVELOP -> METAL ETCH</div>
+        </article>
+      </div>
+
+      <div class="panel pad" style="margin-top: 18px;">
+        <h3>Best interpretation for your team</h3>
+        <p>
+          Do not pitch this as "we can tell Infineon what their conveyor should do next." Pitch it as "we can learn and audit long industrial process logic from traces, compare models against rules, and detect invalid or surprising process behavior."
+        </p>
+      </div>
+    </section>
+
+    <section id="sources">
+      <div class="section-head">
+        <h2>Sources and confidence</h2>
+        <p>The repo itself proves the synthetic part. Public manufacturing references support the real-fab framing.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="panel pad">
+          <h3>Repo references</h3>
+          <ul class="sources">
+            <li><a href="../industrial-infineon/Track_industrial_en.md">Track brief</a>: says the hackathon abstracts the process-sequence problem and uses synthetic data.</li>
+            <li><a href="../training_data/generation_rules.md">Generation rules</a>: defines the process grammar, variation axes, and forbidden patterns.</li>
+            <li><a href="../training_data/generate_sequences.py">Generator</a>: implements randomized valid sequence generation and validation.</li>
+          </ul>
+        </div>
+        <div class="panel pad">
+          <h3>Real-world framing</h3>
+          <ul class="sources">
+            <li><a href="https://www.nist.gov/publications/toward-real-time-scheduler-and-controller-semiconductor-fabrication-systems">NIST</a>: semiconductor fab scheduling must predict starts/completions and manage WIP in a challenging environment.</li>
+            <li><a href="https://www.sciencedirect.com/science/article/pii/S0736584500000314">Robotics and Computer-Integrated Manufacturing</a>: wafer fabs are re-entrant flow systems where products revisit workstations.</li>
+            <li><a href="https://www.mdpi.com/2079-9292/12/11/2411">MDPI Electronics</a>: cluster tool scheduling discusses serial vs re-entrant wafer flows and repeated visits to steps.</li>
+          </ul>
+        </div>
+      </div>
+      <p class="footer-note">
+        Confidence note: the exact repo task is synthetic. The real-world usefulness claim is narrower: prediction is weak as a replacement for route-control truth, but useful as inference, monitoring, scheduling, anomaly detection, and process-mining support when full state is unavailable or messy.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const scenarios = {
+      mes: {
+        tag: "Low value as prediction",
+        tagClass: "tag red",
+        title: "The MES already knows the planned next operation.",
+        text: "If all master data and lot state are available, next-step ML is mostly redundant and risky as a controller. The better engineering pattern is rule validation, auditability, and deterministic dispatch logic.",
+        width: "18%",
+        color: "var(--red)"
+      },
+      ops: {
+        tag: "Useful as forecasting",
+        tagClass: "tag blue",
+        title: "Operations teams care about timing, queues, and bottlenecks.",
+        text: "The next planned step may be known, but the next thing that physically happens depends on tool availability, WIP, queue constraints, maintenance, and dispatch choices. That is a real prediction problem.",
+        width: "76%",
+        color: "var(--blue)"
+      },
+      qa: {
+        tag: "High value",
+        tagClass: "tag",
+        title: "Quality teams need to spot traces that should not happen.",
+        text: "A model or rule engine can flag missing cleans, impossible orderings, skipped masks, early electrical tests, or route behavior that diverges from historical norms.",
+        width: "88%",
+        color: "var(--green)"
+      },
+      spy: {
+        tag: "Plausible external use",
+        tagClass: "tag amber",
+        title: "An outside observer would be doing process mining.",
+        text: "Your spy example is directionally right: if someone sees enough partial traces, prediction can infer route structure. But internal teams also use the same idea for documentation, migration, monitoring, and audits.",
+        width: "63%",
+        color: "var(--amber)"
+      }
+    };
+
+    const buttons = document.querySelectorAll(".scenario-button");
+    const scenarioTag = document.getElementById("scenarioTag");
+    const scenarioTitle = document.getElementById("scenarioTitle");
+    const scenarioText = document.getElementById("scenarioText");
+    const scenarioMeter = document.getElementById("scenarioMeter");
+
+    buttons.forEach((button) => {
+      button.addEventListener("click", () => {
+        const next = scenarios[button.dataset.scenario];
+        buttons.forEach((b) => {
+          b.classList.remove("active");
+          b.setAttribute("aria-selected", "false");
+        });
+        button.classList.add("active");
+        button.setAttribute("aria-selected", "true");
+        scenarioTag.className = next.tagClass;
+        scenarioTag.textContent = next.tag;
+        scenarioTitle.textContent = next.title;
+        scenarioText.textContent = next.text;
+        scenarioMeter.style.width = next.width;
+        scenarioMeter.style.background = next.color;
+      });
+    });
+  </script>
+</body>
+</html>

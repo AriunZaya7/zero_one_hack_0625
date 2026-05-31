@@ -1,0 +1,12 @@
+METRIC,VALUE
+public_sequences,7009
+synthetic_template_families,100
+synthetic_template_sequences,2000
+total_template_training_sequences,9009
+full_route_exact_prefix_coverage,1.000000
+full_route_exact_prefix_rows,600
+valid_lattice_coverage,0.500000
+valid_lattice_rows,300
+paired_length_coverage,0.000000
+paired_length_rows,0
+mean_candidate_total_lengths,0.0000

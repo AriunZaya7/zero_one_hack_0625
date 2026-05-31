@@ -1,0 +1,71 @@
+{
+  "model": "xgb_holdout_igbt_hybrid_robust_eval100",
+  "model_type": "xgboost_hybrid",
+  "checkpoint": null,
+  "checkpoints": null,
+  "next_checkpoints": [
+    "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_legacy_features_holdout_igbt"
+  ],
+  "completion_checkpoint": "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_regularized_v2_holdout_igbt",
+  "anomaly_checkpoint": "solution/checkpoints/xgboost_sweeps/xgb_holdout_focused_30k_80_legacy_features_holdout_igbt",
+  "families": [
+    "IGBT"
+  ],
+  "train_families": [
+    "IC",
+    "MOSFET"
+  ],
+  "eval_split": "val",
+  "eval_strategy": "holdout_family",
+  "task1": {
+    "top1": 0.7,
+    "top3": 0.96,
+    "top5": 0.96,
+    "mrr": 0.8275,
+    "n": 200
+  },
+  "task2": {
+    "exact_match": 0.0,
+    "norm_edit_dist": 0.47253518882429335,
+    "token_acc": 0.179894704502535,
+    "block_acc": 0.5110508203863061,
+    "n": 200
+  },
+  "task3": {
+    "binary_acc": 0.57,
+    "precision": 0.5068493150684932,
+    "recall": 0.8409090909090909,
+    "f1": 0.6324786324786325,
+    "roc_auc": 0.7102272727272727,
+    "confusion": {
+      "tp": 37,
+      "tn": 20,
+      "fp": 36,
+      "fn": 7
+    },
+    "n": 100,
+    "threshold": 5.895507235971752,
+    "rule_attribution_acc": 1.0,
+    "rule_attribution_n": 37
+  },
+  "by_family": {
+    "IGBT": {
+      "task1": {
+        "top1": 0.7,
+        "top3": 0.96,
+        "top5": 0.96,
+        "mrr": 0.8275,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.0,
+        "norm_edit_dist": 0.47253518882429335,
+        "token_acc": 0.179894704502535,
+        "block_acc": 0.5110508203863061,
+        "n": 200
+      }
+    }
+  },
+  "elapsed_s": 92.0,
+  "timestamp": "2026-05-30 20:06:31"
+}

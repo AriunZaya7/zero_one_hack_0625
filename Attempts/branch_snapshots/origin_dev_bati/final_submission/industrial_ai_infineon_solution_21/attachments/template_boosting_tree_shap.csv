@@ -1,0 +1,15 @@
+rank,feature,mean_abs_shap,share,plain_english
+1,lag_step_1,0.3483816981315613,0.181529786243096,Recent exact/template step token in the visible prefix.
+2,prefix_len,0.2253219336271286,0.11740755230995925,How many steps are already visible in the partial route.
+3,lag_step_4,0.12946254014968872,0.06745850131021032,Recent exact/template step token in the visible prefix.
+4,lag_step_2,0.12580637633800507,0.06555339940972518,Recent exact/template step token in the visible prefix.
+5,lag_block_3,0.12268563359975815,0.06392728711613471,"Recent high-level process block, such as lithography, etch, clean, or test."
+6,lag_block_4,0.10544273257255554,0.05494260119702276,"Recent high-level process block, such as lithography, etch, clean, or test."
+7,lag_block_1,0.10478826612234116,0.05460158111632429,"Recent high-level process block, such as lithography, etch, clean, or test."
+8,lag_block_5,0.07954360544681549,0.041447451950569175,"Recent high-level process block, such as lithography, etch, clean, or test."
+9,lag_block_6,0.0770675465464592,0.04015726235301674,"Recent high-level process block, such as lithography, etch, clean, or test."
+10,unique_step_frac,0.072121761739254,0.03758018306420385,How diverse the visible prefix is relative to its length.
+11,lag_step_8,0.07027806341648102,0.03661949493326953,Recent exact/template step token in the visible prefix.
+12,lag_block_2,0.06950614601373672,0.03621727517870429,"Recent high-level process block, such as lithography, etch, clean, or test."
+13,lag_step_3,0.0590905025601387,0.030790039649810527,Recent exact/template step token in the visible prefix.
+14,lag_step_5,0.05163664370775223,0.026906088766578573,Recent exact/template step token in the visible prefix.

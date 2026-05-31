@@ -1,0 +1,16 @@
+METRIC,VALUE
+alpha,0.05
+rank_cutoff,2
+rank_coverage,0.995000
+rank_mean_set_size,2.000000
+fallback_top1,0.731667
+fallback_top2,0.995000
+fallback_top3,1.000000
+fallback_top5,1.000000
+fallback_mrr,0.865000
+completion_ned_mean,0.242010
+completion_ned_q95,0.391304
+completion_exact_match,0.001667
+completion_token_accuracy,0.448525
+completion_block_accuracy,0.716737
+calibration_rows,600

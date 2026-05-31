@@ -1,0 +1,18 @@
+1. Cover with metric rail and submission status.
+2. Jury scoring surface with exact deliverables mapped to tasks.
+3. Branch ranking and why SECONDCRISTI is first.
+4. 15-family OOD protocol diagram.
+5. System architecture from data to CSVs.
+6. Evidence chart: n-gram vs GPT on OOD3.
+7. Submission validity checklist and legal boundary.
+8. Two-minute demo storyboard and final ask.
+
+Layouts:
+- cover metric rail
+- wide scoring table
+- horizontal ranking bars
+- split protocol diagram
+- pipeline map
+- chart with evidence table
+- status checklist
+- demo timeline

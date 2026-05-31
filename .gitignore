@@ -6,6 +6,12 @@ outputs/
 *.pth
 hf_cache/
 
+# Final SUBMISSION_1 checkpoint is intentionally included for reproducibility.
+!outputs/
+outputs/*
+!outputs/gpt_large_train12/
+!outputs/gpt_large_train12/**
+
 # ── Generated extra training data (reproducible via generate_sequences.py) ───
 training_data/MOSFET_extra.csv
 training_data/MOSFET_extra2.csv
@@ -46,3 +52,10 @@ wandb/
 
 # ── Stale single-file results ──────────────────────────────────────────────────
 results.csv
+
+# The final branch intentionally keeps these for submission reproducibility and
+# auditability.
+!self_eval/
+!self_eval/**
+!Attempts/
+!Attempts/**

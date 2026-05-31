@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 11 Explanation - OOD-Guarded Consensus</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c2530; background: #fff; line-height: 1.58; }
+    main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 72px; }
+    header { padding-bottom: 22px; margin-bottom: 28px; border-bottom: 1px solid #d9e0e8; }
+    h1 { margin: 0 0 12px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-top: 10px; border-top: 1px solid #d9e0e8; font-size: 1.34rem; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 1.08rem; letter-spacing: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #13202d; background: #eef2f6; border: 1px solid #dbe3ec; border-radius: 4px; padding: 1px 4px; font-size: 0.93em; }
+    pre { overflow-x: auto; background: #0f1b26; color: #edf4fb; border-radius: 6px; padding: 14px 16px; line-height: 1.45; font-size: 0.91rem; }
+    pre code { background: transparent; border: 0; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 0.95rem; }
+    th, td { border: 1px solid #d9e0e8; padding: 9px 10px; vertical-align: top; }
+    th { background: #eef3f7; text-align: left; }
+    .note { background: #f6f8fb; border-left: 4px solid #176b87; padding: 12px 14px; margin: 14px 0; }
+    .warning { background: #fff8eb; border-left: 4px solid #875c13; padding: 12px 14px; margin: 14px 0; }
+    .good { color: #17613a; font-weight: 650; }
+    .warn { color: #875c13; font-weight: 650; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Solution 11: OOD-Guarded Consensus</h1>
+    <p>
+      Solution 11 is a conservative portfolio. It keeps the stronger Task 2
+      consensus decoder from Solution 10, but changes Task 1 back to the
+      more robust leave-one-family-out specialist from the Solution 2/8 family.
+    </p>
+  </header>
+
+  <section>
+    <h2>What Problem This Solves</h2>
+    <p>
+      The organizers say the model should generalize to a hidden product family.
+      We do not have that hidden family, so the repo uses a local proxy called
+      leave-one-family-out, or LOFO. In LOFO, one known family is removed from
+      training and used as the test family. This tests whether the method can
+      transfer process logic instead of relying only on same-family examples.
+    </p>
+    <div class="note">
+      <p>
+        For a junior engineer: <strong>OOD</strong> means
+        <strong>out-of-distribution</strong>. Here it means "a product family
+        that is not represented in the training data in the same way as the
+        visible families."
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Specialists Chosen</h2>
+    <table>
+      <thead><tr><th>Task</th><th>Chosen specialist</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>Task 1 next-step ranking</td>
+          <td>Solution 2 eval-aware retrieval</td>
+          <td>Better leave-one-family-out Task 1 proxy than the Solution 3 specialist used by Solutions 9 and 10.</td>
+        </tr>
+        <tr>
+          <td>Task 2 completion</td>
+          <td>Confidence-gated suffix consensus</td>
+          <td>Same Task 2 decoder as Solution 10; improves normalized edit distance compared with Solution 9.</td>
+        </tr>
+        <tr>
+          <td>Task 3 anomaly detection</td>
+          <td>Solution 8 semantic conformance checker</td>
+          <td>Keeps transparent rule attribution without calling the public validator directly during prediction.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Why Task 1 Changes</h2>
+    <p>
+      Solution 10 uses Solution 3 for Task 1 because Solution 3 has the best
+      seed-42 visible Top-1 score. But Solution 3 is weaker on the LOFO proxy,
+      especially when IC is held out. Solution 11 chooses the safer Task 1 model
+      instead. That is why the visible Task 1 Top-1 is slightly lower, but the
+      hidden-family story is stronger.
+    </p>
+    <table>
+      <thead><tr><th>Model family</th><th>Visible Task 1 Top-1</th><th>LOFO MOSFET</th><th>LOFO IGBT</th><th>LOFO IC</th></tr></thead>
+      <tbody>
+        <tr><td>Solution 10 Task 1 specialist</td><td>0.7350</td><td>0.7450</td><td>0.7050</td><td>0.5700</td></tr>
+        <tr><td>Solution 11 Task 1 specialist</td><td>0.7317</td><td>0.7800</td><td>0.7200</td><td>0.6400</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Task 2 Consensus Decoder</h2>
+    <p>
+      Task 2 uses the same confidence-gated consensus decoder introduced in
+      Solution 10. It retrieves candidate suffixes from the generated suffix
+      library, keeps the top 10, and builds a weighted token-by-token consensus
+      only when candidate agreement is high. If agreement is weak, it falls back
+      to one valid retrieved suffix.
+    </p>
+    <p>
+      The consensus gate is still set to <code>0.80</code>. On the seed-42 local
+      split, consensus is used on <code>117</code> of <code>600</code> completion
+      rows and fallback is used on the other <code>483</code> rows.
+    </p>
+  </section>
+
+  <section>
+    <h2>Important Code</h2>
+    <p>
+      The task-level selection rule is explicit in
+      <code>OODGuardedConsensusPortfolio.__init__()</code>:
+    </p>
+    <pre><code>self.task1_model = sol2.EvalAwareRetrievalModel(train_sequences, train_sequences)
+self.task2_model = sol7.TaskSpecializedMonteCarloModel(train_sequences)</code></pre>
+    <p>
+      Task 3 is also explicit:
+    </p>
+    <pre><code>@staticmethod
+def predict_task3(examples):
+    return sol8.predict_task3_semantic(examples)</code></pre>
+  </section>
+
+  <section>
+    <h2>Output Files Produced</h2>
+    <table>
+      <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>outputs/nextstep.csv</code></td><td>Task 1 ranked next-step predictions.</td></tr>
+        <tr><td><code>outputs/completion.csv</code></td><td>Task 2 predicted suffixes.</td></tr>
+        <tr><td><code>outputs/anomaly.csv</code></td><td>Task 3 validity, confidence score, and predicted rule.</td></tr>
+        <tr><td><code>outputs/metrics.json</code></td><td>Machine-readable metrics, data inventory, and consensus statistics.</td></tr>
+        <tr><td><code>outputs/metrics.md</code></td><td>Human-readable metric summary.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Local Seed-42 Metrics</h2>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Task 1 Top-1</td><td><span class="warn">0.7317</span></td><td>Slightly lower than Solution 10's 0.7350.</td></tr>
+        <tr><td>Task 1 MRR</td><td>0.8650</td><td>Slightly lower than Solution 10's 0.8661.</td></tr>
+        <tr><td>Task 2 normalized edit distance</td><td><span class="good">0.2319</span></td><td>Same improved Task 2 edit distance as Solution 10.</td></tr>
+        <tr><td>Task 2 block accuracy</td><td><span class="good">0.7374</span></td><td>Same improved Task 2 block score as Solution 10.</td></tr>
+        <tr><td>Task 3 accuracy</td><td><span class="good">1.0000</span></td><td>Semantic conformance checker separates all local valid/invalid rows.</td></tr>
+        <tr><td>LOFO average Top-1</td><td><span class="good">0.7133</span></td><td>Higher than Solution 10's seed-42 LOFO average of 0.6733.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Honest Tradeoff</h2>
+    <div class="warning">
+      <p>
+        Solution 11 is not the highest visible Task 1 scorer. It is a risk-aware
+        submission candidate for the case where hidden-family robustness matters
+        more than the last few visible Task 1 rows.
+      </p>
+    </div>
+    <p>
+      Use Solution 11 when the team wants stronger hidden-family evidence while
+      keeping the best current Task 2 edit-distance decoder. Use Solution 10
+      when visible Task 1 Top-1 is the priority. Use Solution 9 when exact
+      completion match is believed to be more important than edit distance.
+    </p>
+  </section>
+
+  <section>
+    <h2>Submission Readiness</h2>
+    <p>
+      This solution is complete as a standalone candidate. It has a runnable
+      script, generated output CSVs, local metrics, this explanation page, a
+      manual submission guide, and a generated <code>submission_package/</code>
+      folder with result CSVs, metrics, per-family proxy breakdown, training
+      notes, demo notes, and a solution-level report.
+    </p>
+  </section>
+</main>
+</body>
+</html>

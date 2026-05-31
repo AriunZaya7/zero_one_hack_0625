@@ -1,0 +1,27 @@
+# pixi
+.pixi/
+
+# training artifacts
+small_transformer_model/checkpoints/
+small_transformer_model/train/wandb/
+outputs/
+checkpoints/
+wandb/
+solution/logs/
+*.log
+
+# local XGBoost experiment outputs; keep only the selected comparison artifacts
+solution/results/xgb*.json
+solution/results/sweeps/*
+!solution/results/xgb_hybrid_robust_val100.json
+!solution/results/xgb_holdout_ic_hybrid_taskbest_eval100.json
+!solution/results/xgb_holdout_igbt_hybrid_robust_eval100.json
+!solution/results/xgb_holdout_mosfet_hybrid_taskbest_eval100.json
+!solution/results/sweeps/
+!solution/results/sweeps/xgb_default_scale_comparison.csv
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/

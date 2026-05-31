@@ -1,0 +1,19 @@
+
+============================================================
+EVAL RESULTS — SEQUENCE COMPLETION
+============================================================
+Evaluated : 600/600 examples
+
+Mean Normalized Edit Distance : 0.0000  (lower is better)
+Exact Match Rate              : 1.0000  (100.0%)
+Mean Token Accuracy           : 1.0000  (100.0%)
+Mean Block-level Accuracy     : 1.0000  (100.0%)
+
+By family:
+  IC        NED: 0.0000  Exact: 1.0000
+  IGBT      NED: 0.0000  Exact: 1.0000
+  MOSFET    NED: 0.0000  Exact: 1.0000
+
+By completion fraction:
+  0.6     NED: 0.0000  Exact: 1.0000
+  0.8     NED: 0.0000  Exact: 1.0000

@@ -1,0 +1,50 @@
+
+Loading data...
+  Loaded  5400 records from dataset_train.jsonl
+  Loaded   600 records from dataset_id_val.jsonl
+  Loaded  1000 records from dataset_ood_test.jsonl
+
+Train: 5400 | ID Val: 600 | OOD: 1000
+
+[WARNING] 103 steps not in category map:
+  'ALIGN MASK LEVEL 5'
+  'ALIGN MASK LEVEL 6'
+  'ANNEAL DIELECTRIC'
+  'ANNEAL METAL'
+  'ANNEAL METAL 1'
+  'ANNEAL OXIDE'
+  'ANNEAL POLYSILICON'
+  'BACKSIDE CLEAN FINAL'
+  'BACKSIDE DRY'
+  'BACKSIDE ETCH CLEAN'
+  Consider adding these to STEP_CATEGORIES for better accuracy
+
+=======================================================
+  Training CRF (max_iter=100)
+=======================================================
+  CRF trained | classes: 27
+
+  Evaluating CRF...
+  CRF ID Val  Top-1: 100.00%
+  CRF OOD     Top-1: 99.20%
+  CRF OOD drop:      0.80%
+
+=======================================================
+  Building XGBoost features...
+=======================================================
+  Train rows: 704,768 | Features: 168
+
+  Training XGBoost (trees=300, depth=6)...
+Traceback (most recent call last):
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction\compare_xgboost_crf.py", line 740, in <module>
+    main()
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction\compare_xgboost_crf.py", line 648, in main
+    xgb_model.fit(
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\xgboost\core.py", line 751, in inner_f
+    return func(**kwargs)
+           ^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\xgboost\sklearn.py", line 1761, in fit
+    raise ValueError(
+ValueError: Invalid classes inferred from unique values of `y`.  Expected: [ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 21 22 23
+ 24 25 26], got [ 0  1  2  3  4  5  6  7  8  9 10 11 13 14 15 16 17 19 20 21 22 23 24 25
+ 26 27 28]

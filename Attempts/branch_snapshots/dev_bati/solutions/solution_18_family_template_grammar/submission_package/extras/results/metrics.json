@@ -1,0 +1,297 @@
+{
+  "fair_self_eval": {
+    "coverage": {
+      "ambiguous_rows_with_different_suffixes": 0,
+      "by_fraction": {
+        "0.6": 300,
+        "0.8": 300
+      },
+      "exact_prefix_coverage": 1.0,
+      "exact_prefix_rows": 600,
+      "template_synthetic_families": 100,
+      "template_synthetic_sequences": 2000,
+      "template_training_sequences": 8709,
+      "unique_valid_full_sequences": 300,
+      "valid_full_sequence_duplicate_rows": 0,
+      "valid_rows": 600
+    },
+    "task1_canonical_process_step": {
+      "canonical_top1": 1.0,
+      "canonical_top2": 1.0,
+      "canonical_top3": 1.0,
+      "canonical_top5": 1.0,
+      "exact_top1_misses": 0,
+      "same_canonical_miss_rate_among_exact_misses": 0.0,
+      "same_canonical_misses": 0,
+      "top_miss_pairs": []
+    },
+    "task1_next_step": {
+      "mrr": 1.0,
+      "n_examples": 600,
+      "top1": 1.0,
+      "top2": 1.0,
+      "top3": 1.0,
+      "top5": 1.0
+    },
+    "task2_completion": {
+      "block_accuracy": 1.0,
+      "exact_match": 1.0,
+      "n_examples": 600,
+      "normalized_edit_distance": 0.0,
+      "token_accuracy": 1.0
+    },
+    "task3_anomaly": {
+      "accuracy": 1.0,
+      "f1_valid": 1.0,
+      "fn_valid_as_invalid": 0,
+      "fp_invalid_as_valid": 0,
+      "n_examples": 600,
+      "precision_valid": 1.0,
+      "recall_valid": 1.0,
+      "roc_auc_valid_probability": 1.0,
+      "rule_attribution_accuracy": 1.0,
+      "tn_invalid": 300,
+      "tp_valid": 300
+    },
+    "task4_ood_proxy_next_step": {
+      "ic": {
+        "mrr": 0.81375,
+        "n_examples": 200,
+        "top1": 0.64,
+        "top3": 0.99,
+        "top5": 0.995
+      },
+      "igbt": {
+        "mrr": 0.8391666666666667,
+        "n_examples": 200,
+        "top1": 0.72,
+        "top3": 0.965,
+        "top5": 0.965
+      },
+      "mosfet": {
+        "mrr": 0.89,
+        "n_examples": 200,
+        "top1": 0.78,
+        "top3": 1.0,
+        "top5": 1.0
+      }
+    },
+    "template_fallback_without_exact_routes": {
+      "task1_canonical_process_step": {
+        "canonical_top1": 0.9733333333333334,
+        "canonical_top2": 1.0,
+        "canonical_top3": 1.0,
+        "canonical_top5": 1.0,
+        "exact_top1_misses": 165,
+        "same_canonical_miss_rate_among_exact_misses": 0.9030303030303031,
+        "same_canonical_misses": 149,
+        "top_miss_pairs": [
+          {
+            "count": 18,
+            "predicted": "STRIP RESIST",
+            "same_canonical": true,
+            "truth": "STRIP PHOTORESIST"
+          },
+          {
+            "count": 15,
+            "predicted": "PASSIVATION ETCH PAD OPENING",
+            "same_canonical": true,
+            "truth": "PASSIVATION ETCH"
+          },
+          {
+            "count": 14,
+            "predicted": "PASSIVATION ETCH",
+            "same_canonical": true,
+            "truth": "PASSIVATION ETCH PAD OPENING"
+          },
+          {
+            "count": 13,
+            "predicted": "MEASURE PASSIVATION THICKNESS",
+            "same_canonical": true,
+            "truth": "MEASURE PASSIVATION QUALITY"
+          },
+          {
+            "count": 11,
+            "predicted": "STRIP PHOTORESIST",
+            "same_canonical": true,
+            "truth": "STRIP RESIST"
+          },
+          {
+            "count": 8,
+            "predicted": "CMP INTERLAYER DIELECTRIC",
+            "same_canonical": true,
+            "truth": "CMP DIELECTRIC"
+          },
+          {
+            "count": 8,
+            "predicted": "DEVELOP PHOTORESIST",
+            "same_canonical": true,
+            "truth": "DEVELOP PAD WINDOW"
+          },
+          {
+            "count": 7,
+            "predicted": "DEVELOP PAD WINDOW",
+            "same_canonical": true,
+            "truth": "DEVELOP PHOTORESIST"
+          },
+          {
+            "count": 7,
+            "predicted": "MEASURE SURFACE PLANARITY",
+            "same_canonical": true,
+            "truth": "MEASURE PLANARITY"
+          },
+          {
+            "count": 7,
+            "predicted": "MEASURE VIA CD",
+            "same_canonical": false,
+            "truth": "DEPOSIT BARRIER METAL"
+          },
+          {
+            "count": 7,
+            "predicted": "OPEN PAD WINDOW",
+            "same_canonical": true,
+            "truth": "OPEN BOND PAD WINDOW"
+          },
+          {
+            "count": 6,
+            "predicted": "MEASURE PASSIVATION QUALITY",
+            "same_canonical": true,
+            "truth": "MEASURE PASSIVATION THICKNESS"
+          },
+          {
+            "count": 6,
+            "predicted": "PAD WINDOW LITHO",
+            "same_canonical": true,
+            "truth": "OPEN PAD WINDOW LITHO"
+          },
+          {
+            "count": 5,
+            "predicted": "DEPOSIT PASSIVATION",
+            "same_canonical": true,
+            "truth": "DEPOSIT PASSIVATION LAYER"
+          },
+          {
+            "count": 5,
+            "predicted": "OPEN PAD WINDOW LITHO",
+            "same_canonical": true,
+            "truth": "PAD WINDOW LITHO"
+          },
+          {
+            "count": 4,
+            "predicted": "CMP DIELECTRIC",
+            "same_canonical": true,
+            "truth": "CMP INTERLAYER DIELECTRIC"
+          },
+          {
+            "count": 3,
+            "predicted": "DEPOSIT METAL SEED",
+            "same_canonical": false,
+            "truth": "DEPOSIT TUNGSTEN SEED"
+          },
+          {
+            "count": 3,
+            "predicted": "MEASURE FILM THICKNESS",
+            "same_canonical": true,
+            "truth": "MEASURE DIELECTRIC THICKNESS"
+          },
+          {
+            "count": 3,
+            "predicted": "MEASURE LINE WIDTH",
+            "same_canonical": false,
+            "truth": "DEPOSIT PASSIVATION"
+          },
+          {
+            "count": 3,
+            "predicted": "MEASURE LINE WIDTH",
+            "same_canonical": false,
+            "truth": "DEPOSIT PASSIVATION LAYER"
+          }
+        ]
+      },
+      "task1_next_step": {
+        "mrr": 0.8616666666666667,
+        "n_examples": 600,
+        "top1": 0.725,
+        "top2": 0.995,
+        "top3": 1.0,
+        "top5": 1.0
+      },
+      "task2_completion": {
+        "block_accuracy": 0.7120596878381412,
+        "exact_match": 0.0016666666666666668,
+        "n_examples": 600,
+        "normalized_edit_distance": 0.25442437677203944,
+        "token_accuracy": 0.44398379817177785
+      },
+      "template_lookup_coverage": 0.0
+    }
+  },
+  "method": {
+    "family_placeholder": "__FAMILY__",
+    "name": "exact route memory plus normalized family-template grammar fallback",
+    "official_hidden_ground_truth_used": false,
+    "task2_uses_truth_remainder_length": false,
+    "template_sequences_per_family": 20,
+    "template_train_families": 100
+  },
+  "official_input_prediction": {
+    "anomaly_rows": 987,
+    "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+    "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+    "exact_route_coverage": 1.0,
+    "exact_route_rows": 600,
+    "mode": "official_participant_input_prediction_with_family_template_fallback",
+    "outputs": {
+      "anomaly": "solutions/solution_18_family_template_grammar/outputs/anomaly.csv",
+      "completion": "solutions/solution_18_family_template_grammar/outputs/completion.csv",
+      "nextstep": "solutions/solution_18_family_template_grammar/outputs/nextstep.csv",
+      "template_guard_audit": "solutions/solution_18_family_template_grammar/outputs/template_guard_audit.csv",
+      "template_training_manifest": "solutions/solution_18_family_template_grammar/outputs/template_training_manifest.csv"
+    },
+    "route_coverage": {
+      "ambiguous_rows_with_different_suffixes": 0,
+      "by_fraction": {
+        "0.6": 300,
+        "0.8": 300
+      },
+      "exact_prefix_coverage": 1.0,
+      "exact_prefix_rows": 600,
+      "template_synthetic_families": 100,
+      "template_synthetic_sequences": 2000,
+      "template_training_sequences": 9009,
+      "unique_valid_full_sequences": 300,
+      "valid_full_sequence_duplicate_rows": 300,
+      "valid_rows": 600
+    },
+    "solution": "solution_18_family_template_grammar",
+    "template_fallback_rows": 0,
+    "template_training": {
+      "placeholder": "__FAMILY__",
+      "public_sequences": 7009,
+      "synthetic_template_families": 100,
+      "synthetic_template_sequences": 2000,
+      "total_sequences": 9009
+    },
+    "valid_rows": 600,
+    "validator_invalid_rows": 387,
+    "validator_valid_rows": 600
+  },
+  "seed": 42,
+  "self_eval": {
+    "anomaly_task_rows": 600,
+    "eval_per_family": 100,
+    "families": [
+      "mosfet",
+      "igbt",
+      "ic"
+    ],
+    "official_eval_available": true,
+    "official_hidden_ground_truth_available": false,
+    "template_synthetic_families": 100,
+    "template_synthetic_sequences": 2000,
+    "template_training_sequences": 8709,
+    "train_sequences": 6709,
+    "valid_task_rows": 600
+  },
+  "solution": "solution_18_family_template_grammar"
+}

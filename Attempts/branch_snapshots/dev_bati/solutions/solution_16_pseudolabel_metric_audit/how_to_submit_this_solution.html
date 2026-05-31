@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit Solution 16</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.6; max-width: 980px; margin: 32px auto; padding: 0 20px; color: #1f2933; }
+    h1, h2 { color: #102a43; }
+    pre { background: #f3f6f9; padding: 14px; border-radius: 6px; overflow-x: auto; border: 1px solid #d9e2ec; }
+    code { background: #f3f6f9; padding: 1px 4px; border-radius: 4px; }
+    li { margin-bottom: 8px; }
+    .warning { border-left: 4px solid #d97706; padding: 10px 14px; background: #fff7ed; }
+  </style>
+</head>
+<body>
+  <h1>How To Submit Solution 16: Pseudo-Label Metric Audit</h1>
+
+  <p>Use these manual steps from the repository root on branch <code>dev/bati</code>.</p>
+
+  <h2>1. Check The Branch</h2>
+
+  <pre><code>git branch --show-current
+git status --short --branch</code></pre>
+
+  <p>The branch should be <code>dev/bati</code>. The status should not show
+  unrelated local changes before you regenerate outputs.</p>
+
+  <h2>2. Regenerate This Solution</h2>
+
+  <pre><code>python -B solutions/solution_16_pseudolabel_metric_audit/solution.py</code></pre>
+
+  <p>This writes the three upload-facing CSVs here:</p>
+
+  <ul>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/outputs/official_submission/nextstep.csv</code></li>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/outputs/official_submission/completion.csv</code></li>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/outputs/official_submission/anomaly.csv</code></li>
+  </ul>
+
+  <p>It also writes pseudo-label audit files under
+  <code>outputs/pseudo_ground_truth/</code> and official scorer logs under
+  <code>outputs/official_metric_logs/</code>. These audit files are for our
+  development evidence. The three CSVs above are the submission outputs.</p>
+
+  <h2>3. Regenerate All Official Submission Copies</h2>
+
+  <pre><code>python -B solutions/generate_official_submissions.py
+python -B solutions/prepare_submission_packages.py</code></pre>
+
+  <p>The package generator copies the official-input CSVs into:</p>
+
+  <ul>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/submission_package/extras/results/nextstep.csv</code></li>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/submission_package/extras/results/completion.csv</code></li>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/submission_package/extras/results/anomaly.csv</code></li>
+  </ul>
+
+  <h2>4. Check Exact CSV Headers And Row Counts</h2>
+
+  <pre><code>python - &lt;&lt;'PY'
+import csv
+from pathlib import Path
+root = Path("solutions/solution_16_pseudolabel_metric_audit/submission_package/extras/results")
+expected = {
+    "nextstep.csv": (["EXAMPLE_ID","RANK_1","RANK_2","RANK_3","RANK_4","RANK_5"], 600),
+    "completion.csv": (["EXAMPLE_ID","PREDICTED_SEQUENCE"], 600),
+    "anomaly.csv": (["EXAMPLE_ID","IS_VALID","SCORE","PREDICTED_RULE"], 987),
+}
+for name, (header, rows) in expected.items():
+    with (root / name).open(newline="", encoding="utf-8") as f:
+        reader = csv.reader(f)
+        actual_header = next(reader)
+        actual_rows = sum(1 for _ in reader)
+    assert actual_header == header, (name, actual_header)
+    assert actual_rows == rows, (name, actual_rows)
+print("Solution 16 CSVs are submission-shaped.")
+PY</code></pre>
+
+  <h2>5. Check The Official Scorer Audit</h2>
+
+  <p>Open these files if someone asks how we know the local pseudo labels score
+  correctly under the official script:</p>
+
+  <ul>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs/next_step_pseudo_eval.txt</code></li>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs/completion_pseudo_eval.txt</code></li>
+    <li><code>solutions/solution_16_pseudolabel_metric_audit/outputs/official_metric_logs/anomaly_pseudo_eval.txt</code></li>
+  </ul>
+
+  <div class="warning">
+    <p><strong>Important:</strong> call these pseudo-label audit scores, not
+    official hidden scores. The organizers still hold the hidden ground truth.
+    The audit is a strong development check because it runs their metric script
+    on labels inferred from the released input structure.</p>
+  </div>
+
+  <h2>6. What To Upload Or Reference</h2>
+
+  <p>For a manual Tally/repo submission, reference the repository branch and use
+  this package folder as the concrete artifact:</p>
+
+  <pre><code>solutions/solution_16_pseudolabel_metric_audit/submission_package/</code></pre>
+
+  <p>The exact CSV files are under
+  <code>submission_package/extras/results/</code>. The report and demo notes are
+  in the package root and <code>extras/demo/</code>.</p>
+</body>
+</html>

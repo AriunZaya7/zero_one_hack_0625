@@ -1,0 +1,92 @@
+[project]
+name = "zero-one-hack"
+version = "0.1.0"
+description = "Industrial AI track — learning & benchmarking semiconductor process logic"
+channels = ["conda-forge"]
+# Leonardo (and every EuroHPC compute/login node) is Linux x86_64.
+# `pixi install` / `pixi run` happen there, so we only need linux-64.
+# Add "win-64" here if you also want to resolve the env on your laptop.
+platforms = ["linux-64"]
+
+# Tell pixi the nodes have CUDA 12 GPUs so it won't fall back to CPU-only solves.
+[system-requirements]
+cuda = "12"
+
+# Python + anything that is nicer from conda-forge goes here.
+[dependencies]
+python = "3.11.*"
+pip = "*"
+
+# The ML stack, mirroring small_transformer_model/train/requirements.txt.
+# Pinning the PyTorch CUDA 12.1 index guarantees GPU-enabled wheels on the A100s.
+[pypi-options]
+extra-index-urls = ["https://download.pytorch.org/whl/cu121"]
+
+[pypi-dependencies]
+torch = ">=2.1.0"
+transformers = ">=4.40.0"
+accelerate = ">=0.27.0"
+wandb = ">=0.16.0"
+datasets = ">=2.18.0"
+sentencepiece = ">=0.1.99"
+protobuf = ">=3.20.0"
+numpy = ">=1.24.0"
+tqdm = ">=4.66.0"
+scikit-learn = "*"
+pandas = ">=2.0.0"
+# Added for the from-scratch transformer + LoRA-LLM + Streamlit plan (PLAN.md).
+peft = ">=0.10.0"
+streamlit = ">=1.35.0"
+altair = ">=5.0.0"
+editdistance = ">=0.6.0"
+xgboost = ">=2.0.0"
+catboost = ">=1.2.0"
+
+# `pixi run <task>`. Paths are written relative to the repo root so every task
+# works no matter which subfolder you launch from.
+[tasks]
+# Sanity check: is a GPU visible inside the pixi env?
+gpu-check = "python -c \"import torch; print('torch', torch.__version__, '| cuda available:', torch.cuda.is_available(), '| cuda:', torch.version.cuda)\""
+
+# Fast CPU smoke test of the training script (catch bugs before using a GPU).
+debug = "python small_transformer_model/train/train_model.py --debug --data_dir small_transformer_model/data --output_dir small_transformer_model/checkpoints"
+
+# Full fine-tuning run (submit this from inside a Slurm job on a GPU node).
+train = "python small_transformer_model/train/train_model.py --data_dir small_transformer_model/data --output_dir small_transformer_model/checkpoints"
+
+# Test the TRAINED model on the actual tasks (next-step + completion), with
+# per-family and ID->OOD breakdown. Runs on a GPU node.
+eval = "python small_transformer_model/eval/evaluate_model.py --checkpoint small_transformer_model/checkpoints/best_model --data_dir small_transformer_model/data --out small_transformer_model/eval/eval_results.json"
+
+# Fast sanity check of the eval harness (few examples, fine on CPU/login node).
+eval-smoke = "python small_transformer_model/eval/evaluate_model.py --checkpoint small_transformer_model/checkpoints/best_model --data_dir small_transformer_model/data --limit 8 --num_beams 3 --out small_transformer_model/eval/eval_smoke.json"
+
+# N-gram next-step baseline, for the 'baseline vs trained' comparison the jury wants.
+ngram-baseline = "python test_baseline_1/baseline_ngram.py"
+
+# ── solution/ experiment: from-scratch transformer + LoRA-LLM + Streamlit (PLAN.md) ──
+# Stdlib-only self-checks (no torch needed) — good first smoke test.
+sol-check = "python -m solution.eval.rules && python -m solution.eval.metrics && python -m solution.data.loader --data_dir training_data"
+# N-gram baseline on all three tasks (n=2,3,4) → solution/results/*.json
+sol-baseline = "python -m solution.run_baseline --data_dir training_data"
+# Tiny CPU smoke test of the from-scratch transformer training loop.
+sol-train-smoke = "python -m solution.train.train_transformer --smoke"
+# Train the from-scratch transformer (GPU node).
+sol-train-transformer = "python -m solution.train.train_transformer --data_dir training_data --out solution/checkpoints/transformer_small --epochs 30"
+# Smoke-test boosted-tree baselines.
+sol-train-xgboost-smoke = "python -m solution.train.train_boosting --model xgboost --data_dir training_data --out solution/checkpoints/xgboost_smoke --max_train_examples 1000 --max_val_examples 1000 --iterations 5"
+sol-train-catboost-smoke = "python -m solution.train.train_boosting --model catboost --data_dir training_data --out solution/checkpoints/catboost_smoke --max_train_examples 100 --max_val_examples 100 --iterations 1 --verbose"
+# Train boosted-tree baselines.
+sol-train-xgboost = "python -m solution.train.train_boosting --model xgboost --data_dir training_data --out solution/checkpoints/xgboost"
+sol-train-catboost = "python -m solution.train.train_boosting --model catboost --data_dir training_data --out solution/checkpoints/catboost"
+# Fine-tune the LoRA LLM (GPU node; needs Qwen weights cached on a login node first).
+sol-train-llm = "python -m solution.train.finetune_llm --data_dir training_data --out solution/checkpoints/llm_qwen --epochs 3"
+# Evaluate the trained transformer on all three tasks → solution/results/transformer_small.json
+sol-eval-transformer = "python -m solution.run_eval --model transformer --checkpoint solution/checkpoints/transformer_small/best.pt --out solution/results/transformer_small.json"
+# Evaluate boosted-tree baselines.
+sol-eval-xgboost = "python -m solution.run_eval --model xgboost --checkpoint solution/checkpoints/xgboost --out solution/results/xgboost.json"
+sol-eval-catboost = "python -m solution.run_eval --model catboost --checkpoint solution/checkpoints/catboost --out solution/results/catboost.json"
+# Evaluate the LoRA LLM → solution/results/llm_qwen.json
+sol-eval-llm = "python -m solution.run_eval --model llm --base_model Qwen/Qwen2-0.5B --checkpoint solution/checkpoints/llm_qwen --out solution/results/llm_qwen.json"
+# Streamlit dashboard (compare results, live demo, training curves).
+sol-dashboard = "streamlit run solution/app.py"

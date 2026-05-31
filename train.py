@@ -1,18 +1,9 @@
-"""Train a model (from-scratch GPT *or* pretrained Qwen2.5) on process sequences
-and report next-step accuracy vs the n-gram baseline, in ID or leave-one-family-out
-(OOD) mode. Writes one JSON per run to results/ so viz.py can plot across models.
+"""Train a from-scratch step-level GPT model on process sequences.
 
-Two model tiers (PLAN.md model strategy):
-  --model gpt:tiny|small|large     from-scratch GPT-2, step-level tokenizer (anchor)
-  --model hf:Qwen/Qwen2.5-0.5B     pretrained LLM, native BPE tokenizer (transfer tier)
+The final submission path is:
 
-Both are measured through the SAME shared interface (closed-vocab next-step ranking),
-so the numbers are directly comparable.
-
-Examples:
-    python train.py --model gpt:tiny           --leave-out mosfet --epochs 8
-    python train.py --model hf:Qwen/Qwen2.5-0.5B --leave-out mosfet --epochs 3 --lr 1e-5
-    python train.py --model hf:Qwen/Qwen2.5-1.5B --train-families mosfet igbt ic --epochs 3
+    python train.py --model gpt:large --submission-1-ood --epochs 30 \
+      --batch-size 64 --out outputs/gpt_large_train12
 """
 from __future__ import annotations
 
@@ -26,20 +17,27 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader, Dataset
 
-from data import FAMILIES, leave_one_family_out, load_all, train_val_split
+from data import FAMILIES, leave_one_family_out, load_all, train12_test3_split, train_val_split
 from ngram import NGramModel
 from tokenizer import StepTokenizer
 
 SEED = 42
-EVAL_SEQS = 150          # full GPT eval is fast; HF eval is capped (see EVAL_SEQS_HF)
-EVAL_SEQS_HF = 60        # closed-vocab scoring is heavier -> smaller eval set
-RESULTS_DIR = "results"  # one JSON per run -> safe for parallel SLURM jobs
+EVAL_SEQS = 150
+RESULTS_DIR = "results"
 
 
 def set_seed(seed: int = SEED) -> None:
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+
+
+def best_torch_device() -> str:
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
 
 
 # ======================= datasets =======================
@@ -96,9 +94,33 @@ def eval_gpt_fast(gpt, seqs: dict, max_seqs: int = EVAL_SEQS) -> dict:
 
 
 def eval_via_interface(model, seqs: dict, max_seqs: int) -> dict:
-    """Generic next-step metrics through next_step_ranking (n-gram and HF)."""
-    from run_baseline import next_step_metrics
-    return next_step_metrics(model, seqs, max_seqs=max_seqs)
+    """Generic next-step metrics through next_step_ranking."""
+    keys = list(seqs)
+    random.Random(SEED).shuffle(keys)
+    keys = keys[:max_seqs]
+
+    top1 = top3 = top5 = 0
+    mrr = 0.0
+    n = 0
+    for key in keys:
+        seq = seqs[key]
+        for i in range(1, len(seq)):
+            prefix, truth = seq[:i], seq[i]
+            ranking = model.next_step_ranking(prefix, k=5)
+            n += 1
+            if truth in ranking:
+                rank = ranking.index(truth)
+                top1 += rank == 0
+                top3 += rank < 3
+                top5 += 1
+                mrr += 1.0 / (rank + 1)
+    return {
+        "top1": top1 / n,
+        "top3": top3 / n,
+        "top5": top5 / n,
+        "mrr": mrr / n,
+        "n_predictions": n,
+    }
 
 
 # ======================= training loop =======================
@@ -124,8 +146,7 @@ def run_training(model, loader, epochs, lr, device, pad_id):
 
 # ======================= results logging =======================
 def log_result(row: dict) -> str:
-    """One JSON file per run -> no concurrent-append corruption (parallel jobs).
-    viz.py merges results/*.json."""
+    """Write one JSON file per run."""
     os.makedirs(RESULTS_DIR, exist_ok=True)
     name = f"{row['model_type']}_{row['model_name'].replace('/', '-')}_" \
            f"{row['mode']}_{row['holdout'] or 'all'}_{int(time.time())}.json"
@@ -138,23 +159,31 @@ def log_result(row: dict) -> str:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model", default="gpt:tiny",
-                    help="gpt:tiny|small|large  OR  hf:<hf-model-name>")
+                    help="gpt:tiny|small|large")
     ap.add_argument("--leave-out", choices=FAMILIES, default=None)
     ap.add_argument("--train-families", nargs="+", default=None)
+    ap.add_argument(
+        "--submission-1-ood",
+        action="store_true",
+        help="Train on the fixed 12-family SUBMISSION_1 split and evaluate on the 3 held-out OOD families.",
+    )
     ap.add_argument("--epochs", type=int, default=8)
     ap.add_argument("--batch-size", type=int, default=64)
-    ap.add_argument("--lr", type=float, default=None, help="default: gpt 3e-4, hf 1e-5")
+    ap.add_argument("--lr", type=float, default=None, help="default: 3e-4")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
     set_seed()
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = best_torch_device()
     kind, spec = args.model.split(":", 1)
-    assert kind in ("gpt", "hf"), "model must be gpt:<size> or hf:<name>"
-    lr = args.lr if args.lr is not None else (3e-4 if kind == "gpt" else 1e-5)
+    assert kind == "gpt", "final submission training supports gpt:<size>"
+    lr = args.lr if args.lr is not None else 3e-4
 
     # ---- data split (shared between baseline and the model) ----------------
-    if args.leave_out:
+    if args.submission_1_ood:
+        train_seqs, test_seqs = train12_test3_split(seed=SEED)
+        mode, holdout = "ood3", "scfam10+scfam11+scfam12"
+    elif args.leave_out:
         train_seqs, test_seqs = leave_one_family_out(args.leave_out, seed=SEED)
         mode, holdout = "ood", args.leave_out
     else:
@@ -171,20 +200,11 @@ def main():
           f"top5={ng['top5']:.3f} mrr={ng['mrr']:.3f}", flush=True)
 
     # ---- build + train the model ------------------------------------------
-    if kind == "gpt":
-        from gpt import GPTModel, build_gpt
-        tok = StepTokenizer.build_from_sequences(load_all().values())
-        model = build_gpt(tok, size=spec)
-        enc = [tok.encode(s, add_special=True) for s in train_seqs.values()]
-        pad_id = tok.pad_id
-    else:  # hf
-        from hf_model import HFModel, load_hf, seq_to_text
-        step_tok = StepTokenizer.build_from_sequences(load_all().values())
-        step_vocab = sorted(s for s in step_tok.step_to_id if not s.startswith("<"))
-        hf_model, hf_tok = load_hf(spec)
-        model = hf_model
-        enc = [hf_tok(seq_to_text(s)).input_ids for s in train_seqs.values()]
-        pad_id = hf_tok.pad_token_id
+    from gpt import GPTModel, build_gpt
+    tok = StepTokenizer.build_from_sequences(train_seqs.values())
+    model = build_gpt(tok, size=spec)
+    enc = [tok.encode(s, add_special=True) for s in train_seqs.values()]
+    pad_id = tok.pad_id
 
     n_params = sum(p.numel() for p in model.parameters()) / 1e6
     print(f"[{kind}] params={n_params:.1f}M  training {args.epochs} epochs lr={lr}...",
@@ -195,17 +215,12 @@ def main():
     run_training(model, loader, args.epochs, lr, device, pad_id)
 
     # ---- eval -------------------------------------------------------------
-    if kind == "gpt":
-        from gpt import GPTModel
-        wrapped = GPTModel(model, tok, device=device)
-        gm = eval_gpt_fast(wrapped, test_seqs)
-    else:
-        wrapped = HFModel(model, hf_tok, step_vocab, device=device)
-        gm = eval_via_interface(wrapped, test_seqs, EVAL_SEQS_HF)
+    wrapped = GPTModel(model, tok, device=device)
+    gm = eval_gpt_fast(wrapped, test_seqs)
 
     print(f"[{kind}]     top1={gm['top1']:.3f} top3={gm['top3']:.3f} "
           f"top5={gm['top5']:.3f} mrr={gm['mrr']:.3f}", flush=True)
-    tag = "OOD" if mode == "ood" else "ID"
+    tag = "OOD" if mode in ("ood", "ood3") else "ID"
     print(f"\n=== {tag} next-step top1:  n-gram={ng['top1']:.3f}  "
           f"{kind}={gm['top1']:.3f}  (delta={gm['top1']-ng['top1']:+.3f}) ===", flush=True)
 

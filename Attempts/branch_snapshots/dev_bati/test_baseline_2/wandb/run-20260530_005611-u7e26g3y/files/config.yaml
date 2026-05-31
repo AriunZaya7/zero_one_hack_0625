@@ -1,0 +1,62 @@
+_wandb:
+    value:
+        cli_version: 0.27.0
+        e:
+            m42pevzpe5f5ve9887uqwrtdbutv5jbw:
+                codePath: test_baseline_2\ngram_context_comparison.py
+                codePathLocal: ngram_context_comparison.py
+                cpu_count: 8
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "768014807040"
+                        used: "527892459520"
+                email: angiezaya7@gmail.com
+                executable: D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Scripts\python.exe
+                git:
+                    commit: e5df1f4df86e578537eac4fa510ffd6fcd1d66b8
+                    remote: https://github.com/AriunZaya7/zero_one_hack_0625.git
+                host: LAPTOP-UBNDF6IL
+                memory:
+                    total: "16505954304"
+                os: Windows-10-10.0.26200-SP0
+                program: D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_2\ngram_context_comparison.py
+                python: CPython 3.11.3
+                root: D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_2
+                startedAt: "2026-05-29T22:56:11.171461Z"
+                writerId: m42pevzpe5f5ve9887uqwrtdbutv5jbw
+        m: []
+        python_version: 3.11.3
+        t:
+            "3":
+                - 2
+                - 13
+                - 15
+                - 16
+            "4": 3.11.3
+            "5": 0.27.0
+            "8":
+                - 3
+            "12": 0.27.0
+            "13": windows-amd64
+experiment:
+    value: ngram_context_comparison
+n_values:
+    value:
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 8
+        - 10
+        - 15
+        - 20
+        - 30
+        - 50
+seed:
+    value: 42
+train_sequences:
+    value: 2700
+val_sequences:
+    value: 300

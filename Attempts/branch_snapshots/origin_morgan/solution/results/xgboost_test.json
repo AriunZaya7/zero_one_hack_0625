@@ -1,0 +1,93 @@
+{
+  "model": "xgboost",
+  "checkpoint": "solution/checkpoints/xgboost",
+  "families": [
+    "IC",
+    "IGBT",
+    "MOSFET"
+  ],
+  "train_families": [],
+  "task1": {
+    "top1": 0.7233333333333334,
+    "top3": 1.0,
+    "top5": 1.0,
+    "mrr": 0.8608333333333333,
+    "n": 600
+  },
+  "task2": {
+    "exact_match": 0.0033333333333333335,
+    "norm_edit_dist": 0.24933269682589929,
+    "token_acc": 0.4442014110146148,
+    "block_acc": 0.7521635351544809,
+    "n": 600
+  },
+  "task3": {
+    "binary_acc": 0.7633333333333333,
+    "precision": 0.6911764705882353,
+    "recall": 0.9463087248322147,
+    "f1": 0.7988668555240793,
+    "roc_auc": 0.7506111382728121,
+    "confusion": {
+      "tp": 141,
+      "tn": 88,
+      "fp": 63,
+      "fn": 8
+    },
+    "n": 300,
+    "threshold": 0.5050061803615129,
+    "rule_attribution_acc": 1.0,
+    "rule_attribution_n": 141
+  },
+  "by_family": {
+    "IC": {
+      "task1": {
+        "top1": 0.675,
+        "top3": 1.0,
+        "top5": 1.0,
+        "mrr": 0.8375,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.0,
+        "norm_edit_dist": 0.3206725401945601,
+        "token_acc": 0.35461521669049423,
+        "block_acc": 0.7044670069552784,
+        "n": 200
+      }
+    },
+    "IGBT": {
+      "task1": {
+        "top1": 0.76,
+        "top3": 1.0,
+        "top5": 1.0,
+        "mrr": 0.8775,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.0,
+        "norm_edit_dist": 0.24487270855359636,
+        "token_acc": 0.47396005982866796,
+        "block_acc": 0.7738521517883464,
+        "n": 200
+      }
+    },
+    "MOSFET": {
+      "task1": {
+        "top1": 0.735,
+        "top3": 1.0,
+        "top5": 1.0,
+        "mrr": 0.8675,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.01,
+        "norm_edit_dist": 0.18245284172954165,
+        "token_acc": 0.5040289565246825,
+        "block_acc": 0.7781714467198222,
+        "n": 200
+      }
+    }
+  },
+  "elapsed_s": 396.6,
+  "timestamp": "2026-05-30 15:52:42"
+}

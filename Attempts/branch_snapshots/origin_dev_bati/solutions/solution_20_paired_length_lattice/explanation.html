@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 20 Explanation - Paired-Length Lattice</title>
+  <style>
+    :root {
+      --ink: #162033;
+      --muted: #5c6878;
+      --line: #d8e1ec;
+      --panel: #f6f8fb;
+      --accent: #315c9a;
+      --good: #0f6b4f;
+      --warn: #8a4b0f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.62;
+      background: white;
+    }
+    .wrap { width: min(1120px, calc(100% - 36px)); margin: 0 auto; }
+    header { background: #eef5fb; border-bottom: 1px solid var(--line); }
+    header .wrap { padding: 42px 0 34px; }
+    main.wrap { padding: 30px 0 72px; }
+    h1, h2, h3 { line-height: 1.18; color: #0f1d30; }
+    h1 { margin: 0 0 12px; font-size: clamp(2rem, 4vw, 3.05rem); }
+    h2 { margin-top: 38px; padding-top: 14px; border-top: 2px solid var(--accent); }
+    h3 { margin-top: 24px; }
+    p, li { max-width: 980px; }
+    code { background: #edf2f7; padding: 0.1em 0.3em; border-radius: 4px; }
+    pre { background: #101827; color: #f8fafc; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    pre code { background: transparent; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 26px; font-size: 0.94rem; }
+    th, td { border: 1px solid var(--line); padding: 9px 10px; vertical-align: top; text-align: left; }
+    th { background: #edf3f7; }
+    .subtitle { max-width: 880px; color: var(--muted); font-size: 1.08rem; }
+    .callout { border-left: 5px solid var(--accent); background: #eef5fb; padding: 14px 16px; border-radius: 6px; }
+    .good { border-left-color: var(--good); background: #edf8f4; }
+    .warn { border-left-color: var(--warn); background: #fff7ea; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Solution 20: Paired-Length Lattice</h1>
+      <p class="subtitle">
+        A standalone explanation of the current final OOD-oriented strategy:
+        keep exact evidence first, keep valid-partial lattice evidence second,
+        and use paired 60%/80% lengths only as a conservative completion guard.
+      </p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section>
+      <h2>1. TL;DR</h2>
+      <div class="callout good">
+        Solution 20 is Solution 19 plus a careful Task 2 improvement. It does
+        not force a new Task 1 ranking trick, because the scaling probe showed
+        that was risky. It preserves the best OOD next-step behavior and adds a
+        route-length sanity check when choosing fallback completions.
+      </div>
+      <p>
+        The hackathon has three output files. For Task 1, we rank the next
+        process step. For Task 2, we predict the remaining suffix of the route.
+        For Task 3, we label full sequences as valid or invalid and, when
+        invalid, name the rule that appears to be broken.
+      </p>
+      <p>
+        The hard OOD problem is not just "new family name". The hard problem is
+        exact strings. If a hidden family introduces steps like
+        <code>NEWFAMILY SPECIAL DOSE CHECK</code>, an ordinary model cannot
+        guess that exact string unless it can see it, derive it from a template,
+        or match a full route that contains it.
+      </p>
+    </section>
+
+    <section>
+      <h2>2. What This Solution Does</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>What it uses</th>
+            <th>Why it matters</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Exact full-route memory</td>
+            <td>Validator-valid full sequences from the visible anomaly input.</td>
+            <td>If a partial is the prefix of a visible full route, the next step and completion are exact.</td>
+          </tr>
+          <tr>
+            <td>2. Valid-partial lattice</td>
+            <td>Longer valid-input partials that extend shorter valid-input partials.</td>
+            <td>If a 60% row and an 80% row come from the same route, the 80% row reveals exact hidden-family steps for the 60% row.</td>
+          </tr>
+          <tr>
+            <td>3. Family-template fallback</td>
+            <td>Normalized steps like <code>__FAMILY__ JTE DOSE VERIFICATION</code>.</td>
+            <td>This lets the model transfer a family-specific step pattern to a new visible family name.</td>
+          </tr>
+          <tr>
+            <td>4. Paired-length completion guard</td>
+            <td>The fact that the same route can appear at both 60% and 80% cuts.</td>
+            <td>The two prefix lengths constrain the unknown total route length, which helps choose a better Task 2 suffix.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>3. The New Idea In Plain Language</h2>
+      <p>
+        Suppose we see two partial rows from the same hidden route:
+      </p>
+      <pre><code>60% row: 90 visible steps
+80% row: 120 visible steps</code></pre>
+      <p>
+        The organizer's truncation rule is floor-based: a partial length is
+        approximately <code>floor(total_route_length * fraction)</code>. So
+        those two rows tell us the full route length is probably around 150
+        steps. We still do not know every exact future step. But when the
+        fallback has two plausible suffixes, one that ends at 150 total steps
+        and another that ends at 162 total steps, the 150-step suffix is more
+        consistent with the visible evidence.
+      </p>
+      <p>
+        This is why paired length belongs in Task 2. Task 2 is about the whole
+        remaining sequence, so total length is directly useful. Task 1 is an
+        exact next-step string problem. The same length evidence sometimes
+        pushes optional steps like <code>HARD BAKE</code> above
+        <code>METAL ETCH</code>, but our 110-family probe showed that this can
+        hurt exact Top-1. The final solution therefore does not use paired
+        length to override Task 1.
+      </p>
+    </section>
+
+    <section>
+      <h2>4. Important Code Choices</h2>
+      <p>
+        The exact route and lattice stages are inherited from Solution 19. The
+        new paired-length logic starts with this helper:
+      </p>
+      <pre><code>def inferred_total_length_range(cuts, max_total=260):
+    matches = [
+        total
+        for total in range(2, max_total + 1)
+        if all(cut_position(total, fraction) == prefix_len
+               for fraction, prefix_len in cuts)
+    ]
+    if not matches:
+        return None
+    return min(matches), max(matches)</code></pre>
+      <p>
+        Junior-friendly explanation: this function tries possible full route
+        lengths from 2 to 260. For each possible length, it asks: "If this were
+        the real full length, would the 60% and 80% cuts produce the prefix
+        lengths we actually observed?" The matching lengths become the allowed
+        range.
+      </p>
+      <p>
+        The final Task 1 choice is intentionally conservative:
+      </p>
+      <pre><code>PAIR_LENGTH_BETA = 0.0</code></pre>
+      <p>
+        That means paired length is disabled as a next-step rank force. The
+        code still computes paired length for auditability and Task 2 suffix
+        choice, but it will not reorder Task 1 just because a length prior
+        likes another optional branch.
+      </p>
+    </section>
+
+    <section>
+      <h2>5. Results</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Setting</th>
+            <th>Task 1 Top-1</th>
+            <th>Task 1 Top-3</th>
+            <th>Task 2 edit distance</th>
+            <th>Task 2 block accuracy</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Official-input diagnostic with full-route memory</td>
+            <td>Covered by exact routes</td>
+            <td>Covered by exact routes</td>
+            <td>Covered by exact routes</td>
+            <td>Covered by exact routes</td>
+          </tr>
+          <tr>
+            <td>Local coupled self-eval</td>
+            <td>1.0000</td>
+            <td>1.0000</td>
+            <td>0.0000</td>
+            <td>1.0000</td>
+          </tr>
+          <tr>
+            <td>No-full-route fallback diagnostic</td>
+            <td>0.8150</td>
+            <td>1.0000</td>
+            <td>0.1700</td>
+            <td>0.8952</td>
+          </tr>
+          <tr>
+            <td>110-family probe, 100 training families</td>
+            <td>0.8938</td>
+            <td>1.0000</td>
+            <td>0.1065</td>
+            <td>0.9533</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Lower Task 2 edit distance is better. Higher Task 1 Top-1, Top-3, and
+        Task 2 block accuracy are better. The useful comparison is against
+        Solution 19 in the same 110-family probe: Task 1 Top-1 stays the same
+        at <code>0.8938</code>, while Task 2 edit and block accuracy improve
+        slightly.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. What To Submit</h2>
+      <p>
+        Submit the three files from:
+      </p>
+      <pre><code>solutions/solution_20_paired_length_lattice/outputs/official_submission/nextstep.csv
+solutions/solution_20_paired_length_lattice/outputs/official_submission/completion.csv
+solutions/solution_20_paired_length_lattice/outputs/official_submission/anomaly.csv</code></pre>
+      <p>
+        For the full package and manual steps, open
+        <a href="how_to_submit_this_solution.html">how_to_submit_this_solution.html</a>.
+      </p>
+    </section>
+  </main>
+</body>
+</html>

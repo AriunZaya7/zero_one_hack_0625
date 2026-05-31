@@ -1,0 +1,12 @@
+Found training files: ['IC_Longdescr.csv', 'IC_longdescription_parameters.csv', 'IC_variants.csv', 'IGBT_Longdescr.csv', 'IGBT_longdescription_parameters.csv', 'IGBT_variants.csv', 'MOSFET_Longdescr.csv', 'MOSFET_longdescription_parameters.csv', 'MOSFET_variants.csv', 'syntheticIC.csv', 'syntheticIGBT.csv', 'synthetic_mosfet.csv']
+Loaded 3000 total sequences
+Train: 2700 | Val: 300
+Traceback (most recent call last):
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_ngram.py", line 304, in <module>
+    main()
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_ngram.py", line 254, in main
+    model.train(train_seqs)
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\test_baseline_1\baseline_ngram.py", line 82, in train
+    next_step = padded[i + self.n - 1]
+                ~~~~~~^^^^^^^^^^^^^^^^
+IndexError: list index out of range

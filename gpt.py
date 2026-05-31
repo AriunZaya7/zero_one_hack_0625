@@ -1,6 +1,6 @@
-"""From-scratch decoder-only transformer (HF GPT-2, random init) for process steps.
+"""From-scratch decoder-only transformer for process steps.
 
-Mirrors the n-gram's shared interface (PLAN.md §3) so eval code is model-agnostic:
+Mirrors the n-gram's shared interface so eval code is model-agnostic:
     next_step_ranking(prefix, k) -> top-k next steps          (Task 1)
     complete(prefix)             -> greedy roll-out to <eos>   (Task 2)
     sequence_surprisal(seq)      -> mean NLL (anomaly score)   (Task 3)
@@ -11,7 +11,7 @@ GPT-only extras for the analysis slides:
 Random init only (GPT2LMHeadModel(cfg)) -- no Hugging Face Hub download, works
 offline, and is the "open stack, not an API wrapper" the judges reward.
 NO family-embedding token: the model must infer the regime from the prefix so it
-can transfer to the hidden 4th family (PLAN.md §4.2).
+can transfer to unseen process families.
 """
 from __future__ import annotations
 
@@ -23,12 +23,20 @@ from transformers import GPT2Config, GPT2LMHeadModel
 
 from tokenizer import StepTokenizer
 
-# Size ladder from PLAN.md §4.2
+# Size ladder used by the submission training script.
 SIZES = {
     "tiny":  dict(n_embd=128, n_layer=2, n_head=4),
     "small": dict(n_embd=256, n_layer=6, n_head=8),
     "large": dict(n_embd=384, n_layer=12, n_head=12),
 }
+
+
+def best_torch_device() -> str:
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
 
 
 def build_gpt(tok: StepTokenizer, size: str = "tiny", n_positions: int = 256,
@@ -50,7 +58,7 @@ class GPTModel:
     def __init__(self, model: GPT2LMHeadModel, tok: StepTokenizer, device: str | None = None):
         self.model = model
         self.tok = tok
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = device or best_torch_device()
         self.model.to(self.device).eval()
         self.max_pos = self.model.config.n_positions
         # never emit these as a predicted "next step"

@@ -22,11 +22,8 @@ from __future__ import annotations
 
 import argparse
 import csv
-import json
 import os
-import random
 import sys
-import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -36,6 +33,11 @@ from tokenizer import StepTokenizer
 from anomaly import AnomalyDetector
 
 SEED = 42
+OFFICIAL_FILENAMES = {
+    "1": "nextstep.csv",
+    "2": "completion.csv",
+    "3": "anomaly.csv",
+}
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -77,7 +79,25 @@ def load_anomaly_csv(path: str) -> list[dict]:
 
 # ── model loader ──────────────────────────────────────────────────────────────
 
-def load_model(model_spec: str, checkpoint: str | None, device: str):
+def resolve_device(model_spec: str) -> str:
+    """Return a device without requiring torch for dependency-free baselines."""
+    if model_spec.split(":", 1)[0] == "ngram":
+        return "cpu"
+    try:
+        import torch
+    except ModuleNotFoundError as exc:
+        raise SystemExit(
+            "PyTorch is required for GPT inference. Use --model ngram for "
+            "the dependency-free fallback, or install requirements.txt."
+        ) from exc
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
+
+
+def load_model(model_spec: str, checkpoint: str | None, device: str, allow_random_init: bool = False):
     """Return a model wrapping the shared interface."""
     kind, *rest = model_spec.split(":", 1)
     spec = rest[0] if rest else ""
@@ -100,27 +120,22 @@ def load_model(model_spec: str, checkpoint: str | None, device: str):
             raw = GPT2LMHeadModel.from_pretrained(checkpoint)
             print(f"[model] GPT loaded from checkpoint: {checkpoint}")
         else:
+            if not allow_random_init:
+                raise SystemExit(
+                    "GPT checkpoint missing. Refusing to emit random-init submission CSVs. "
+                    "Pass a valid --checkpoint, or use --model ngram for the safe baseline."
+                )
             raw = build_gpt(tok, size=spec or "small")
             print(f"[model] GPT {spec or 'small'} random init (no checkpoint)")
         return GPTModel(raw, tok, device=device)
 
-    if kind == "hf":
-        from hf_model import HFModel, load_hf, seq_to_text
-        from transformers import AutoModelForCausalLM
-        import torch
-        all_seqs = load_all()
-        step_tok = StepTokenizer.build_from_sequences(all_seqs.values())
-        step_vocab = sorted(s for s in step_tok.step_to_id if not s.startswith("<"))
-
-        hf_path = checkpoint if (checkpoint and Path(checkpoint).exists()) else spec
-        hf_model, hf_tok = load_hf(hf_path)
-        if checkpoint and Path(checkpoint).exists():
-            state = AutoModelForCausalLM.from_pretrained(checkpoint)
-            hf_model.load_state_dict(state.state_dict())
-            print(f"[model] HF model loaded from {checkpoint}")
-        return HFModel(hf_model, hf_tok, step_vocab, device=device)
-
     raise ValueError(f"Unknown model spec: {model_spec!r}")
+
+
+def output_path(out_dir: str, task: str, tag: str, official_names: bool) -> str:
+    if official_names:
+        return f"{out_dir}/{OFFICIAL_FILENAMES[task]}"
+    return f"{out_dir}/task{task}_{tag}.csv"
 
 
 # ── Task 1: next-step prediction ──────────────────────────────────────────────
@@ -270,14 +285,108 @@ def score_task1(pred_path: str, gt_path: str):
               f"Top-5: {top5/n:.4f}  MRR: {mrr_sum/n:.4f}  (n={n})")
 
 
+def _levenshtein(seq1: list[str], seq2: list[str]) -> int:
+    m, n = len(seq1), len(seq2)
+    dp = list(range(n + 1))
+    for i in range(1, m + 1):
+        prev = dp[:]
+        dp[0] = i
+        for j in range(1, n + 1):
+            if seq1[i - 1] == seq2[j - 1]:
+                dp[j] = prev[j - 1]
+            else:
+                dp[j] = 1 + min(prev[j], dp[j - 1], prev[j - 1])
+    return dp[n]
+
+
+def _major_block(step: str) -> str:
+    s = step.upper()
+    if "LITHO" in s or s.startswith("SPIN COAT PHOTORESIST") or "MASK LEVEL" in s:
+        return "LITHO"
+    if "ETCH" in s or s.startswith("OPEN PAD WINDOW"):
+        return "ETCH"
+    if "IMPLANT" in s or "ANNEAL" in s or "DIFFUSION" in s:
+        return "DOPING_THERMAL"
+    if s.startswith("DEPOSIT") or "OXIDATION" in s or "GROWTH" in s:
+        return "DEPOSITION"
+    if s.startswith("CMP") or "PLANAR" in s:
+        return "PLANARIZATION"
+    if "VIA" in s:
+        return "VIA"
+    if "PASSIVATION" in s:
+        return "PASSIVATION"
+    if "BACKSIDE" in s or "GRIND" in s:
+        return "BACKSIDE"
+    if "TEST" in s or "MEASURE" in s or "INSPECT" in s or "ANALYSIS" in s:
+        return "METROLOGY_TEST"
+    if "LOT" in s or "RELEASE" in s or "SHIP" in s:
+        return "LOGISTICS"
+    return "OTHER"
+
+
+def _block_signature(seq: list[str]) -> list[str]:
+    sig: list[str] = []
+    prev = None
+    for step in seq:
+        block = _major_block(step)
+        if block != prev:
+            sig.append(block)
+            prev = block
+    return sig
+
+
+def _token_accuracy(pred: list[str], ref: list[str]) -> float:
+    n = min(len(pred), len(ref))
+    if n == 0:
+        return 0.0
+    return sum(p == r for p, r in zip(pred, ref)) / n
+
+
+def score_task2(pred_path: str, gt_path: str):
+    """Self-score Task 2 against ground_truth_valid.csv."""
+    gt = {}
+    with open(gt_path, newline="") as f:
+        for r in csv.DictReader(f):
+            remaining = r.get("_REMAINING", "")
+            if not remaining and r.get("FULL_SEQUENCE") and r.get("PARTIAL_SEQUENCE"):
+                partial = _unpipe(r["PARTIAL_SEQUENCE"])
+                full = _unpipe(r["FULL_SEQUENCE"])
+                remaining = _pipe(full[len(partial):])
+            gt[r["EXAMPLE_ID"]] = _unpipe(remaining)
+
+    ned = []
+    exact = []
+    token = []
+    block = []
+    with open(pred_path, newline="") as f:
+        for r in csv.DictReader(f):
+            ref = gt.get(r["EXAMPLE_ID"])
+            if ref is None:
+                continue
+            pred = _unpipe(r["PREDICTED_SEQUENCE"])
+            denom = max(len(pred), len(ref), 1)
+            ned.append(_levenshtein(pred, ref) / denom)
+            exact.append(pred == ref)
+            token.append(_token_accuracy(pred, ref))
+            block.append(_token_accuracy(_block_signature(pred), _block_signature(ref)))
+
+    n = len(ned)
+    if n:
+        print(f"\n=== Task 2 Self-score ===")
+        print(f"  Exact Match Rate          : {sum(exact)/n:.4f}")
+        print(f"  Normalized Edit Distance  : {sum(ned)/n:.4f}")
+        print(f"  Token Accuracy            : {sum(token)/n:.4f}")
+        print(f"  Block-level Accuracy      : {sum(block)/n:.4f}  (n={n})")
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model",     default="gpt:small",
-                    help="ngram | gpt:tiny|small|large | hf:<name>")
+                    help="ngram | gpt:tiny|small|large")
     ap.add_argument("--checkpoint", default=None,
-                    help="Path to saved GPT/HF checkpoint")
+                    help="Path to saved GPT checkpoint")
     ap.add_argument("--valid",     default=None,
                     help="eval_input_valid.csv (default: self_eval/)")
     ap.add_argument("--anomaly",   default=None,
@@ -288,9 +397,13 @@ def main():
                     help="Which tasks to run (default: 1 2 3)")
     ap.add_argument("--score",     action="store_true",
                     help="Self-score using self_eval/ ground truth after running")
+    ap.add_argument("--official-names", action="store_true",
+                    help="Write nextstep.csv, completion.csv, anomaly.csv instead of tagged filenames")
+    ap.add_argument("--allow-random-init", action="store_true",
+                    help="Allow GPT random initialisation when --checkpoint is missing (never use for final submission)")
     args = ap.parse_args()
 
-    device = "cuda" if __import__("torch").cuda.is_available() else "cpu"
+    device = resolve_device(args.model)
     print(f"[eval_runner] model={args.model}  device={device}")
 
     # Resolve input file paths
@@ -311,7 +424,7 @@ def main():
         return
 
     # Load model (shared across tasks)
-    model = load_model(args.model, args.checkpoint, device)
+    model = load_model(args.model, args.checkpoint, device, allow_random_init=args.allow_random_init)
 
     # Build run tag for output filenames
     tag = args.model.replace(":", "_").replace("/", "-")
@@ -323,25 +436,27 @@ def main():
         valid_rows = load_valid_csv(valid_path)
         if "1" in args.tasks:
             run_task1(model, valid_rows,
-                      f"{args.out}/task1_{tag}.csv")
+                      output_path(args.out, "1", tag, args.official_names))
         if "2" in args.tasks:
             run_task2(model, valid_rows,
-                      f"{args.out}/task2_{tag}.csv")
+                      output_path(args.out, "2", tag, args.official_names))
 
     # Task 3
     if "3" in args.tasks:
         anomaly_rows = load_anomaly_csv(anomaly_path)
         run_task3(model, anomaly_rows,
-                  f"{args.out}/task3_{tag}.csv")
+                  output_path(args.out, "3", tag, args.official_names))
 
     # Self-scoring
     if args.score:
         gt_valid   = "self_eval/ground_truth_valid.csv"
         gt_anomaly = "self_eval/ground_truth_anomaly.csv"
         if "1" in args.tasks and Path(gt_valid).exists():
-            score_task1(f"{args.out}/task1_{tag}.csv", gt_valid)
+            score_task1(output_path(args.out, "1", tag, args.official_names), gt_valid)
+        if "2" in args.tasks and Path(gt_valid).exists():
+            score_task2(output_path(args.out, "2", tag, args.official_names), gt_valid)
         if "3" in args.tasks and Path(gt_anomaly).exists():
-            score_task3(f"{args.out}/task3_{tag}.csv", gt_anomaly)
+            score_task3(output_path(args.out, "3", tag, args.official_names), gt_anomaly)
 
     print(f"\n[done] Submissions written to {args.out}/")
 

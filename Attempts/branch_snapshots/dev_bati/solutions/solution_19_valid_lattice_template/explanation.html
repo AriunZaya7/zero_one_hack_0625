@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 19 Explanation</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; color: #1f2933; background: #f7f9fb; }
+    main { max-width: 1100px; margin: 0 auto; padding: 34px 22px 64px; }
+    section { background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 24px; margin: 18px 0; }
+    h1, h2, h3 { color: #102a43; line-height: 1.2; }
+    code { background: #f3f6f9; padding: 1px 4px; border-radius: 4px; }
+    pre { background: #102a43; color: #f8fafc; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { border: 1px solid #d9e2ec; padding: 9px 10px; text-align: left; vertical-align: top; }
+    th { background: #f3f6f9; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    .metric { border: 1px solid #d9e2ec; border-radius: 6px; padding: 12px; background: #f8fafc; }
+    .metric span { display: block; font-size: 0.86rem; color: #52606d; }
+    .metric strong { font-size: 1.35rem; color: #102a43; }
+    .warning { border-left: 4px solid #d97706; background: #fff7ed; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Solution 19: Valid-Lattice Template</h1>
+  <p>This page is standalone. It explains the solution without assuming you
+  have read any previous solution page.</p>
+
+  <section>
+    <h2>The Problem In Plain Language</h2>
+    <p>The Industrial AI task asks us to predict exact semiconductor process
+    step strings. OOD means the organizers may test us on a new product family.
+    A new family is hard because it may use new exact strings, and exact-string
+    scoring gives no credit for a nearly correct spelling or synonym.</p>
+    <p>Solution 18 handled derivable new strings with a family template such as
+    <code>__FAMILY__ JTE DOSE VERIFICATION</code>. Solution 19 adds another
+    source of evidence: longer partial routes that are already present in the
+    evaluation input.</p>
+  </section>
+
+  <section>
+    <h2>What A Valid-Partial Lattice Means</h2>
+    <p>A lattice here is just a small graph of partial routes. If one partial
+    route is a prefix of another partial route, the longer route gives us more
+    known steps.</p>
+    <pre><code>60% partial:
+RECEIVE WAFER LOT | ... | DEVELOP PHOTORESIST
+
+80% partial from the same route:
+RECEIVE WAFER LOT | ... | DEVELOP PHOTORESIST | THEFOURTHFAMILY JTE DOSE VERIFICATION | STRIP RESIST | ...</code></pre>
+    <p>For the 60% row, the exact next step is visible inside the 80% row:
+    <code>THEFOURTHFAMILY JTE DOSE VERIFICATION</code>. We do not need to guess
+    the hidden-family generator seed. We only use input rows that the submitted
+    system receives.</p>
+  </section>
+
+  <section>
+    <h2>Prediction Cascade</h2>
+    <ol>
+      <li>Read Task 1/2 partial routes from <code>eval_input_valid.csv</code>.</li>
+      <li>Read Task 3 full routes from <code>eval_input_anomaly.csv</code>.</li>
+      <li>Use the validator to find valid full routes. If a partial is a prefix
+      of a valid full route, copy the exact answer from that route.</li>
+      <li>If no full route exists, search the valid-input file for a longer
+      partial that starts with the current partial.</li>
+      <li>If a longer partial exists, use it to predict the next step and a
+      known completion bridge.</li>
+      <li>If no longer partial exists, fall back to the normalized
+      <code>__FAMILY__</code> template grammar.</li>
+      <li>For anomaly detection, use the public validator and report the first
+      violated rule.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>What The Curves Told Us</h2>
+    <p>The previous 110-family curve showed that simply adding more families is
+    not enough. Raw exact retrieval stayed around <code>0.6188</code> Task 1
+    Top-1 at 100 training families because it cannot invent validation-family
+    exact strings. Template retrieval improved to <code>0.7688</code>, because
+    it can rewrite <code>__FAMILY__</code> templates to a visible family name.</p>
+    <p>After adding the valid-partial lattice to the same curve, the 100-family
+    OOD probe reached <code>0.8938</code> Task 1 Top-1 and <code>0.1066</code>
+    Task 2 edit distance. That is the strongest current evidence for the next
+    OOD layer.</p>
+  </section>
+
+  <section>
+    <h2>Measured Results</h2>
+    <div class="metric-grid">
+      <div class="metric"><span>Official full-route coverage</span><strong>1.0000</strong></div>
+      <div class="metric"><span>Official valid-lattice coverage</span><strong>0.5000</strong></div>
+      <div class="metric"><span>No-full-route local Top-1</span><strong>0.8150</strong></div>
+      <div class="metric"><span>No-full-route local Task 2 edit</span><strong>0.1726</strong></div>
+    </div>
+    <table>
+      <tr><th>Mode</th><th>Metric</th><th>Value</th><th>Meaning</th></tr>
+      <tr><td>Coupled full-route memory</td><td>Task 1 Top-1</td><td><code>1.0000</code></td><td>Every current official partial has a matching full valid route.</td></tr>
+      <tr><td>No full routes, lattice available</td><td>Task 1 Top-1</td><td><code>0.8150</code></td><td>The lattice recovers exact next steps for rows with longer visible partials.</td></tr>
+      <tr><td>No full routes, lattice available</td><td>Task 2 edit distance</td><td><code>0.1726</code></td><td>Known bridge steps make completions much closer.</td></tr>
+      <tr><td>Template only</td><td>Task 1 Top-1</td><td><code>0.7250</code></td><td>This is what happens if we remove both full routes and valid-lattice evidence.</td></tr>
+    </table>
+  </section>
+
+  <section class="warning">
+    <h2>Important Caveat</h2>
+    <p>The lattice is a conditional advantage. It helps only when multiple
+    partials from the same hidden route are visible. If final hidden OOD scoring
+    has no full routes and no longer partials, Solution 19 falls back to the
+    family-template grammar from Solution 18. The audit file makes this visible
+    row by row.</p>
+  </section>
+
+  <section>
+    <h2>Files To Inspect</h2>
+    <ul>
+      <li><code>solution.py</code>: complete runnable source code</li>
+      <li><code>outputs/metrics.md</code>: concise metric summary</li>
+      <li><code>outputs/lattice_guard_audit.csv</code>: per-row source audit</li>
+      <li><code>outputs/lattice_training_manifest.csv</code>: training and coverage counts</li>
+      <li><code>how_to_submit_this_solution.html</code>: manual submission steps</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

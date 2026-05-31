@@ -1,0 +1,28 @@
+{
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "CPython 3.11.3",
+  "startedAt": "2026-05-29T22:56:11.171461Z",
+  "program": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\zero_one_hack_0625\\test_baseline_2\\ngram_context_comparison.py",
+  "codePath": "test_baseline_2\\ngram_context_comparison.py",
+  "codePathLocal": "ngram_context_comparison.py",
+  "git": {
+    "remote": "https://github.com/AriunZaya7/zero_one_hack_0625.git",
+    "commit": "e5df1f4df86e578537eac4fa510ffd6fcd1d66b8"
+  },
+  "email": "angiezaya7@gmail.com",
+  "root": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\zero_one_hack_0625\\test_baseline_2",
+  "host": "LAPTOP-UBNDF6IL",
+  "executable": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\venv\\Scripts\\python.exe",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "768014807040",
+      "used": "527892459520"
+    }
+  },
+  "memory": {
+    "total": "16505954304"
+  },
+  "writerId": "m42pevzpe5f5ve9887uqwrtdbutv5jbw"
+}

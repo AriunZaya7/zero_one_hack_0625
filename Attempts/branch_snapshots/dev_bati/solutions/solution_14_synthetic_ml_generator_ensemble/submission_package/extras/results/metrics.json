@@ -1,0 +1,145 @@
+{
+  "fair_self_eval": {
+    "task1_canonical_process_step": {
+      "canonical_top1": 1.0,
+      "canonical_top2": 1.0,
+      "canonical_top3": 1.0,
+      "canonical_top5": 1.0,
+      "exact_top1_misses": 0,
+      "same_canonical_miss_rate_among_exact_misses": 0.0,
+      "same_canonical_misses": 0,
+      "top_miss_pairs": []
+    },
+    "task1_next_step": {
+      "mrr": 1.0,
+      "n_examples": 600,
+      "top1": 1.0,
+      "top2": 1.0,
+      "top3": 1.0,
+      "top5": 1.0
+    },
+    "task2_completion": {
+      "block_accuracy": 1.0,
+      "exact_match": 1.0,
+      "n_examples": 600,
+      "normalized_edit_distance": 0.0,
+      "token_accuracy": 1.0
+    },
+    "task3_anomaly": {
+      "accuracy": 1.0,
+      "f1_valid": 1.0,
+      "fn_valid_as_invalid": 0,
+      "fp_invalid_as_valid": 0,
+      "n_examples": 600,
+      "precision_valid": 1.0,
+      "recall_valid": 1.0,
+      "roc_auc_valid_probability": 1.0,
+      "rule_attribution_accuracy": 1.0,
+      "tn_invalid": 300,
+      "tp_valid": 300
+    },
+    "task4_ood_proxy_next_step": {
+      "ic": {
+        "mrr": 0.81375,
+        "n_examples": 200,
+        "top1": 0.64,
+        "top3": 0.99,
+        "top5": 0.995
+      },
+      "igbt": {
+        "mrr": 0.8391666666666667,
+        "n_examples": 200,
+        "top1": 0.72,
+        "top3": 0.965,
+        "top5": 0.965
+      },
+      "mosfet": {
+        "mrr": 0.89,
+        "n_examples": 200,
+        "top1": 0.78,
+        "top3": 1.0,
+        "top5": 1.0
+      }
+    },
+    "transductive_coverage": {
+      "ambiguous_rows_with_different_suffixes": 0,
+      "by_fraction": {
+        "0.6": 300,
+        "0.8": 300
+      },
+      "exact_prefix_coverage": 1.0,
+      "exact_prefix_rows": 600,
+      "generated_sequences": 75000,
+      "training_sequences_total": 82009,
+      "unique_valid_full_sequences": 300,
+      "valid_full_sequence_duplicate_rows": 0,
+      "valid_rows": 600
+    }
+  },
+  "method": {
+    "context_lengths": [
+      24,
+      16,
+      12,
+      8,
+      4,
+      2,
+      1,
+      0
+    ],
+    "fallback_when_no_full_sequence_match": "generated_prefix_context_model",
+    "name": "transductive exact gate plus generated-data prefix/context statistical model",
+    "synthetic_per_family": 25000,
+    "synthetic_seed_base": 41000,
+    "task2_uses_truth_remainder_length": false
+  },
+  "official_input_prediction": {
+    "anomaly_rows": 987,
+    "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+    "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+    "generated_sequences": 75000,
+    "mode": "official_participant_input_prediction",
+    "outputs": {
+      "anomaly": "solutions/solution_14_synthetic_ml_generator_ensemble/outputs/anomaly.csv",
+      "completion": "solutions/solution_14_synthetic_ml_generator_ensemble/outputs/completion.csv",
+      "nextstep": "solutions/solution_14_synthetic_ml_generator_ensemble/outputs/nextstep.csv"
+    },
+    "solution": "solution_14_synthetic_ml_generator_ensemble",
+    "synthetic_per_family": 25000,
+    "training_sequences_total": 82009,
+    "transductive_coverage": {
+      "ambiguous_rows_with_different_suffixes": 0,
+      "by_fraction": {
+        "0.6": 300,
+        "0.8": 300
+      },
+      "exact_prefix_coverage": 1.0,
+      "exact_prefix_rows": 600,
+      "generated_sequences": 75000,
+      "training_sequences_total": 82009,
+      "unique_valid_full_sequences": 300,
+      "valid_full_sequence_duplicate_rows": 300,
+      "valid_rows": 600
+    },
+    "valid_rows": 600,
+    "validator_invalid_rows": 387,
+    "validator_valid_rows": 600
+  },
+  "seed": 42,
+  "self_eval": {
+    "anomaly_task_rows": 600,
+    "eval_per_family": 100,
+    "families": [
+      "mosfet",
+      "igbt",
+      "ic"
+    ],
+    "generated_sequences": 75000,
+    "official_eval_available": true,
+    "official_hidden_ground_truth_available": false,
+    "train_sequences": 6709,
+    "training_sequences_total": 82009,
+    "valid_task_rows": 600
+  },
+  "solution": "solution_14_synthetic_ml_generator_ensemble"
+}

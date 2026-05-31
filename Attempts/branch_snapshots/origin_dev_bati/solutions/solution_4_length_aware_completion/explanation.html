@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 4 Explanation - Length-Aware Completion</title>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #5c6878;
+      --line: #d8dee8;
+      --paper: #ffffff;
+      --soft: #f5f7fb;
+      --accent-soft: #dff4f2;
+      --warn-soft: #fff2d8;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--soft);
+    }
+    header { background: var(--paper); border-bottom: 1px solid var(--line); padding: 32px max(24px, calc((100vw - 1050px) / 2)); }
+    main { max-width: 1050px; margin: 0 auto; padding: 28px 24px 64px; }
+    section { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 18px; margin: 18px 0; }
+    h1, h2, h3 { line-height: 1.2; margin: 0 0 12px; }
+    h1 { font-size: 34px; }
+    h2 { font-size: 24px; }
+    h3 { font-size: 18px; margin-top: 22px; }
+    p { margin: 0 0 14px; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; background: #edf2f7; padding: 2px 5px; border-radius: 5px; font-size: 0.92em; }
+    pre { margin: 14px 0; overflow: auto; padding: 16px; border-radius: 8px; background: var(--code); color: #eef2ff; font-size: 14px; line-height: 1.45; }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { border-bottom: 1px solid var(--line); padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #edf3f8; }
+    .callout { background: var(--accent-soft); border-color: #a8d7d4; }
+    .warn { background: var(--warn-soft); border-color: #f0d197; }
+    .muted { color: var(--muted); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    .metric { border: 1px solid var(--line); border-radius: 8px; padding: 14px; background: #fbfcfe; }
+    .metric strong { display: block; font-size: 24px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Solution 4: Length-Aware Completion</h1>
+    <p class="muted">A standalone explanation of the Task 2 length-trimming attempt.</p>
+  </header>
+
+  <main>
+    <section class="callout">
+      <h2>Read This First</h2>
+      <p>
+        This report is standalone. The industrial track is about ordered
+        semiconductor process routes. The submitted system must predict the next
+        step, complete the remaining steps after a cut point, and detect
+        process-rule violations in full sequences.
+      </p>
+      <p>
+        Solution 4 is not mainly a next-step invention. It focuses on Task 2:
+        completion. Completion is hard because the model must predict a long
+        suffix, not just one next step. Even if the first next step is correct,
+        the suffix can drift, become too long, or become too short.
+      </p>
+    </section>
+
+    <section>
+      <h2>Why Remainder Length Matters</h2>
+      <p>
+        The official valid input includes a <code>COMPLETION_FRACTION</code>,
+        usually <code>0.6</code> or <code>0.8</code>. If a sequence is cut at
+        80%, only about 20% should remain. If a retrieved suffix is much longer
+        than the true suffix, token-level and block-level comparison can suffer
+        even when the broad process stage is plausible.
+      </p>
+      <p>
+        Solution 4 learns likely remainder lengths from public training
+        sequences. It does not use the true hidden suffix length. It uses only
+        things visible in the input: family, completion fraction, and prefix
+        length.
+      </p>
+    </section>
+
+    <section>
+      <h2>Task Definitions In This Page</h2>
+      <table>
+        <thead><tr><th>Task</th><th>What is predicted</th><th>What Solution 4 does</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>Task 1</td>
+            <td>Five ranked guesses for the next process step.</td>
+            <td>Uses exact public-prefix lookup when available; otherwise retrieves similar historical prefixes and applies a small family-aware rerank for known IC versus MOSFET/IGBT seed-step differences.</td>
+          </tr>
+          <tr>
+            <td>Task 2</td>
+            <td>The full suffix after the cut point.</td>
+            <td>Retrieves a suffix, estimates likely suffix length, and trims if too long.</td>
+          </tr>
+          <tr>
+            <td>Task 3</td>
+            <td>Whether a full sequence is valid, and which rule is violated if invalid.</td>
+            <td>Calls the public validator. This is an oracle baseline, not learned anomaly detection.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>How The Length Model Is Trained</h2>
+      <p>
+        The model scans public training sequences. For each sequence, it
+        computes the same 60% and 80% cut positions used by the local eval. It
+        records how many steps remain after each cut.
+      </p>
+      <pre><code>cut = max(1, min(len(sequence) - 1, int(len(sequence) * fraction)))
+remainder_length = len(sequence) - cut</code></pre>
+      <p>
+        The model stores several levels of statistics:
+      </p>
+      <ul>
+        <li><code>(family, fraction, cut)</code>: most specific.</li>
+        <li><code>(fraction, cut)</code>: useful if the family-specific bucket is sparse.</li>
+        <li><code>(family, fraction)</code>: broader family-level fallback.</li>
+        <li><code>(fraction)</code>: broadest fallback.</li>
+      </ul>
+      <p>
+        At prediction time, it uses the most specific available bucket and picks
+        the most common remainder length.
+      </p>
+    </section>
+
+    <section>
+      <h2>How Completion Works Step By Step</h2>
+      <ol>
+        <li>Receive a partial route and its family and completion fraction.</li>
+        <li>Use retrieval to find a plausible historical continuation.</li>
+        <li>Estimate the likely number of remaining steps from public cut statistics.</li>
+        <li>If the retrieved suffix is longer than the likely length, trim it.</li>
+        <li>Write the trimmed suffix to <code>outputs/completion.csv</code>.</li>
+      </ol>
+      <pre><code>target_length = self.expected_remainder_length(prefix, family, completion_fraction)
+if len(suffix) &gt; target_length:
+    return suffix[:target_length]
+return suffix</code></pre>
+    </section>
+
+    <section>
+      <h2>Current Local Results</h2>
+      <div class="grid">
+        <div class="metric"><span>Task 1 Top-1</span><strong>0.7317</strong></div>
+        <div class="metric"><span>Task 1 MRR</span><strong>0.8650</strong></div>
+        <div class="metric"><span>Task 2 token accuracy</span><strong>0.4495</strong></div>
+        <div class="metric"><span>Task 2 block accuracy</span><strong>0.7188</strong></div>
+      </div>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Interpretation</th></tr></thead>
+        <tbody>
+          <tr><td>Task 2 exact match</td><td>0.0017</td><td>Only rare suffixes match exactly; full exact completion remains hard.</td></tr>
+          <tr><td>Task 2 normalized edit distance</td><td>0.2468</td><td>Worse than the untrimmed retrieval solution on this metric.</td></tr>
+          <tr><td>Task 2 block accuracy</td><td>0.7188</td><td>Slightly better broad-stage alignment than the untrimmed suffix on seed 42.</td></tr>
+          <tr><td>Task 3 accuracy</td><td>1.0000</td><td>Perfect because this uses the public rule validator.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>Leave-One-Family-Out Proxy</h2>
+      <p>
+        In the local LOFO proxy, one known family is removed from training and
+        used as test data. This test estimates whether a method can still make
+        reasonable predictions for a family it did not see during fitting.
+        Solution 4's Task 1 predictor is exact-lookup plus retrieval fallback,
+        while its new idea mainly affects Task 2 completion length.
+      </p>
+      <table>
+        <thead><tr><th>Held-out family</th><th>Top-1</th><th>MRR</th></tr></thead>
+        <tbody>
+          <tr><td>MOSFET</td><td>0.7800</td><td>0.8900</td></tr>
+          <tr><td>IGBT</td><td>0.7200</td><td>0.8392</td></tr>
+          <tr><td>IC</td><td>0.6400</td><td>0.8137</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="warn">
+      <h2>Limitations</h2>
+      <p>
+        This is a metric-tradeoff attempt. It can improve block-level alignment
+        in some cases, but it worsens normalized edit distance on the current
+        seed-42 local split. It should not be treated as the best overall
+        solution unless the jury weights block accuracy much more heavily than
+        edit distance.
+      </p>
+      <p>
+        The solution also does not learn anomaly detection. It directly calls
+        the public validator for Task 3.
+      </p>
+    </section>
+
+    <section>
+      <h2>Files Produced</h2>
+      <ul>
+        <li><code>solution.py</code>: runnable implementation.</li>
+        <li><code>outputs/nextstep.csv</code>: Task 1 submission-shaped output.</li>
+        <li><code>outputs/completion.csv</code>: Task 2 trimmed suffix output.</li>
+        <li><code>outputs/anomaly.csv</code>: Task 3 validator output.</li>
+        <li><code>outputs/metrics.json</code> and <code>outputs/metrics.md</code>: local metrics.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

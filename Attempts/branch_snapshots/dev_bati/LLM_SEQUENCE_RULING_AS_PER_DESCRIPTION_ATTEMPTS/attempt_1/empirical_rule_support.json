@@ -1,0 +1,2547 @@
+{
+  "attempt_id": "attempt_1",
+  "title": "Empirical support for description-derived sequence rules",
+  "status": "generated_from_training_traces",
+  "sequence_count": 3000,
+  "rule_results": [
+    {
+      "rule_id": "EMP_001_CLEAN_BEFORE_DEPOSITION_LIKE",
+      "total_trigger_occurrences": 32000,
+      "satisfied_occurrences": 31884,
+      "support_rate": 0.996375,
+      "example_failures": [
+        {
+          "sequence_id": "MOSFET:seq_0003",
+          "index": 62,
+          "step": "DEPOSIT INTERLAYER DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0004",
+          "index": 62,
+          "step": "DEPOSIT INTERLEVEL DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0007",
+          "index": 61,
+          "step": "DEPOSIT INTERLEVEL DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0027",
+          "index": 60,
+          "step": "DEPOSIT INTERLEVEL DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0030",
+          "index": 64,
+          "step": "DEPOSIT INTERLAYER DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0033",
+          "index": 62,
+          "step": "DEPOSIT INTERLAYER DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0040",
+          "index": 65,
+          "step": "DEPOSIT INTERLEVEL DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        },
+        {
+          "sequence_id": "MOSFET:seq_0044",
+          "index": 63,
+          "step": "DEPOSIT INTERLAYER DIELECTRIC",
+          "context": [
+            "ANISOTROPIC ETCH SPACER",
+            "MEASURE SPACER WIDTH",
+            "IMPLANT LDD",
+            "PRE ANNEAL CHECK",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE JUNCTION PROFILE"
+          ]
+        }
+      ],
+      "notes": "Tests clean-like context before oxidation/epitaxy/deposition."
+    },
+    {
+      "rule_id": "EMP_002_DEVELOP_BEFORE_PATTERNED_ETCH",
+      "total_trigger_occurrences": 18000,
+      "satisfied_occurrences": 17000,
+      "support_rate": 0.9444444444444444,
+      "example_failures": [
+        {
+          "sequence_id": "IC:seq_0001",
+          "index": 12,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "WAFER CLEAN PRE PROCESS",
+            "RCA CLEAN 1",
+            "WET CLEAN RCA2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0002",
+          "index": 13,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "WAFER CLEAN PRE PROCESS",
+            "WET CLEAN RCA1",
+            "WET CLEAN RCA2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0003",
+          "index": 14,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "FRONTSIDE CLEAN",
+            "WET CLEAN RCA1",
+            "RCA CLEAN 2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0004",
+          "index": 13,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "WAFER CLEAN PRE PROCESS",
+            "RCA CLEAN 1",
+            "RCA CLEAN 2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0005",
+          "index": 12,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "WAFER CLEAN PRE PROCESS",
+            "RCA CLEAN 1",
+            "RCA CLEAN 2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0006",
+          "index": 14,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "BACKSIDE CLEAN",
+            "RCA CLEAN 1",
+            "WET CLEAN RCA2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0007",
+          "index": 13,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "WAFER CLEAN PRE PROCESS",
+            "WET CLEAN RCA1",
+            "WET CLEAN RCA2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE GEOMETRY"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0008",
+          "index": 13,
+          "step": "ETCH WET BACKSIDE",
+          "context": [
+            "WAFER CLEAN PRE PROCESS",
+            "RCA CLEAN 1",
+            "RCA CLEAN 2",
+            "HF DIP",
+            "DRY WAFER",
+            "WAFER CLEAN PRE-GRIND",
+            "GRINDING WAFER BACKSIDE",
+            "MEASURE INITIAL GEOMETRY"
+          ]
+        }
+      ],
+      "notes": "Patterned etches should have developed resist nearby."
+    },
+    {
+      "rule_id": "EMP_003_STRIP_AND_CLEAN_AFTER_ETCH",
+      "total_trigger_occurrences": 18000,
+      "satisfied_occurrences": 16498,
+      "support_rate": 0.9165555555555556,
+      "example_failures": [
+        {
+          "sequence_id": "IC:seq_0001",
+          "index": 12,
+          "step": "ETCH WET BACKSIDE",
+          "after": [
+            "RINSE WET WAFER_EDGE",
+            "DRY WAFER BACKSIDE",
+            "BACKSIDE CLEAN",
+            "MEASURE BACKSIDE ROUGHNESS",
+            "THERMAL OXIDATION",
+            "MEASURE OXIDE THICKNESS",
+            "RCA CLEAN 1",
+            "RCA CLEAN 2"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0001",
+          "index": 46,
+          "step": "POLYSILICON ETCH DRY",
+          "after": [
+            "STRIP RESIST LEVEL 2",
+            "CLEAN AFTER POLY ETCH",
+            "IMPLANT N-TYPE",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE SHEET RESISTANCE",
+            "DEPOSIT INTERLEVEL DIELECTRIC",
+            "DENSIFY DIELECTRIC",
+            "MEASURE FILM THICKNESS"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0002",
+          "index": 13,
+          "step": "ETCH WET BACKSIDE",
+          "after": [
+            "RINSE WET WAFER_EDGE",
+            "DRY WAFER BACKSIDE",
+            "BACKSIDE CLEAN",
+            "MEASURE BACKSIDE ROUGHNESS",
+            "THERMAL OXIDATION",
+            "MEASURE OXIDE THICKNESS",
+            "WET CLEAN RCA1",
+            "RCA CLEAN 2"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0003",
+          "index": 14,
+          "step": "ETCH WET BACKSIDE",
+          "after": [
+            "RINSE WET WAFER_EDGE",
+            "DRY WAFER BACKSIDE",
+            "BACKSIDE CLEAN",
+            "MEASURE BACKSIDE ROUGHNESS",
+            "THERMAL OXIDATION",
+            "MEASURE OXIDE THICKNESS",
+            "RCA CLEAN 1",
+            "WET CLEAN RCA2"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0004",
+          "index": 13,
+          "step": "ETCH WET BACKSIDE",
+          "after": [
+            "RINSE WET WAFER_EDGE",
+            "DRY WAFER BACKSIDE",
+            "BACKSIDE CLEAN",
+            "MEASURE BACKSIDE ROUGHNESS",
+            "THERMAL OXIDATION",
+            "MEASURE OXIDE THICKNESS",
+            "RCA CLEAN 1",
+            "RCA CLEAN 2"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0004",
+          "index": 47,
+          "step": "POLYSILICON ETCH DRY",
+          "after": [
+            "STRIP RESIST LEVEL 2",
+            "CLEAN AFTER POLY ETCH",
+            "MEASURE CD LEVEL 2",
+            "IMPLANT N-TYPE",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE SHEET RESISTANCE",
+            "DEPOSIT INTERLEVEL DIELECTRIC",
+            "DENSIFY OXIDE"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0005",
+          "index": 12,
+          "step": "ETCH WET BACKSIDE",
+          "after": [
+            "RINSE WET WAFER_EDGE",
+            "DRY WAFER BACKSIDE",
+            "BACKSIDE CLEAN",
+            "MEASURE BACKSIDE ROUGHNESS",
+            "THERMAL OXIDATION",
+            "MEASURE OXIDE THICKNESS",
+            "WET CLEAN RCA1",
+            "WET CLEAN RCA2"
+          ]
+        },
+        {
+          "sequence_id": "IC:seq_0005",
+          "index": 47,
+          "step": "POLYSILICON ETCH DRY",
+          "after": [
+            "STRIP RESIST LEVEL 2",
+            "CLEAN AFTER POLY ETCH",
+            "MEASURE CD LEVEL 2",
+            "IMPLANT N-TYPE",
+            "RAPID THERMAL ANNEAL",
+            "MEASURE SHEET RESISTANCE",
+            "DEPOSIT INTERLAYER DIELECTRIC",
+            "DENSIFY OXIDE"
+          ]
+        }
+      ],
+      "notes": "Checks whether etch is followed by strip and clean within 8 steps."
+    },
+    {
+      "rule_id": "EMP_004_IMPLANT_FOLLOWED_BY_ACTIVATION",
+      "total_trigger_occurrences": 9000,
+      "satisfied_occurrences": 9000,
+      "support_rate": 1.0,
+      "example_failures": [],
+      "notes": "Looks for drive-in diffusion, RTA, or anneal after implant."
+    },
+    {
+      "rule_id": "EMP_005_CMP_AFTER_DEPOSITION_OR_FILL",
+      "total_trigger_occurrences": 6000,
+      "satisfied_occurrences": 6000,
+      "support_rate": 1.0,
+      "example_failures": [],
+      "notes": "Checks CMP has material to planarize nearby."
+    },
+    {
+      "rule_id": "EMP_006_TEST_AFTER_PASSIVATION_CURE",
+      "total_trigger_occurrences": 14763,
+      "satisfied_occurrences": 14763,
+      "support_rate": 1.0,
+      "example_failures": [],
+      "notes": "Electrical tests should appear after passivation cure."
+    },
+    {
+      "rule_id": "EMP_007_WAFER_SORT_BEFORE_SHIP",
+      "total_trigger_occurrences": 3000,
+      "satisfied_occurrences": 3000,
+      "support_rate": 1.0,
+      "example_failures": [],
+      "notes": "Terminal order sanity check."
+    },
+    {
+      "rule_id": "EMP_008_MEASUREMENT_SUBJECT_ALIGNMENT",
+      "total_trigger_occurrences": 19081,
+      "satisfied_occurrences": 19081,
+      "support_rate": 1.0,
+      "example_failures": [],
+      "notes": "Soft heuristic for whether a measurement follows what it measures."
+    }
+  ],
+  "top_transitions_for_frequent_steps": {
+    "ALIGN MASK LEVEL 1": [
+      {
+        "next_step": "EXPOSE LITHO LEVEL 1",
+        "count": 3000
+      }
+    ],
+    "ALIGN MASK LEVEL 2": [
+      {
+        "next_step": "EXPOSE LITHO LEVEL 2",
+        "count": 3000
+      }
+    ],
+    "ALIGN MASK LEVEL 3": [
+      {
+        "next_step": "EXPOSE LITHO LEVEL 3",
+        "count": 3000
+      }
+    ],
+    "ALIGN MASK LEVEL 4": [
+      {
+        "next_step": "EXPOSE LITHO LEVEL 4",
+        "count": 3000
+      }
+    ],
+    "ALIGN MASK LEVEL 5": [
+      {
+        "next_step": "EXPOSE LITHO LEVEL 5",
+        "count": 1000
+      }
+    ],
+    "ALIGN MASK LEVEL 6": [
+      {
+        "next_step": "EXPOSE LITHO LEVEL 6",
+        "count": 1000
+      }
+    ],
+    "ANISOTROPIC ETCH SPACER": [
+      {
+        "next_step": "MEASURE SPACER WIDTH",
+        "count": 750
+      },
+      {
+        "next_step": "IMPLANT LDD",
+        "count": 250
+      }
+    ],
+    "ANNEAL DIELECTRIC": [
+      {
+        "next_step": "MEASURE OXIDE QUALITY",
+        "count": 749
+      },
+      {
+        "next_step": "DEPOSIT POLYSILICON",
+        "count": 251
+      }
+    ],
+    "ANNEAL METAL": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 842
+      },
+      {
+        "next_step": "MEASURE METAL THICKNESS",
+        "count": 689
+      }
+    ],
+    "ANNEAL METAL 1": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 803
+      },
+      {
+        "next_step": "MEASURE METAL THICKNESS",
+        "count": 666
+      }
+    ],
+    "ANNEAL OXIDE": [
+      {
+        "next_step": "MEASURE FILM THICKNESS",
+        "count": 511
+      },
+      {
+        "next_step": "MEASURE OXIDE THICKNESS",
+        "count": 489
+      }
+    ],
+    "ANNEAL POLYSILICON": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1000
+      }
+    ],
+    "BACKSIDE ANNEAL": [
+      {
+        "next_step": "MEASURE BACKSIDE CONTACT",
+        "count": 2000
+      },
+      {
+        "next_step": "FRONTSIDE CLEAN FINAL",
+        "count": 510
+      },
+      {
+        "next_step": "FINAL CLEAN",
+        "count": 490
+      }
+    ],
+    "BACKSIDE CLEAN": [
+      {
+        "next_step": "FRONTSIDE CLEAN",
+        "count": 1365
+      },
+      {
+        "next_step": "BACKSIDE GRIND",
+        "count": 1000
+      },
+      {
+        "next_step": "MEASURE BACKSIDE ROUGHNESS",
+        "count": 1000
+      },
+      {
+        "next_step": "DEPOSIT BACKSIDE PROTECTION",
+        "count": 514
+      },
+      {
+        "next_step": "WET CLEAN RCA1",
+        "count": 306
+      },
+      {
+        "next_step": "RCA CLEAN 1",
+        "count": 305
+      }
+    ],
+    "BACKSIDE DRY": [
+      {
+        "next_step": "BACKSIDE METALLIZATION PREP",
+        "count": 2000
+      }
+    ],
+    "BACKSIDE ETCH CLEAN": [
+      {
+        "next_step": "BACKSIDE RINSE",
+        "count": 2000
+      }
+    ],
+    "BACKSIDE GRIND": [
+      {
+        "next_step": "MEASURE WAFER THICKNESS",
+        "count": 1037
+      },
+      {
+        "next_step": "MEASURE THICKNESS",
+        "count": 963
+      }
+    ],
+    "BACKSIDE METALLIZATION PREP": [
+      {
+        "next_step": "DEPOSIT BACKSIDE METAL",
+        "count": 2000
+      }
+    ],
+    "BACKSIDE RINSE": [
+      {
+        "next_step": "BACKSIDE DRY",
+        "count": 2000
+      }
+    ],
+    "BACKSIDE THINNING CHECK": [
+      {
+        "next_step": "BACKSIDE CLEAN",
+        "count": 327
+      },
+      {
+        "next_step": "BACKSIDE CLEAN FINAL",
+        "count": 296
+      }
+    ],
+    "BREAKDOWN VOLTAGE TEST": [
+      {
+        "next_step": "SWITCHING TEST",
+        "count": 1000
+      }
+    ],
+    "CLEAN AFTER ETCH": [
+      {
+        "next_step": "MEASURE OPENING CD",
+        "count": 747
+      },
+      {
+        "next_step": "MEASURE CD LEVEL 1",
+        "count": 745
+      },
+      {
+        "next_step": "DEPOSIT POLYSILICON",
+        "count": 255
+      },
+      {
+        "next_step": "IMPLANT WELL",
+        "count": 253
+      }
+    ],
+    "CLEAN AFTER FIELD ETCH": [
+      {
+        "next_step": "MEASURE SURFACE UNIFORMITY",
+        "count": 752
+      },
+      {
+        "next_step": "IMPLANT SOURCE REGION",
+        "count": 248
+      }
+    ],
+    "CLEAN AFTER METAL ETCH": [
+      {
+        "next_step": "MEASURE LINE WIDTH",
+        "count": 2214
+      },
+      {
+        "next_step": "DEPOSIT PASSIVATION",
+        "count": 403
+      },
+      {
+        "next_step": "DEPOSIT PASSIVATION LAYER",
+        "count": 383
+      }
+    ],
+    "CLEAN AFTER OXIDE ETCH": [
+      {
+        "next_step": "MEASURE OPENING CD",
+        "count": 766
+      },
+      {
+        "next_step": "IMPLANT P BODY",
+        "count": 234
+      }
+    ],
+    "CLEAN AFTER POLY ETCH": [
+      {
+        "next_step": "MEASURE GATE CD",
+        "count": 1506
+      },
+      {
+        "next_step": "MEASURE CD LEVEL 2",
+        "count": 750
+      },
+      {
+        "next_step": "IMPLANT CHANNEL STOP",
+        "count": 260
+      },
+      {
+        "next_step": "IMPLANT N-TYPE",
+        "count": 250
+      },
+      {
+        "next_step": "IMPLANT SOURCE DRAIN",
+        "count": 234
+      }
+    ],
+    "CLEAN AFTER VIA ETCH": [
+      {
+        "next_step": "MEASURE VIA CD",
+        "count": 2263
+      },
+      {
+        "next_step": "DEPOSIT BARRIER METAL",
+        "count": 737
+      }
+    ],
+    "CLEAN AFTER WINDOW ETCH": [
+      {
+        "next_step": "MEASURE WINDOW CD",
+        "count": 743
+      },
+      {
+        "next_step": "IMPLANT N BUFFER",
+        "count": 257
+      }
+    ],
+    "CLEAN PAD OPENING": [
+      {
+        "next_step": "MEASURE PAD OPENING",
+        "count": 3000
+      }
+    ],
+    "CMP DIELECTRIC": [
+      {
+        "next_step": "MEASURE SURFACE PLANARITY",
+        "count": 746
+      },
+      {
+        "next_step": "MEASURE PLANARITY",
+        "count": 730
+      }
+    ],
+    "CMP INTERLAYER DIELECTRIC": [
+      {
+        "next_step": "MEASURE SURFACE PLANARITY",
+        "count": 765
+      },
+      {
+        "next_step": "MEASURE PLANARITY",
+        "count": 759
+      }
+    ],
+    "CMP METAL": [
+      {
+        "next_step": "MEASURE CONTACT RESISTANCE",
+        "count": 582
+      },
+      {
+        "next_step": "MEASURE VIA RESISTANCE",
+        "count": 558
+      },
+      {
+        "next_step": "DEPOSIT TOP METAL",
+        "count": 187
+      },
+      {
+        "next_step": "DEPOSIT METAL 1",
+        "count": 169
+      }
+    ],
+    "CMP VIA FILL": [
+      {
+        "next_step": "MEASURE CONTACT RESISTANCE",
+        "count": 600
+      },
+      {
+        "next_step": "MEASURE VIA RESISTANCE",
+        "count": 535
+      },
+      {
+        "next_step": "DEPOSIT TOP METAL",
+        "count": 187
+      },
+      {
+        "next_step": "DEPOSIT METAL 1",
+        "count": 182
+      }
+    ],
+    "CURE PASSIVATION": [
+      {
+        "next_step": "MEASURE PASSIVATION THICKNESS",
+        "count": 1503
+      },
+      {
+        "next_step": "MEASURE PASSIVATION QUALITY",
+        "count": 1497
+      }
+    ],
+    "DENSIFY DIELECTRIC": [
+      {
+        "next_step": "MEASURE DIELECTRIC THICKNESS",
+        "count": 738
+      },
+      {
+        "next_step": "MEASURE FILM THICKNESS",
+        "count": 707
+      }
+    ],
+    "DENSIFY OXIDE": [
+      {
+        "next_step": "MEASURE FILM THICKNESS",
+        "count": 1531
+      },
+      {
+        "next_step": "MEASURE DIELECTRIC THICKNESS",
+        "count": 776
+      },
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 248
+      }
+    ],
+    "DEPOSIT BACKSIDE METAL": [
+      {
+        "next_step": "BACKSIDE ANNEAL",
+        "count": 2000
+      }
+    ],
+    "DEPOSIT BACKSIDE PROTECTION": [
+      {
+        "next_step": "BACKSIDE ANNEAL",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT BARRIER METAL": [
+      {
+        "next_step": "DEPOSIT METAL SEED",
+        "count": 2000
+      },
+      {
+        "next_step": "DEPOSIT TUNGSTEN SEED",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT FIELD OXIDE": [
+      {
+        "next_step": "DENSIFY OXIDE",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT GATE OXIDE OR DIELECTRIC": [
+      {
+        "next_step": "ANNEAL DIELECTRIC",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT INTERLAYER DIELECTRIC": [
+      {
+        "next_step": "DENSIFY OXIDE",
+        "count": 750
+      },
+      {
+        "next_step": "DENSIFY DIELECTRIC",
+        "count": 677
+      }
+    ],
+    "DEPOSIT INTERLEVEL DIELECTRIC": [
+      {
+        "next_step": "DENSIFY OXIDE",
+        "count": 805
+      },
+      {
+        "next_step": "DENSIFY DIELECTRIC",
+        "count": 768
+      }
+    ],
+    "DEPOSIT METAL 1": [
+      {
+        "next_step": "ANNEAL METAL",
+        "count": 759
+      },
+      {
+        "next_step": "ANNEAL METAL 1",
+        "count": 721
+      }
+    ],
+    "DEPOSIT METAL SEED": [
+      {
+        "next_step": "FILL VIA METAL",
+        "count": 2000
+      }
+    ],
+    "DEPOSIT PAD OXIDE": [
+      {
+        "next_step": "ANNEAL OXIDE",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT PASSIVATION": [
+      {
+        "next_step": "CURE PASSIVATION",
+        "count": 1501
+      }
+    ],
+    "DEPOSIT PASSIVATION LAYER": [
+      {
+        "next_step": "CURE PASSIVATION",
+        "count": 1499
+      }
+    ],
+    "DEPOSIT POLYSILICON": [
+      {
+        "next_step": "POLYSILICON ANNEAL",
+        "count": 2000
+      },
+      {
+        "next_step": "ANNEAL POLYSILICON",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT SPACER DIELECTRIC": [
+      {
+        "next_step": "ANISOTROPIC ETCH SPACER",
+        "count": 1000
+      }
+    ],
+    "DEPOSIT TOP METAL": [
+      {
+        "next_step": "ANNEAL METAL",
+        "count": 772
+      },
+      {
+        "next_step": "ANNEAL METAL 1",
+        "count": 748
+      }
+    ],
+    "DEPOSIT TUNGSTEN SEED": [
+      {
+        "next_step": "FILL VIA TUNGSTEN",
+        "count": 1000
+      }
+    ],
+    "DEVELOP PAD WINDOW": [
+      {
+        "next_step": "PASSIVATION ETCH PAD OPENING",
+        "count": 766
+      },
+      {
+        "next_step": "PASSIVATION ETCH",
+        "count": 717
+      }
+    ],
+    "DEVELOP PHOTORESIST": [
+      {
+        "next_step": "METAL PATTERN INSPECTION",
+        "count": 3000
+      },
+      {
+        "next_step": "POLY PATTERN INSPECTION",
+        "count": 2000
+      },
+      {
+        "next_step": "INSPECT PATTERN LEVEL 1",
+        "count": 2000
+      },
+      {
+        "next_step": "VIA OPENING INSPECTION",
+        "count": 1503
+      },
+      {
+        "next_step": "VIA INSPECTION",
+        "count": 1497
+      },
+      {
+        "next_step": "PATTERN INSPECTION LEVEL 1",
+        "count": 1000
+      },
+      {
+        "next_step": "P BODY WINDOW INSPECTION",
+        "count": 1000
+      },
+      {
+        "next_step": "FIELD PATTERN INSPECTION",
+        "count": 1000
+      }
+    ],
+    "DIELECTRIC ETCH VIA": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 510
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 470
+      }
+    ],
+    "DRIVE IN DIFFUSION": [
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 2000
+      }
+    ],
+    "DRY WAFER": [
+      {
+        "next_step": "SUBSTRATE CHECK",
+        "count": 626
+      },
+      {
+        "next_step": "WAFER CLEAN PRE-GRIND",
+        "count": 589
+      },
+      {
+        "next_step": "EPITAXIAL WAFER CHECK",
+        "count": 573
+      }
+    ],
+    "DRY WAFER BACKSIDE": [
+      {
+        "next_step": "BACKSIDE CLEAN",
+        "count": 1000
+      }
+    ],
+    "ELECTRICAL PARAMETRIC TEST": [
+      {
+        "next_step": "LEAKAGE TEST",
+        "count": 1494
+      }
+    ],
+    "EPITAXIAL DEPOSITION": [
+      {
+        "next_step": "MEASURE EPITAXY THICKNESS",
+        "count": 1000
+      }
+    ],
+    "EPITAXIAL LAYER PREP": [
+      {
+        "next_step": "THERMAL OXIDATION",
+        "count": 1000
+      }
+    ],
+    "EPITAXIAL REWORK CHECK": [
+      {
+        "next_step": "EPITAXIAL LAYER PREP",
+        "count": 487
+      },
+      {
+        "next_step": "DEPOSIT FIELD OXIDE",
+        "count": 364
+      }
+    ],
+    "EPITAXIAL WAFER CHECK": [
+      {
+        "next_step": "MEASURE EPITAXY THICKNESS",
+        "count": 1000
+      }
+    ],
+    "EPITAXY ANNEAL": [
+      {
+        "next_step": "WAFER SURFACE CLEAN",
+        "count": 1000
+      }
+    ],
+    "EPITAXY PREP": [
+      {
+        "next_step": "EPITAXIAL DEPOSITION",
+        "count": 1000
+      }
+    ],
+    "ETCH SILICON OR OXIDE WINDOW": [
+      {
+        "next_step": "STRIP RESIST",
+        "count": 520
+      },
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 480
+      }
+    ],
+    "ETCH WET BACKSIDE": [
+      {
+        "next_step": "RINSE WET WAFER_EDGE",
+        "count": 1000
+      }
+    ],
+    "EXPOSE LITHO LEVEL 1": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 2106
+      },
+      {
+        "next_step": "POST EXPOSE BAKE",
+        "count": 894
+      }
+    ],
+    "EXPOSE LITHO LEVEL 2": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 2096
+      },
+      {
+        "next_step": "POST EXPOSE BAKE",
+        "count": 904
+      }
+    ],
+    "EXPOSE LITHO LEVEL 3": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 2032
+      },
+      {
+        "next_step": "POST EXPOSE BAKE",
+        "count": 968
+      }
+    ],
+    "EXPOSE LITHO LEVEL 4": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 2140
+      },
+      {
+        "next_step": "POST EXPOSE BAKE",
+        "count": 860
+      }
+    ],
+    "EXPOSE LITHO LEVEL 5": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 702
+      },
+      {
+        "next_step": "POST EXPOSE BAKE",
+        "count": 298
+      }
+    ],
+    "EXPOSE LITHO LEVEL 6": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 692
+      },
+      {
+        "next_step": "POST EXPOSE BAKE",
+        "count": 308
+      }
+    ],
+    "FIELD OXIDE ETCH": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 504
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 496
+      }
+    ],
+    "FIELD PATTERN INSPECTION": [
+      {
+        "next_step": "FIELD OXIDE ETCH",
+        "count": 699
+      },
+      {
+        "next_step": "HARD BAKE",
+        "count": 301
+      }
+    ],
+    "FILL VIA METAL": [
+      {
+        "next_step": "CMP VIA FILL",
+        "count": 1011
+      },
+      {
+        "next_step": "CMP METAL",
+        "count": 989
+      }
+    ],
+    "FILL VIA TUNGSTEN": [
+      {
+        "next_step": "CMP METAL",
+        "count": 507
+      },
+      {
+        "next_step": "CMP VIA FILL",
+        "count": 493
+      }
+    ],
+    "FINAL CD INSPECTION": [
+      {
+        "next_step": "FINAL PARTICLE INSPECTION",
+        "count": 1171
+      },
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 133
+      },
+      {
+        "next_step": "ELECTRICAL PARAMETRIC TEST",
+        "count": 119
+      },
+      {
+        "next_step": "FINAL ELECTRICAL TEST PREP",
+        "count": 51
+      }
+    ],
+    "FINAL CLEAN": [
+      {
+        "next_step": "FINAL THICKNESS MEASURE",
+        "count": 2381
+      },
+      {
+        "next_step": "FINAL GEOMETRY CHECK",
+        "count": 513
+      },
+      {
+        "next_step": "FINAL CD INSPECTION",
+        "count": 46
+      },
+      {
+        "next_step": "FINAL PARTICLE INSPECTION",
+        "count": 31
+      },
+      {
+        "next_step": "FINAL OXIDE CHECK",
+        "count": 17
+      },
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 8
+      },
+      {
+        "next_step": "ELECTRICAL PARAMETRIC TEST",
+        "count": 3
+      },
+      {
+        "next_step": "FINAL ELECTRICAL TEST PREP",
+        "count": 1
+      }
+    ],
+    "FINAL GEOMETRY CHECK": [
+      {
+        "next_step": "FINAL CD INSPECTION",
+        "count": 980
+      },
+      {
+        "next_step": "FINAL PARTICLE INSPECTION",
+        "count": 806
+      },
+      {
+        "next_step": "FINAL OXIDE CHECK",
+        "count": 445
+      },
+      {
+        "next_step": "ELECTRICAL PARAMETRIC TEST",
+        "count": 95
+      },
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 93
+      },
+      {
+        "next_step": "FINAL ELECTRICAL TEST PREP",
+        "count": 15
+      }
+    ],
+    "FINAL LOT RELEASE": [
+      {
+        "next_step": "SHIP LOT",
+        "count": 1298
+      },
+      {
+        "next_step": "PACKAGE PREPARATION",
+        "count": 234
+      }
+    ],
+    "FINAL OXIDE CHECK": [
+      {
+        "next_step": "FINAL CD INSPECTION",
+        "count": 270
+      },
+      {
+        "next_step": "FINAL PARTICLE INSPECTION",
+        "count": 228
+      },
+      {
+        "next_step": "FINAL ELECTRICAL TEST PREP",
+        "count": 27
+      },
+      {
+        "next_step": "ELECTRICAL PARAMETRIC TEST",
+        "count": 16
+      },
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 13
+      }
+    ],
+    "FINAL PARTICLE INSPECTION": [
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 1010
+      },
+      {
+        "next_step": "ELECTRICAL PARAMETRIC TEST",
+        "count": 989
+      },
+      {
+        "next_step": "FINAL ELECTRICAL TEST PREP",
+        "count": 393
+      }
+    ],
+    "FINAL THICKNESS MEASURE": [
+      {
+        "next_step": "FINAL GEOMETRY CHECK",
+        "count": 1921
+      },
+      {
+        "next_step": "FINAL CD INSPECTION",
+        "count": 178
+      },
+      {
+        "next_step": "FINAL PARTICLE INSPECTION",
+        "count": 156
+      },
+      {
+        "next_step": "FINAL OXIDE CHECK",
+        "count": 92
+      },
+      {
+        "next_step": "ELECTRICAL PARAMETRIC TEST",
+        "count": 16
+      },
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 13
+      },
+      {
+        "next_step": "FINAL ELECTRICAL TEST PREP",
+        "count": 5
+      }
+    ],
+    "FRONTSIDE CLEAN": [
+      {
+        "next_step": "RCA CLEAN 1",
+        "count": 883
+      },
+      {
+        "next_step": "WET CLEAN RCA1",
+        "count": 883
+      }
+    ],
+    "FRONTSIDE CLEAN FINAL": [
+      {
+        "next_step": "FINAL CLEAN",
+        "count": 510
+      }
+    ],
+    "GATE OXIDE GROWTH": [
+      {
+        "next_step": "MEASURE GATE OXIDE THICKNESS",
+        "count": 1000
+      }
+    ],
+    "GATE OXIDE PREP": [
+      {
+        "next_step": "GATE OXIDE GROWTH",
+        "count": 1000
+      }
+    ],
+    "GRINDING WAFER BACKSIDE": [
+      {
+        "next_step": "MEASURE GEOMETRY",
+        "count": 519
+      },
+      {
+        "next_step": "MEASURE INITIAL GEOMETRY",
+        "count": 481
+      }
+    ],
+    "HARD BAKE": [
+      {
+        "next_step": "OXIDE ETCH DRY",
+        "count": 1276
+      },
+      {
+        "next_step": "POLYSILICON ETCH DRY",
+        "count": 616
+      },
+      {
+        "next_step": "METAL ETCH DRY",
+        "count": 588
+      },
+      {
+        "next_step": "VIA ETCH THROUGH DIELECTRIC",
+        "count": 335
+      },
+      {
+        "next_step": "OXIDE ETCH",
+        "count": 321
+      },
+      {
+        "next_step": "VIA ETCH",
+        "count": 311
+      },
+      {
+        "next_step": "FIELD OXIDE ETCH",
+        "count": 301
+      },
+      {
+        "next_step": "POLYSILICON ETCH",
+        "count": 291
+      }
+    ],
+    "HF DIP": [
+      {
+        "next_step": "DRY WAFER",
+        "count": 1788
+      },
+      {
+        "next_step": "OXIDE STRIP",
+        "count": 1000
+      },
+      {
+        "next_step": "EPITAXIAL WAFER CHECK",
+        "count": 427
+      },
+      {
+        "next_step": "WAFER CLEAN PRE-GRIND",
+        "count": 411
+      },
+      {
+        "next_step": "SUBSTRATE CHECK",
+        "count": 374
+      }
+    ],
+    "IMPLANT CHANNEL STOP": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 583
+      },
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 417
+      }
+    ],
+    "IMPLANT DRAIN / CATHODE REGION": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 616
+      },
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 384
+      }
+    ],
+    "IMPLANT LDD": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 586
+      },
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 414
+      }
+    ],
+    "IMPLANT N BUFFER": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 569
+      },
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 431
+      }
+    ],
+    "IMPLANT N-TYPE": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 596
+      },
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 404
+      }
+    ],
+    "IMPLANT P BODY": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 632
+      },
+      {
+        "next_step": "DRIVE IN DIFFUSION",
+        "count": 368
+      }
+    ],
+    "IMPLANT SOURCE DRAIN": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 574
+      },
+      {
+        "next_step": "LIGHT ANNEAL",
+        "count": 426
+      }
+    ],
+    "IMPLANT SOURCE REGION": [
+      {
+        "next_step": "IMPLANT DRAIN / CATHODE REGION",
+        "count": 1000
+      }
+    ],
+    "IMPLANT WELL": [
+      {
+        "next_step": "PRE ANNEAL CHECK",
+        "count": 624
+      },
+      {
+        "next_step": "DRIVE IN DIFFUSION",
+        "count": 376
+      }
+    ],
+    "INITIAL WAFER INSPECTION": [
+      {
+        "next_step": "MEASURE INITIAL THICKNESS",
+        "count": 620
+      },
+      {
+        "next_step": "MEASURE THICKNESS",
+        "count": 390
+      },
+      {
+        "next_step": "MEASURE INITIAL GEOMETRY",
+        "count": 209
+      },
+      {
+        "next_step": "MEASURE SURFACE PARTICLES",
+        "count": 175
+      },
+      {
+        "next_step": "MEASURE SURFACE DEFECTS",
+        "count": 37
+      },
+      {
+        "next_step": "PRE CLEAN WAFER",
+        "count": 24
+      },
+      {
+        "next_step": "WAFER CLEAN PRE PROCESS",
+        "count": 13
+      }
+    ],
+    "INSPECT PATTERN LEVEL 1": [
+      {
+        "next_step": "HARD BAKE",
+        "count": 1276
+      },
+      {
+        "next_step": "OXIDE ETCH DRY",
+        "count": 724
+      }
+    ],
+    "LEAKAGE TEST": [
+      {
+        "next_step": "THRESHOLD VOLTAGE TEST",
+        "count": 1492
+      },
+      {
+        "next_step": "BREAKDOWN VOLTAGE TEST",
+        "count": 1000
+      },
+      {
+        "next_step": "PARAMETRIC TEST",
+        "count": 271
+      },
+      {
+        "next_step": "SWITCHING TEST",
+        "count": 237
+      }
+    ],
+    "LIGHT ANNEAL": [
+      {
+        "next_step": "MEASURE SHEET RESISTANCE",
+        "count": 741
+      },
+      {
+        "next_step": "DEPOSIT SPACER DIELECTRIC",
+        "count": 259
+      }
+    ],
+    "LOT IDENTIFICATION": [
+      {
+        "next_step": "PRE CLEAN INSPECTION",
+        "count": 1532
+      },
+      {
+        "next_step": "INITIAL WAFER INSPECTION",
+        "count": 1468
+      }
+    ],
+    "LOT RELEASE": [
+      {
+        "next_step": "SHIP LOT",
+        "count": 1223
+      },
+      {
+        "next_step": "PACKAGE PREPARATION",
+        "count": 245
+      }
+    ],
+    "MEASURE BACKSIDE CONTACT": [
+      {
+        "next_step": "FINAL CLEAN",
+        "count": 2000
+      }
+    ],
+    "MEASURE BACKSIDE ROUGHNESS": [
+      {
+        "next_step": "THERMAL OXIDATION",
+        "count": 1000
+      }
+    ],
+    "MEASURE CD LEVEL 1": [
+      {
+        "next_step": "DEPOSIT POLYSILICON",
+        "count": 745
+      }
+    ],
+    "MEASURE CD LEVEL 2": [
+      {
+        "next_step": "IMPLANT N-TYPE",
+        "count": 750
+      }
+    ],
+    "MEASURE CONTACT RESISTANCE": [
+      {
+        "next_step": "DEPOSIT TOP METAL",
+        "count": 608
+      },
+      {
+        "next_step": "DEPOSIT METAL 1",
+        "count": 574
+      }
+    ],
+    "MEASURE DEVICE PARAMETER": [
+      {
+        "next_step": "DEPOSIT INTERLEVEL DIELECTRIC",
+        "count": 377
+      },
+      {
+        "next_step": "DEPOSIT INTERLAYER DIELECTRIC",
+        "count": 364
+      }
+    ],
+    "MEASURE DIELECTRIC THICKNESS": [
+      {
+        "next_step": "CMP INTERLAYER DIELECTRIC",
+        "count": 768
+      },
+      {
+        "next_step": "CMP DIELECTRIC",
+        "count": 746
+      }
+    ],
+    "MEASURE EPITAXY THICKNESS": [
+      {
+        "next_step": "MEASURE RESISTIVITY",
+        "count": 2000
+      }
+    ],
+    "MEASURE FILM THICKNESS": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1263
+      },
+      {
+        "next_step": "CMP INTERLAYER DIELECTRIC",
+        "count": 756
+      },
+      {
+        "next_step": "CMP DIELECTRIC",
+        "count": 730
+      }
+    ],
+    "MEASURE GATE CD": [
+      {
+        "next_step": "IMPLANT SOURCE DRAIN",
+        "count": 766
+      },
+      {
+        "next_step": "IMPLANT CHANNEL STOP",
+        "count": 740
+      }
+    ],
+    "MEASURE GATE OXIDE THICKNESS": [
+      {
+        "next_step": "DEPOSIT POLYSILICON",
+        "count": 1000
+      }
+    ],
+    "MEASURE GEOMETRY": [
+      {
+        "next_step": "ETCH WET BACKSIDE",
+        "count": 519
+      }
+    ],
+    "MEASURE INITIAL GEOMETRY": [
+      {
+        "next_step": "ETCH WET BACKSIDE",
+        "count": 481
+      },
+      {
+        "next_step": "MEASURE SURFACE DEFECTS",
+        "count": 179
+      },
+      {
+        "next_step": "MEASURE SURFACE PARTICLES",
+        "count": 171
+      },
+      {
+        "next_step": "WAFER CLEAN PRE PROCESS",
+        "count": 61
+      }
+    ],
+    "MEASURE INITIAL THICKNESS": [
+      {
+        "next_step": "MEASURE SURFACE PARTICLES",
+        "count": 866
+      },
+      {
+        "next_step": "MEASURE SURFACE DEFECTS",
+        "count": 198
+      },
+      {
+        "next_step": "PRE CLEAN WAFER",
+        "count": 157
+      },
+      {
+        "next_step": "WAFER CLEAN PRE PROCESS",
+        "count": 63
+      }
+    ],
+    "MEASURE JUNCTION DEPTH": [
+      {
+        "next_step": "THERMAL OXIDATION",
+        "count": 1540
+      }
+    ],
+    "MEASURE JUNCTION PROFILE": [
+      {
+        "next_step": "DEPOSIT INTERLEVEL DIELECTRIC",
+        "count": 402
+      },
+      {
+        "next_step": "DEPOSIT INTERLAYER DIELECTRIC",
+        "count": 347
+      }
+    ],
+    "MEASURE LINE WIDTH": [
+      {
+        "next_step": "DEPOSIT PASSIVATION LAYER",
+        "count": 1116
+      },
+      {
+        "next_step": "DEPOSIT PASSIVATION",
+        "count": 1098
+      }
+    ],
+    "MEASURE METAL THICKNESS": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1355
+      }
+    ],
+    "MEASURE OPENING CD": [
+      {
+        "next_step": "IMPLANT P BODY",
+        "count": 766
+      },
+      {
+        "next_step": "IMPLANT WELL",
+        "count": 747
+      }
+    ],
+    "MEASURE OXIDE QUALITY": [
+      {
+        "next_step": "DEPOSIT POLYSILICON",
+        "count": 749
+      }
+    ],
+    "MEASURE OXIDE THICKNESS": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 2489
+      },
+      {
+        "next_step": "WET CLEAN RCA1",
+        "count": 505
+      },
+      {
+        "next_step": "RCA CLEAN 1",
+        "count": 495
+      }
+    ],
+    "MEASURE PAD OPENING": [
+      {
+        "next_step": "BACKSIDE CLEAN",
+        "count": 1187
+      },
+      {
+        "next_step": "BACKSIDE GRIND",
+        "count": 1000
+      },
+      {
+        "next_step": "BACKSIDE THINNING CHECK",
+        "count": 623
+      },
+      {
+        "next_step": "BACKSIDE CLEAN FINAL",
+        "count": 190
+      }
+    ],
+    "MEASURE PASSIVATION QUALITY": [
+      {
+        "next_step": "OPEN PAD WINDOW",
+        "count": 795
+      },
+      {
+        "next_step": "OPEN BOND PAD WINDOW",
+        "count": 702
+      }
+    ],
+    "MEASURE PASSIVATION THICKNESS": [
+      {
+        "next_step": "OPEN PAD WINDOW",
+        "count": 780
+      },
+      {
+        "next_step": "OPEN BOND PAD WINDOW",
+        "count": 723
+      }
+    ],
+    "MEASURE PLANARITY": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1489
+      }
+    ],
+    "MEASURE POLY THICKNESS": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1529
+      }
+    ],
+    "MEASURE RESISTIVITY": [
+      {
+        "next_step": "EPITAXY ANNEAL",
+        "count": 1000
+      },
+      {
+        "next_step": "EPITAXIAL LAYER PREP",
+        "count": 513
+      },
+      {
+        "next_step": "EPITAXIAL REWORK CHECK",
+        "count": 487
+      }
+    ],
+    "MEASURE SHEET RESISTANCE": [
+      {
+        "next_step": "DEPOSIT SPACER DIELECTRIC",
+        "count": 741
+      },
+      {
+        "next_step": "DEPOSIT GATE OXIDE OR DIELECTRIC",
+        "count": 738
+      },
+      {
+        "next_step": "DEPOSIT FIELD OXIDE",
+        "count": 466
+      },
+      {
+        "next_step": "DEPOSIT INTERLEVEL DIELECTRIC",
+        "count": 383
+      },
+      {
+        "next_step": "DEPOSIT INTERLAYER DIELECTRIC",
+        "count": 345
+      },
+      {
+        "next_step": "EPITAXIAL REWORK CHECK",
+        "count": 277
+      }
+    ],
+    "MEASURE SPACER WIDTH": [
+      {
+        "next_step": "IMPLANT LDD",
+        "count": 750
+      }
+    ],
+    "MEASURE SURFACE PARTICLES": [
+      {
+        "next_step": "PRE CLEAN WAFER",
+        "count": 1667
+      },
+      {
+        "next_step": "WAFER CLEAN PRE PROCESS",
+        "count": 397
+      }
+    ],
+    "MEASURE SURFACE PLANARITY": [
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1511
+      }
+    ],
+    "MEASURE SURFACE UNIFORMITY": [
+      {
+        "next_step": "IMPLANT SOURCE REGION",
+        "count": 752
+      }
+    ],
+    "MEASURE THICKNESS": [
+      {
+        "next_step": "BACKSIDE ETCH CLEAN",
+        "count": 963
+      },
+      {
+        "next_step": "MEASURE SURFACE PARTICLES",
+        "count": 702
+      },
+      {
+        "next_step": "PRE CLEAN WAFER",
+        "count": 130
+      }
+    ],
+    "MEASURE VIA CD": [
+      {
+        "next_step": "DEPOSIT BARRIER METAL",
+        "count": 2263
+      }
+    ],
+    "MEASURE VIA RESISTANCE": [
+      {
+        "next_step": "DEPOSIT METAL 1",
+        "count": 555
+      },
+      {
+        "next_step": "DEPOSIT TOP METAL",
+        "count": 538
+      }
+    ],
+    "MEASURE WAFER THICKNESS": [
+      {
+        "next_step": "BACKSIDE ETCH CLEAN",
+        "count": 1037
+      }
+    ],
+    "MEASURE WINDOW CD": [
+      {
+        "next_step": "IMPLANT N BUFFER",
+        "count": 743
+      }
+    ],
+    "METAL ETCH": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 510
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 490
+      }
+    ],
+    "METAL ETCH DRY": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 1015
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 985
+      }
+    ],
+    "METAL PATTERN INSPECTION": [
+      {
+        "next_step": "METAL ETCH DRY",
+        "count": 1412
+      },
+      {
+        "next_step": "HARD BAKE",
+        "count": 874
+      },
+      {
+        "next_step": "METAL ETCH",
+        "count": 714
+      }
+    ],
+    "OPEN BOND PAD WINDOW": [
+      {
+        "next_step": "OPEN PAD WINDOW LITHO",
+        "count": 745
+      },
+      {
+        "next_step": "PAD WINDOW LITHO",
+        "count": 680
+      }
+    ],
+    "OPEN PAD WINDOW": [
+      {
+        "next_step": "PAD WINDOW LITHO",
+        "count": 795
+      },
+      {
+        "next_step": "OPEN PAD WINDOW LITHO",
+        "count": 780
+      }
+    ],
+    "OPEN PAD WINDOW LITHO": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 768
+      },
+      {
+        "next_step": "DEVELOP PAD WINDOW",
+        "count": 757
+      }
+    ],
+    "OXIDE ETCH": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 513
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 487
+      }
+    ],
+    "OXIDE ETCH DRY": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 1006
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 994
+      }
+    ],
+    "OXIDE STRIP": [
+      {
+        "next_step": "SURFACE PREP FOR DEPOSITION",
+        "count": 1000
+      }
+    ],
+    "P BODY WINDOW INSPECTION": [
+      {
+        "next_step": "ETCH SILICON OR OXIDE WINDOW",
+        "count": 719
+      },
+      {
+        "next_step": "HARD BAKE",
+        "count": 281
+      }
+    ],
+    "PAD WINDOW LITHO": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 749
+      },
+      {
+        "next_step": "DEVELOP PAD WINDOW",
+        "count": 726
+      }
+    ],
+    "PARAMETRIC TEST": [
+      {
+        "next_step": "LEAKAGE TEST",
+        "count": 1506
+      },
+      {
+        "next_step": "SWITCHING TEST",
+        "count": 271
+      }
+    ],
+    "PASSIVATION ETCH": [
+      {
+        "next_step": "STRIP RESIST",
+        "count": 744
+      },
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 718
+      }
+    ],
+    "PASSIVATION ETCH PAD OPENING": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 776
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 762
+      }
+    ],
+    "PATTERN INSPECTION LEVEL 1": [
+      {
+        "next_step": "OXIDE ETCH",
+        "count": 679
+      },
+      {
+        "next_step": "HARD BAKE",
+        "count": 321
+      }
+    ],
+    "PATTERN INSPECTION LEVEL 2": [
+      {
+        "next_step": "POLYSILICON ETCH DRY",
+        "count": 685
+      },
+      {
+        "next_step": "HARD BAKE",
+        "count": 315
+      }
+    ],
+    "POLY PATTERN INSPECTION": [
+      {
+        "next_step": "POLYSILICON ETCH",
+        "count": 709
+      },
+      {
+        "next_step": "POLYSILICON ETCH DRY",
+        "count": 699
+      },
+      {
+        "next_step": "HARD BAKE",
+        "count": 592
+      }
+    ],
+    "POLYSILICON ANNEAL": [
+      {
+        "next_step": "MEASURE POLY THICKNESS",
+        "count": 1529
+      },
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 471
+      }
+    ],
+    "POLYSILICON ETCH": [
+      {
+        "next_step": "STRIP RESIST",
+        "count": 522
+      },
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 478
+      }
+    ],
+    "POLYSILICON ETCH DRY": [
+      {
+        "next_step": "STRIP RESIST",
+        "count": 1019
+      },
+      {
+        "next_step": "STRIP RESIST LEVEL 2",
+        "count": 502
+      },
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 479
+      }
+    ],
+    "POST EXPOSE BAKE": [
+      {
+        "next_step": "DEVELOP PHOTORESIST",
+        "count": 4232
+      }
+    ],
+    "PRE ANNEAL CHECK": [
+      {
+        "next_step": "RAPID THERMAL ANNEAL",
+        "count": 2950
+      },
+      {
+        "next_step": "DRIVE IN DIFFUSION",
+        "count": 1256
+      },
+      {
+        "next_step": "LIGHT ANNEAL",
+        "count": 574
+      }
+    ],
+    "PRE CLEAN INSPECTION": [
+      {
+        "next_step": "MEASURE INITIAL THICKNESS",
+        "count": 664
+      },
+      {
+        "next_step": "MEASURE THICKNESS",
+        "count": 442
+      },
+      {
+        "next_step": "MEASURE INITIAL GEOMETRY",
+        "count": 202
+      },
+      {
+        "next_step": "MEASURE SURFACE PARTICLES",
+        "count": 150
+      },
+      {
+        "next_step": "MEASURE SURFACE DEFECTS",
+        "count": 43
+      },
+      {
+        "next_step": "PRE CLEAN WAFER",
+        "count": 22
+      },
+      {
+        "next_step": "WAFER CLEAN PRE PROCESS",
+        "count": 9
+      }
+    ],
+    "PRE CLEAN WAFER": [
+      {
+        "next_step": "BACKSIDE CLEAN",
+        "count": 1476
+      },
+      {
+        "next_step": "FRONTSIDE CLEAN",
+        "count": 200
+      },
+      {
+        "next_step": "WET CLEAN RCA1",
+        "count": 181
+      },
+      {
+        "next_step": "RCA CLEAN 1",
+        "count": 143
+      }
+    ],
+    "RAPID THERMAL ANNEAL": [
+      {
+        "next_step": "MEASURE SHEET RESISTANCE",
+        "count": 2209
+      },
+      {
+        "next_step": "MEASURE JUNCTION DEPTH",
+        "count": 1540
+      },
+      {
+        "next_step": "MEASURE JUNCTION PROFILE",
+        "count": 749
+      },
+      {
+        "next_step": "MEASURE DEVICE PARAMETER",
+        "count": 741
+      },
+      {
+        "next_step": "THERMAL OXIDATION",
+        "count": 460
+      },
+      {
+        "next_step": "DEPOSIT INTERLEVEL DIELECTRIC",
+        "count": 411
+      },
+      {
+        "next_step": "DEPOSIT INTERLAYER DIELECTRIC",
+        "count": 371
+      },
+      {
+        "next_step": "DEPOSIT GATE OXIDE OR DIELECTRIC",
+        "count": 262
+      }
+    ],
+    "RCA CLEAN 1": [
+      {
+        "next_step": "RCA CLEAN 2",
+        "count": 995
+      },
+      {
+        "next_step": "WET CLEAN RCA2",
+        "count": 982
+      }
+    ],
+    "RCA CLEAN 2": [
+      {
+        "next_step": "HF DIP",
+        "count": 1995
+      }
+    ],
+    "RECEIVE WAFER LOT": [
+      {
+        "next_step": "LOT IDENTIFICATION",
+        "count": 3000
+      }
+    ],
+    "RINSE WET WAFER_EDGE": [
+      {
+        "next_step": "DRY WAFER BACKSIDE",
+        "count": 1000
+      }
+    ],
+    "SOFT BAKE": [
+      {
+        "next_step": "ALIGN MASK LEVEL 1",
+        "count": 3000
+      },
+      {
+        "next_step": "ALIGN MASK LEVEL 2",
+        "count": 3000
+      },
+      {
+        "next_step": "ALIGN MASK LEVEL 3",
+        "count": 3000
+      },
+      {
+        "next_step": "ALIGN MASK LEVEL 4",
+        "count": 3000
+      },
+      {
+        "next_step": "ALIGN MASK LEVEL 5",
+        "count": 1000
+      },
+      {
+        "next_step": "ALIGN MASK LEVEL 6",
+        "count": 1000
+      }
+    ],
+    "SPIN COAT PHOTORESIST": [
+      {
+        "next_step": "SOFT BAKE",
+        "count": 14000
+      }
+    ],
+    "STRIP PHOTORESIST": [
+      {
+        "next_step": "CLEAN AFTER VIA ETCH",
+        "count": 1533
+      },
+      {
+        "next_step": "CLEAN AFTER METAL ETCH",
+        "count": 1525
+      },
+      {
+        "next_step": "CLEAN PAD OPENING",
+        "count": 1494
+      },
+      {
+        "next_step": "CLEAN AFTER ETCH",
+        "count": 1007
+      },
+      {
+        "next_step": "CLEAN AFTER POLY ETCH",
+        "count": 957
+      },
+      {
+        "next_step": "CLEAN AFTER OXIDE ETCH",
+        "count": 512
+      },
+      {
+        "next_step": "CLEAN AFTER FIELD ETCH",
+        "count": 504
+      },
+      {
+        "next_step": "CLEAN AFTER WINDOW ETCH",
+        "count": 480
+      }
+    ],
+    "STRIP RESIST": [
+      {
+        "next_step": "CLEAN AFTER POLY ETCH",
+        "count": 1541
+      },
+      {
+        "next_step": "CLEAN PAD OPENING",
+        "count": 1506
+      },
+      {
+        "next_step": "CLEAN AFTER METAL ETCH",
+        "count": 1475
+      },
+      {
+        "next_step": "CLEAN AFTER VIA ETCH",
+        "count": 1467
+      },
+      {
+        "next_step": "CLEAN AFTER ETCH",
+        "count": 993
+      },
+      {
+        "next_step": "CLEAN AFTER WINDOW ETCH",
+        "count": 520
+      },
+      {
+        "next_step": "CLEAN AFTER FIELD ETCH",
+        "count": 496
+      },
+      {
+        "next_step": "CLEAN AFTER OXIDE ETCH",
+        "count": 488
+      }
+    ],
+    "STRIP RESIST LEVEL 2": [
+      {
+        "next_step": "CLEAN AFTER POLY ETCH",
+        "count": 502
+      }
+    ],
+    "SUBSTRATE CHECK": [
+      {
+        "next_step": "EPITAXY PREP",
+        "count": 1000
+      }
+    ],
+    "SURFACE PREP FOR DEPOSITION": [
+      {
+        "next_step": "DEPOSIT PAD OXIDE",
+        "count": 1000
+      }
+    ],
+    "SWITCHING TEST": [
+      {
+        "next_step": "WAFER SORT TEST",
+        "count": 2500
+      },
+      {
+        "next_step": "YIELD ANALYSIS",
+        "count": 500
+      }
+    ],
+    "THERMAL OXIDATION": [
+      {
+        "next_step": "MEASURE OXIDE THICKNESS",
+        "count": 3000
+      },
+      {
+        "next_step": "GATE OXIDE PREP",
+        "count": 1000
+      },
+      {
+        "next_step": "SPIN COAT PHOTORESIST",
+        "count": 1000
+      }
+    ],
+    "THRESHOLD VOLTAGE TEST": [
+      {
+        "next_step": "SWITCHING TEST",
+        "count": 1492
+      }
+    ],
+    "VIA ETCH": [
+      {
+        "next_step": "STRIP RESIST",
+        "count": 500
+      },
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 489
+      }
+    ],
+    "VIA ETCH THROUGH DIELECTRIC": [
+      {
+        "next_step": "STRIP PHOTORESIST",
+        "count": 534
+      },
+      {
+        "next_step": "STRIP RESIST",
+        "count": 497
+      }
+    ],
+    "VIA INSPECTION": [
+      {
+        "next_step": "HARD BAKE",
+        "count": 446
+      },
+      {
+        "next_step": "DIELECTRIC ETCH VIA",
+        "count": 366
+      },
+      {
+        "next_step": "VIA ETCH",
+        "count": 346
+      },
+      {
+        "next_step": "VIA ETCH THROUGH DIELECTRIC",
+        "count": 339
+      }
+    ],
+    "VIA OPENING INSPECTION": [
+      {
+        "next_step": "HARD BAKE",
+        "count": 469
+      },
+      {
+        "next_step": "VIA ETCH THROUGH DIELECTRIC",
+        "count": 357
+      },
+      {
+        "next_step": "DIELECTRIC ETCH VIA",
+        "count": 345
+      },
+      {
+        "next_step": "VIA ETCH",
+        "count": 332
+      }
+    ],
+    "WAFER CLEAN PRE PROCESS": [
+      {
+        "next_step": "BACKSIDE CLEAN",
+        "count": 500
+      },
+      {
+        "next_step": "FRONTSIDE CLEAN",
+        "count": 201
+      },
+      {
+        "next_step": "RCA CLEAN 1",
+        "count": 151
+      },
+      {
+        "next_step": "WET CLEAN RCA1",
+        "count": 148
+      }
+    ],
+    "WAFER CLEAN PRE-GRIND": [
+      {
+        "next_step": "GRINDING WAFER BACKSIDE",
+        "count": 1000
+      }
+    ],
+    "WAFER SORT TEST": [
+      {
+        "next_step": "YIELD ANALYSIS",
+        "count": 2500
+      },
+      {
+        "next_step": "FINAL LOT RELEASE",
+        "count": 256
+      },
+      {
+        "next_step": "LOT RELEASE",
+        "count": 244
+      }
+    ],
+    "WAFER SURFACE CLEAN": [
+      {
+        "next_step": "THERMAL OXIDATION",
+        "count": 1000
+      }
+    ],
+    "WET CLEAN RCA1": [
+      {
+        "next_step": "WET CLEAN RCA2",
+        "count": 1023
+      },
+      {
+        "next_step": "RCA CLEAN 2",
+        "count": 1000
+      }
+    ],
+    "WET CLEAN RCA2": [
+      {
+        "next_step": "HF DIP",
+        "count": 2005
+      }
+    ],
+    "YIELD ANALYSIS": [
+      {
+        "next_step": "FINAL LOT RELEASE",
+        "count": 1276
+      },
+      {
+        "next_step": "LOT RELEASE",
+        "count": 1224
+      },
+      {
+        "next_step": "WAFER SORT TEST",
+        "count": 500
+      }
+    ]
+  }
+}

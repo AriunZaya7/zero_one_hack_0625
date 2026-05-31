@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-05-31 02:13:20",
+  "model_type": "gpt",
+  "model_name": "large",
+  "mode": "ood3",
+  "holdout": "scfam10+scfam11+scfam12",
+  "n_params_M": 21.47,
+  "epochs": 30,
+  "n_eval_seqs": 23687,
+  "ngram_top1": 0.662,
+  "top1": 0.7203,
+  "top3": 0.9808,
+  "top5": 0.9989,
+  "mrr": 0.8467
+}

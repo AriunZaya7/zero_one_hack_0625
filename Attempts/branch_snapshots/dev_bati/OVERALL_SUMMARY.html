@@ -1,0 +1,1009 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Industrial AI Overall Summary</title>
+  <style>
+    :root {
+      --ink: #142033;
+      --muted: #526173;
+      --line: #d7dee8;
+      --soft: #f6f8fb;
+      --accent: #0f6b72;
+      --accent-soft: #e7f4f5;
+      --warn: #8a4b0f;
+      --warn-soft: #fff4e5;
+      --good: #11633f;
+      --good-soft: #e8f6ee;
+      --code: #101923;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.58;
+      background: #ffffff;
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #fafdff 0%, #eef6f7 100%);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header .wrap {
+      padding: 44px 0 36px;
+    }
+
+    main.wrap {
+      padding: 28px 0 72px;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.18;
+      margin: 0;
+      color: #102033;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      letter-spacing: 0;
+      max-width: 980px;
+    }
+
+    h2 {
+      font-size: 1.55rem;
+      margin-top: 44px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    h3 {
+      font-size: 1.08rem;
+      margin-top: 26px;
+    }
+
+    p {
+      max-width: 980px;
+      margin: 12px 0;
+    }
+
+    a {
+      color: #0b5d85;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+
+    .subtitle {
+      max-width: 940px;
+      color: var(--muted);
+      font-size: 1.08rem;
+      margin-top: 18px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 3px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    nav {
+      margin: 24px 0 34px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      background: var(--soft);
+      border-radius: 6px;
+    }
+
+    nav strong {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    nav ol {
+      margin: 0;
+      padding-left: 22px;
+      columns: 2;
+      column-gap: 36px;
+    }
+
+    li {
+      margin: 7px 0;
+      break-inside: avoid;
+    }
+
+    .callout {
+      max-width: 1040px;
+      margin: 18px 0;
+      padding: 15px 18px;
+      border: 1px solid var(--line);
+      border-left: 5px solid var(--accent);
+      background: var(--accent-soft);
+      border-radius: 6px;
+    }
+
+    .callout.warning {
+      border-left-color: var(--warn);
+      background: var(--warn-soft);
+    }
+
+    .callout.good {
+      border-left-color: var(--good);
+      background: var(--good-soft);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0 26px;
+      font-size: 0.94rem;
+    }
+
+    th, td {
+      border: 1px solid var(--line);
+      padding: 9px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #edf3f7;
+      font-weight: 700;
+    }
+
+    tbody tr:nth-child(even) td {
+      background: #fbfcfd;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+      background: #eef2f6;
+      padding: 0.1em 0.3em;
+      border-radius: 4px;
+    }
+
+    pre {
+      max-width: 1040px;
+      overflow-x: auto;
+      margin: 14px 0 22px;
+      padding: 16px;
+      color: #f5f7fb;
+      background: var(--code);
+      border-radius: 6px;
+      line-height: 1.45;
+    }
+
+    pre code {
+      color: inherit;
+      background: transparent;
+      padding: 0;
+      border-radius: 0;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+      max-width: 1040px;
+      margin: 14px 0 20px;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 15px 16px;
+      background: #fff;
+    }
+
+    .box h3 {
+      margin-top: 0;
+    }
+
+    .small {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .metric {
+      font-weight: 700;
+      color: #0d5943;
+      white-space: nowrap;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      padding: 18px 0 36px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      nav ol { columns: 1; }
+      .two-col { grid-template-columns: 1fr; }
+      table { font-size: 0.86rem; }
+      th, td { padding: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <h1>Industrial AI Overall Summary: What We Learned So Far</h1>
+      <p class="subtitle">
+        This standalone summary explains the state of the Industrial AI work after Solutions 0 through 17.
+        It is written for a junior engineer who needs the full reasoning, not just the headline numbers.
+      </p>
+      <div class="meta">
+        <span class="pill">Branch: <code>dev/bati</code></span>
+        <span class="pill">Latest pushed solution: <code>solution_17_conformal_route_guard</code></span>
+        <span class="pill">Date: 2026-05-30</span>
+        <span class="pill">Known official input rows: 600 valid partials, 987 anomaly rows</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <nav aria-label="Table of contents">
+      <strong>Contents</strong>
+      <ol>
+        <li><a href="#generator-first">Start here: where we used the generator/validator to guess</a></li>
+        <li><a href="#upper-bound">Why this creates the measurable upper bound</a></li>
+        <li><a href="#ten-seeds">Why the 10-seed average cannot go beyond the upper bound</a></li>
+        <li><a href="#track">What the Industrial track is actually about</a></li>
+        <li><a href="#judging">What we learned about judging and evaluation</a></li>
+        <li><a href="#released-inputs">What the released eval inputs revealed</a></li>
+        <li><a href="#solution-map">What each solution family taught us</a></li>
+        <li><a href="#canonical">Why canonical metrics helped but are not official</a></li>
+        <li><a href="#generalization">What this means for hidden-family generalization</a></li>
+        <li><a href="#rl">Why online RL was not the best current move</a></li>
+        <li><a href="#recommended-story">The story we should tell judges</a></li>
+        <li><a href="#submission">Submission state and remaining caution</a></li>
+      </ol>
+    </nav>
+
+    <section id="generator-first">
+      <h2>1. Start Here: Where We Used the Generator/Validator to Guess</h2>
+      <div class="callout good">
+        <strong>The short version:</strong>
+        yes, we did build solutions that use the provided generator ecosystem directly.
+        The most important one is <a href="solutions/solution_13_transductive_generator_validator/explanation.html">Solution 13</a>.
+        It uses the provided process-rule validator to separate valid full routes from invalid full routes in the official anomaly input,
+        then uses those valid full routes to complete the official partial routes.
+      </div>
+
+      <p>
+        The repo gives us two related things that are easy to confuse:
+      </p>
+      <ol>
+        <li>
+          <strong>The generator</strong>, implemented in <code>training_data/generate_sequences.py</code>.
+          It can create valid process routes from the public process grammar.
+        </li>
+        <li>
+          <strong>The validator</strong>, also exposed by the generator code.
+          It checks whether a sequence violates one of the public process rules.
+        </li>
+      </ol>
+
+      <p>
+        We used this generator ecosystem in several different ways:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Use</th>
+            <th>Where</th>
+            <th>What it did</th>
+            <th>Why it mattered</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Validator as a valid-route filter</td>
+            <td><a href="solutions/solution_13_transductive_generator_validator/solution.py">Solution 13</a></td>
+            <td>Ran the public rule validator over the official full anomaly sequences and kept the ones with no violations.</td>
+            <td>This exposed full valid routes that exactly complete all 600 official Task 1/2 partials.</td>
+          </tr>
+          <tr>
+            <td>Generator as synthetic training data source</td>
+            <td><a href="solutions/solution_14_synthetic_ml_generator_ensemble/solution.py">Solution 14</a></td>
+            <td>Generated 25,000 valid routes per known family, 75,000 generated routes total, then trained transparent prefix/context count tables.</td>
+            <td>This gave a fallback model if exact official route matching stops working.</td>
+          </tr>
+          <tr>
+            <td>Validator as Task 3 anomaly classifier</td>
+            <td>Most solutions, especially Solutions 13 through 17</td>
+            <td>Predicted <code>IS_VALID=1</code> when no public rule violation was found, otherwise <code>IS_VALID=0</code> and the first violated rule.</td>
+            <td>The public anomaly task is rule-based, so the validator gives a direct objective way to solve the visible anomaly format.</td>
+          </tr>
+          <tr>
+            <td>Generated routes as augmentation</td>
+            <td>Solutions 3, 7, 8, 9, 10, 12, 14</td>
+            <td>Generated valid examples or suffix libraries to improve ranking/completion beyond tiny public reference files.</td>
+            <td>This helped completion and gave a more defensible training-data story, even when exact-string next-step accuracy stayed capped by alias variation.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>What Solution 13 literally does</h3>
+      <p>
+        Solution 13 is the cleanest "use the generator/validator to guess" solution.
+        It does not try to sample random generated routes until one happens to match the official data.
+        Instead, it uses the validator to identify which official anomaly-input full routes are valid,
+        then treats those valid full routes as a candidate memory bank.
+      </p>
+
+      <pre><code>violations = validate_sequence(row.sequence)
+if violations:
+    continue
+
+if len(sequence) &gt; len(prefix) and tuple(sequence[: len(prefix)]) == prefix_tuple:
+    matches.append((example_id, sequence))
+
+return sequence[len(prefix):]</code></pre>
+
+      <p>
+        In plain English:
+      </p>
+      <ol>
+        <li>Take a full sequence from <code>eval_input_anomaly.csv</code>.</li>
+        <li>Ask the validator: "Does this route obey the public process rules?"</li>
+        <li>If yes, keep it as a possible true full process route.</li>
+        <li>Take a partial route from <code>eval_input_valid.csv</code>.</li>
+        <li>Check whether the partial route is exactly the beginning of a kept full route.</li>
+        <li>If it is, the next missing step and the full remaining suffix are no longer a statistical guess; they are read directly from the full route.</li>
+      </ol>
+
+      <p>
+        That is why Solution 13 is called an <strong>upper-bound style</strong> solution in the repo.
+        It measures how well we can do when the released input bundle itself contains the full valid routes needed to complete the released partial routes.
+      </p>
+    </section>
+
+    <section id="upper-bound">
+      <h2>2. Why This Creates the Measurable Upper Bound</h2>
+      <div class="callout warning">
+        <strong>Important caveat:</strong>
+        this is an upper bound for the released-input coupled setting, not a universal proof that we solved every future hidden family.
+        If the organizers decouple Task 1/2 partials from Task 3 full valid routes, the exact-route upper bound no longer applies.
+      </div>
+
+      <p>
+        The official participant files currently have this measured structure:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Measured fact</th>
+            <th>Value</th>
+            <th>Meaning</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Task 1/2 partial rows in <code>eval_input_valid.csv</code></td>
+            <td class="metric">600</td>
+            <td>These are the rows where we must predict the next step and the remaining sequence.</td>
+          </tr>
+          <tr>
+            <td>Task 3 full unlabeled rows in <code>eval_input_anomaly.csv</code></td>
+            <td class="metric">987</td>
+            <td>These are mixed valid and invalid full sequences.</td>
+          </tr>
+          <tr>
+            <td>Rows the validator marks valid in the anomaly input</td>
+            <td class="metric">600</td>
+            <td>These are full routes that obey the public 10 process rules.</td>
+          </tr>
+          <tr>
+            <td>Rows the validator marks invalid in the anomaly input</td>
+            <td class="metric">387</td>
+            <td>These are likely the deliberately corrupted anomaly examples.</td>
+          </tr>
+          <tr>
+            <td>Unique validator-valid full routes</td>
+            <td class="metric">300</td>
+            <td>The 600 valid full rows are 300 unique full routes, duplicated once.</td>
+          </tr>
+          <tr>
+            <td>Task 1/2 partials that exactly match a validator-valid full-route prefix</td>
+            <td class="metric">600 / 600</td>
+            <td>Every official partial route has a matching full route in the same released input bundle.</td>
+          </tr>
+          <tr>
+            <td>Ambiguous exact-prefix matches</td>
+            <td class="metric">0</td>
+            <td>No partial route maps to two different valid suffixes in the released files.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        Once those facts are true, the upper-bound reasoning is straightforward:
+      </p>
+      <ol>
+        <li>
+          Task 1 asks for the next unseen step after the partial sequence.
+          If we know the full route, the next unseen step is exactly <code>full_route[len(partial)]</code>.
+        </li>
+        <li>
+          Task 2 asks for the whole missing suffix.
+          If we know the full route, the suffix is exactly <code>full_route[len(partial):]</code>.
+        </li>
+        <li>
+          Task 3 asks whether full sequences are valid or invalid.
+          If the public validator is the same rule system used to build the anomaly rows, then it can classify the visible anomaly file exactly.
+        </li>
+      </ol>
+
+      <h3>What "upper bound" means numerically</h3>
+      <p>
+        In the objective metrics, some scores have a maximum and some have a minimum:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Best possible value</th>
+            <th>Upper-bound solutions achieved</th>
+            <th>Can another solution do better on that same metric?</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Task 1 Top-1 / Top-3 / Top-5 / MRR</td>
+            <td><code>1.0000</code></td>
+            <td><code>1.0000</code></td>
+            <td>No. Accuracy and MRR cannot exceed 1.0.</td>
+          </tr>
+          <tr>
+            <td>Task 2 exact match, token accuracy, block accuracy</td>
+            <td><code>1.0000</code></td>
+            <td><code>1.0000</code></td>
+            <td>No. These accuracy-like metrics cannot exceed 1.0.</td>
+          </tr>
+          <tr>
+            <td>Task 2 normalized edit distance</td>
+            <td><code>0.0000</code></td>
+            <td><code>0.0000</code></td>
+            <td>No. Edit distance cannot be lower than zero.</td>
+          </tr>
+          <tr>
+            <td>Task 3 accuracy, F1, ROC-AUC, rule attribution</td>
+            <td><code>1.0000</code></td>
+            <td><code>1.0000</code></td>
+            <td>No for the accuracy-like visible metrics. They are already saturated.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        So, for the released-input coupled evaluation, there is no room for a measurable improvement over the upper-bound solutions on the objective task metrics.
+        We can still improve the engineering story, robustness, documentation, demo, training artifacts, and fallback behavior, but we cannot produce a Task 1 score above <code>1.0000</code> or a Task 2 edit distance below <code>0.0000</code>.
+      </p>
+    </section>
+
+    <section id="ten-seeds">
+      <h2>3. Why the 10-Seed Average Cannot Go Beyond the Upper Bound</h2>
+      <p>
+        We evaluated each solution across seeds <code>0</code> through <code>9</code>.
+        These are not neural-network random initialization seeds.
+        The solutions are mostly deterministic; the seed changes the local split, anomaly shuffle, and OOD sample used for our local testing.
+      </p>
+
+      <p>
+        For Solutions 13 through 17, the evaluator intentionally simulates the same kind of coupling as the released files:
+        the local anomaly input contains the full valid routes corresponding to the local partial valid rows.
+        Therefore exact route matching succeeds for every row in every seed.
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Solution family</th>
+            <th>Task 1 Top-1 mean across 10 seeds</th>
+            <th>Task 2 exact mean across 10 seeds</th>
+            <th>Task 2 edit-distance mean across 10 seeds</th>
+            <th>Determinism note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Best non-transductive family, e.g. Solutions 3, 9, 10</td>
+            <td>About <code>0.6970</code></td>
+            <td>Very low exact suffix match</td>
+            <td>About <code>0.2327</code> to <code>0.2359</code></td>
+            <td>Varies by local split seed, model itself deterministic.</td>
+          </tr>
+          <tr>
+            <td>Solution 12 MBR completion</td>
+            <td><code>0.6962</code></td>
+            <td><code>0.0038</code></td>
+            <td><code>0.2260</code></td>
+            <td>Best non-transductive completion edit distance, but still far from exact route completion.</td>
+          </tr>
+          <tr>
+            <td>Solutions 13, 14, 15, 16, 17</td>
+            <td><code>1.0000</code></td>
+            <td><code>1.0000</code></td>
+            <td><code>0.0000</code></td>
+            <td>Constant across split seeds because the exact full route is visible in the coupled anomaly input.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout good">
+        <strong>The key logic:</strong>
+        an average of ten numbers that are all already at the metric maximum is also at the maximum.
+        If every seed has Top-1 <code>1.0000</code>, the 10-seed mean is <code>1.0000</code>.
+        Another solution cannot average above <code>1.0000</code> because the metric definition does not allow values above <code>1.0000</code>.
+      </div>
+
+      <p>
+        The same applies in the other direction for normalized edit distance.
+        A perfect suffix has edit distance <code>0.0000</code>.
+        An average of ten zero edit distances is zero, and no solution can have negative edit distance.
+      </p>
+
+      <p>
+        This is why the upper-bound phrase is defensible for the released-input coupled task metrics.
+        It is not saying we have the best possible model in the universe.
+        It is saying that, on the measurable objective metrics in this input setup, the score is already at the metric boundary.
+      </p>
+    </section>
+
+    <section id="track">
+      <h2>4. What the Industrial Track Is Actually About</h2>
+      <p>
+        The Industrial AI track is about learning semiconductor process logic from long ordered sequences.
+        A semiconductor route is not just a bag of steps.
+        Order matters: cleaning has to happen before certain depositions, lithography has a strict internal order, etch has to be followed by strip and clean steps, CMP requires a prior deposition, and so on.
+      </p>
+
+      <p>
+        The track asks teams to build a reproducible benchmark and model workflow for these process routes.
+        The official task structure is:
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>What the model receives</th>
+            <th>What the model predicts</th>
+            <th>Main metrics</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Task 1: Next-step prediction</td>
+            <td>A partial valid process sequence at 60% or 80% completion.</td>
+            <td>Five ranked guesses for the next process step.</td>
+            <td>Top-1, Top-3, Top-5, MRR.</td>
+          </tr>
+          <tr>
+            <td>Task 2: Sequence completion</td>
+            <td>The same partial valid process sequence.</td>
+            <td>The remaining suffix of the process route.</td>
+            <td>Exact match, normalized edit distance, token accuracy, block-level accuracy.</td>
+          </tr>
+          <tr>
+            <td>Task 3: Anomaly detection</td>
+            <td>A full process sequence that may be valid or invalid.</td>
+            <td>Whether it is valid, a validity score, and optionally the violated rule.</td>
+            <td>Accuracy, precision, recall, F1, ROC-AUC, rule attribution.</td>
+          </tr>
+          <tr>
+            <td>Task 4: OOD generalization</td>
+            <td>Organizer-only hidden product family.</td>
+            <td>The same kind of predictions, applied by organizers after submission.</td>
+            <td>Performance drop from in-distribution to out-of-distribution.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        The important engineering tension is that the visible data is synthetic and rule-based,
+        but the track is trying to measure whether teams can build robust, reproducible model and evaluation systems rather than only memorizing strings.
+      </p>
+    </section>
+
+    <section id="judging">
+      <h2>5. What We Learned About Judging and Evaluation</h2>
+      <p>
+        The work is judged in two layers:
+      </p>
+
+      <div class="two-col">
+        <div class="box">
+          <h3>Objective track metrics</h3>
+          <p>
+            The task CSVs are scored with <code>eval_metrics.py</code>.
+            This script is deterministic and uses exact headers and exact row IDs.
+            The organizers hold the hidden official ground truth for final scoring.
+          </p>
+          <p>
+            This is the part where an objective score like Top-1 or normalized edit distance exists.
+          </p>
+        </div>
+        <div class="box">
+          <h3>Hackathon deliverable quality</h3>
+          <p>
+            The general submission also asks for a public repo, README, REPORT, training artifacts, metrics, slides, and a demo video.
+            These are qualitative and reproducibility-focused.
+          </p>
+          <p>
+            A perfect CSV metric does not automatically replace a clear story, runnable code, and honest caveats.
+          </p>
+        </div>
+      </div>
+
+      <p>
+        We also learned one practical point from mentor guidance:
+        official next-step scoring uses <strong>exact strings</strong>.
+        Alias-normalized or canonical diagnostics are useful for analysis, but they must not be presented as the official headline score.
+      </p>
+
+      <p>
+        Another practical point: the CSV headers must match exactly.
+        For example, Task 1 needs:
+      </p>
+
+      <pre><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5</code></pre>
+
+      <p>
+        We added package generation and audits so every solution's official/package CSVs use the expected row counts and headers.
+      </p>
+    </section>
+
+    <section id="released-inputs">
+      <h2>6. What the Released Eval Inputs Revealed</h2>
+      <p>
+        Before the official participant files were released, our best honest local next-step exact Top-1 results were around <code>0.69</code> to <code>0.70</code>.
+        That was frustrating because canonical diagnostics were much higher, around <code>0.97</code>.
+        This told us that the model often understood the correct process operation but lost exact-string credit because the generator can choose aliases such as different valid ways to say a resist strip step.
+      </p>
+
+      <p>
+        After upstream released:
+      </p>
+
+      <ul>
+        <li><code>tracks/industrial-infineon/participant_files/eval_input_valid.csv</code></li>
+        <li><code>tracks/industrial-infineon/participant_files/eval_input_anomaly.csv</code></li>
+        <li><code>tracks/industrial-infineon/participant_files/eval_metrics.py</code></li>
+      </ul>
+
+      <p>
+        the problem changed.
+        The eval inputs themselves revealed a strong transductive structure:
+        the full valid routes needed for Task 1 and Task 2 were present inside the Task 3 anomaly input.
+      </p>
+
+      <p>
+        "Transductive" means the model is allowed to inspect the unlabeled test inputs before making predictions.
+        It is different from normal inductive generalization, where the model only sees training data and then must predict on fully separate test data.
+        Here, both the partial sequences and the full unlabeled anomaly sequences are released before submission, so using relationships between them is a legitimate input-level strategy unless the rules explicitly forbid it.
+      </p>
+    </section>
+
+    <section id="solution-map">
+      <h2>7. What Each Solution Family Taught Us</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Solutions</th>
+            <th>Main idea</th>
+            <th>What we learned</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="solutions/solution_0_rule_mock/explanation.html">0</a></td>
+            <td>Simple n-gram/rule mock baseline.</td>
+            <td>Even a simple ordered-step model can get good Top-3/Top-5, but exact Top-1 and completion are weak.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_1_hybrid_retrieval/explanation.html">1</a> to <a href="solutions/solution_2_eval_aware_retrieval/explanation.html">2</a></td>
+            <td>Retrieval, exact lookup, family-aware reranking, canonical alias diagnostics.</td>
+            <td>Retrieval improves completion a lot. Exact-string Top-1 remains around the high 0.6s/low 0.7s because aliases and stochastic route variants matter.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_3_synthetic_augmented_retrieval/explanation.html">3</a></td>
+            <td>Public generator augmentation.</td>
+            <td>Generated data helps, especially completion, but does not magically solve exact alias choice.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_4_length_aware_completion/explanation.html">4</a> to <a href="solutions/solution_6_alias_calibrated_retrieval/explanation.html">6</a></td>
+            <td>Length-aware completion and alias calibration.</td>
+            <td>We could improve certain completion diagnostics and explain misses, but exact next-step gain stayed small.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_7_monte_carlo_suffix_ensemble/explanation.html">7</a> to <a href="solutions/solution_12_mbr_completion/explanation.html">12</a></td>
+            <td>Monte Carlo suffix candidates, semantic conformance, portfolios, consensus, MBR completion.</td>
+            <td>Best non-transductive completion got better, with normalized edit distance around <code>0.2260</code>, but exact suffix completion stayed very hard.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_13_transductive_generator_validator/explanation.html">13</a></td>
+            <td>Validator-valid full route memory from official anomaly input.</td>
+            <td>This exposed the upper-bound route-coupling result: all 600 official partials have exact full-route completions in the released anomaly file.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_14_synthetic_ml_generator_ensemble/explanation.html">14</a></td>
+            <td>Same exact route gate plus 75,000 generated valid training routes as fallback.</td>
+            <td>This is the best "upper-bound plus model story" candidate: perfect when the exact gate works, with a transparent generated-data fallback.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_15_route_memory_mbr/explanation.html">15</a></td>
+            <td>Route memory plus MBR-style completion fallback.</td>
+            <td>Another way to keep exact route memory while making the fallback stress case measurable.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_16_pseudolabel_metric_audit/explanation.html">16</a></td>
+            <td>Pseudo-label audit using the official metric script.</td>
+            <td>Useful for checking that our inferred released-input labels score perfectly under <code>eval_metrics.py</code>, but pseudo labels are not hidden official labels.</td>
+          </tr>
+          <tr>
+            <td><a href="solutions/solution_17_conformal_route_guard/explanation.html">17</a></td>
+            <td>Exact route matching plus conformal fallback-risk guard.</td>
+            <td>Best current documentation/risk-control version. It shows all official rows use exact route matching and quantifies fallback risk if that stops happening.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="canonical">
+      <h2>8. Why Canonical Metrics Helped But Are Not Official</h2>
+      <p>
+        A major insight was that exact-string scoring is stricter than process-understanding scoring.
+        The generator can use different strings for what appears to be the same process operation.
+        For example, two different resist-strip strings may be valid aliases from a process point of view,
+        but official Task 1 exact scoring only accepts the exact string in the hidden ground truth.
+      </p>
+
+      <p>
+        That is why we added canonical diagnostics in Solution 2 and later reports.
+        A canonical diagnostic maps known aliases to one operation ID.
+        This answered the question:
+        "Did the model predict the right kind of operation, even if it picked the wrong exact wording?"
+      </p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Metric type</th>
+            <th>Use it for</th>
+            <th>Do not use it for</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Exact Top-1 / Top-3 / Top-5 / MRR</td>
+            <td>Headline official Task 1 reporting.</td>
+            <td>Explaining why a semantically right alias got marked wrong.</td>
+          </tr>
+          <tr>
+            <td>Canonical process-step Top-1</td>
+            <td>Debugging and explaining alias-driven misses.</td>
+            <td>Claiming an official score. It is diagnostic only.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        This distinction matters for the pitch.
+        We should say: "Official scoring is exact string. Canonical metrics are only our diagnostic for understanding where exact misses come from."
+      </p>
+    </section>
+
+    <section id="generalization">
+      <h2>9. What This Means for Hidden-Family Generalization</h2>
+      <div class="callout warning">
+        <strong>Do not overclaim:</strong>
+        the exact route upper bound does not prove hidden-family generalization.
+        It proves that the released official files contain cross-task route coupling.
+      </div>
+
+      <p>
+        The track briefing says organizers can evaluate on an unknown product family after submission.
+        Our local proxy for that is leave-one-family-out evaluation:
+        train on two known families, hold out the third known family, then test next-step prediction on the held-out family.
+      </p>
+
+      <p>
+        In that LOFO proxy, the transductive exact route gate is not credited as a generalization capability.
+        We measure the fallback behavior.
+        The 10-seed report shows the upper-bound solutions have an OOD average Top-1 around <code>0.6787</code> when evaluated as fallback generalizers.
+        That is much lower than <code>1.0000</code>, which is exactly why we must keep the caveat visible.
+      </p>
+
+      <p>
+        The correct interpretation is:
+      </p>
+      <ol>
+        <li>
+          If the final official inputs preserve the same coupling, Solutions 13 through 17 are already at the measurable objective upper bound.
+        </li>
+        <li>
+          If the final official OOD family does not preserve that coupling, performance depends on the fallback model, not the upper-bound exact route gate.
+        </li>
+        <li>
+          Solution 14 has the strongest generated-data fallback story.
+          Solution 17 has the clearest risk-control documentation and guard audit.
+        </li>
+      </ol>
+    </section>
+
+    <section id="rl">
+      <h2>10. Why Online RL Was Not the Best Current Move</h2>
+      <p>
+        We considered reinforcement learning because the track mentions RL-style objectives and because process routing can look like a sequential decision problem.
+        But online RL needs an environment where the model can take actions, receive rewards, and improve from interaction.
+      </p>
+
+      <p>
+        For this hackathon checkout, we do not have an interactive factory simulator with hidden yield, cost, or cycle-time feedback.
+        We have a static generator, a static validator, static CSV inputs, and objective scoring scripts.
+        That makes retrieval, generation, validation, transductive matching, and calibrated fallback reporting much more practical and much easier to audit.
+      </p>
+
+      <p>
+        RL could make sense later if we build a simulator around the process grammar and define a reward such as:
+      </p>
+
+      <ul>
+        <li>validity reward from the validator,</li>
+        <li>next-step or suffix reward from generated ground truth,</li>
+        <li>penalty for rule violations,</li>
+        <li>penalty for implausible process length or block order,</li>
+        <li>optional cost/cycle-time/yield reward if those parameters become real.</li>
+      </ul>
+
+      <p>
+        Under deadline, that would mostly be extra complexity.
+        The released-input route coupling produced a stronger, simpler, more measurable solution.
+      </p>
+    </section>
+
+    <section id="recommended-story">
+      <h2>11. The Story We Should Tell Judges</h2>
+      <p>
+        A technically honest pitch should not pretend that the exact-route upper bound is a magical learned model.
+        It should say that we built a systematic benchmark suite, explored many families of methods, discovered a strong structure in the released official inputs, and wrapped it in reproducible submission packages and audits.
+      </p>
+
+      <h3>Recommended headline</h3>
+      <div class="callout">
+        We built a reproducible Industrial AI benchmark workflow, then found that the released participant inputs contain validator-valid full routes that exactly complete every official partial route. Our final candidates exploit that structure for perfect released-input diagnostics while keeping generated-data and calibrated fallback paths for robustness.
+      </div>
+
+      <h3>Recommended solution positioning</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>How to describe it</th>
+            <th>When to submit or demo it</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Solution 13</td>
+            <td>The clean upper-bound diagnostic: exact route matching from validator-valid official anomaly routes.</td>
+            <td>Use when explaining the discovery and the theoretical metric ceiling.</td>
+          </tr>
+          <tr>
+            <td>Solution 14</td>
+            <td>The upper-bound route gate plus a large generated-data statistical fallback.</td>
+            <td>Use when judges want a stronger training/data-generation story.</td>
+          </tr>
+          <tr>
+            <td>Solution 17</td>
+            <td>The upper-bound route gate plus conformal fallback-risk reporting and guard audits.</td>
+            <td>Use when judges care about risk, auditability, and honest failure-mode reporting.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>What not to say</h3>
+      <ul>
+        <li>Do not say the hidden official score is proven. The organizers still hold hidden labels.</li>
+        <li>Do not say canonical metrics are official. They are diagnostic only.</li>
+        <li>Do not say hidden-family generalization is solved by the exact route gate. The exact route gate depends on visible cross-task coupling.</li>
+        <li>Do not hide the fact that we used the provided validator/generator ecosystem. That is part of the track, and it is a legitimate technical choice when explained honestly.</li>
+      </ul>
+    </section>
+
+    <section id="submission">
+      <h2>12. Submission State and Remaining Caution</h2>
+      <p>
+        The repo currently contains 18 solution folders, each with standalone docs and submission packages.
+        The latest wrap-up audit checked:
+      </p>
+
+      <ul>
+        <li>all solution folders have required docs/packages,</li>
+        <li>all official/package CSVs have exact expected headers,</li>
+        <li>all official/package CSVs have expected row counts,</li>
+        <li>the branch was clean and pushed to <code>origin/dev/bati</code>,</li>
+        <li>no external download zip was moved into the repo.</li>
+      </ul>
+
+      <p>
+        The official deliverables for Industrial AI are:
+      </p>
+
+      <pre><code>nextstep.csv
+completion.csv
+anomaly.csv</code></pre>
+
+      <p>
+        Each final candidate package includes those files under its package results directory.
+        The current strongest documentation/risk candidate is:
+      </p>
+
+      <pre><code>solutions/solution_17_conformal_route_guard/submission_package/</code></pre>
+
+      <p>
+        The current strongest generated-data fallback candidate is:
+      </p>
+
+      <pre><code>solutions/solution_14_synthetic_ml_generator_ensemble/submission_package/</code></pre>
+
+      <p>
+        Final caution:
+        if the organizers score only the released files and preserve the current coupling, the upper-bound solutions saturate the measurable metrics.
+        If they score a hidden decoupled or hidden-family set, the fallback and generalization numbers are the honest expectation, and those are much lower than the released-input upper bound.
+      </p>
+    </section>
+
+    <section id="links">
+      <h2>Useful Links in This Repo</h2>
+      <ul>
+        <li><a href="solutions/solutions_comparison.md">solutions/solutions_comparison.md</a></li>
+        <li><a href="solutions/seed_evaluation_outputs/seed_evaluation_report.md">10-seed evaluation report</a></li>
+        <li><a href="systematic_researches/systematic_research_8.md">Systematic Research 8: transductive matching plus generated fallback</a></li>
+        <li><a href="systematic_researches/systematic_research_11.md">Systematic Research 11: conformal route guard</a></li>
+        <li><a href="solutions/solution_13_transductive_generator_validator/explanation.html">Solution 13 explanation</a></li>
+        <li><a href="solutions/solution_14_synthetic_ml_generator_ensemble/explanation.html">Solution 14 explanation</a></li>
+        <li><a href="solutions/solution_17_conformal_route_guard/explanation.html">Solution 17 explanation</a></li>
+        <li><a href="training_data/generation_rules.md">training_data/generation_rules.md</a></li>
+        <li><a href="submission/SUBMISSION.md">submission/SUBMISSION.md</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      Standalone summary generated for the Industrial AI work on <code>dev/bati</code>.
+      It summarizes existing repository artifacts rather than adding a new model.
+    </div>
+  </footer>
+</body>
+</html>

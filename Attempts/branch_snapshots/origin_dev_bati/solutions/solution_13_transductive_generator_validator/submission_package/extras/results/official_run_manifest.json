@@ -1,0 +1,27 @@
+{
+  "anomaly_rows": 987,
+  "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+  "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+  "mode": "official_participant_input_prediction",
+  "outputs": {
+    "anomaly": "solutions/solution_13_transductive_generator_validator/outputs/anomaly.csv",
+    "completion": "solutions/solution_13_transductive_generator_validator/outputs/completion.csv",
+    "nextstep": "solutions/solution_13_transductive_generator_validator/outputs/nextstep.csv"
+  },
+  "solution": "solution_13_transductive_generator_validator",
+  "transductive_coverage": {
+    "ambiguous_rows_with_different_suffixes": 0,
+    "by_fraction": {
+      "0.6": 300,
+      "0.8": 300
+    },
+    "exact_prefix_coverage": 1.0,
+    "exact_prefix_rows": 600,
+    "unique_valid_full_sequences": 300,
+    "valid_full_sequence_duplicate_rows": 300,
+    "valid_rows": 600
+  },
+  "valid_rows": 600,
+  "validator_invalid_rows": 387,
+  "validator_valid_rows": 600
+}

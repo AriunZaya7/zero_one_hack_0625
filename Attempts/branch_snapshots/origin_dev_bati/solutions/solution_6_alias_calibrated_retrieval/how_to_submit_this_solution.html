@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit Solution 6</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; color: #17202a; background: #f7f8fb; line-height: 1.55; }
+    header { background: #123047; color: white; padding: 36px 7vw; }
+    main { max-width: 980px; margin: auto; padding: 28px 22px 60px; }
+    section { background: white; border: 1px solid #dde3ec; border-radius: 8px; padding: 22px; margin: 18px 0; }
+    code, pre { background: #eef2f7; border-radius: 6px; }
+    code { padding: 2px 5px; }
+    pre { padding: 14px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>How To Submit Solution 6</h1>
+    <p>Manual steps for running, checking, and packaging the alias-calibrated retrieval solution.</p>
+  </header>
+  <main>
+    <section>
+      <h2>1. Open A Terminal At The Repo Root</h2>
+      <pre><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625</code></pre>
+    </section>
+
+    <section>
+      <h2>2. Run The Solution</h2>
+      <pre><code>python -B solutions/solution_6_alias_calibrated_retrieval/solution.py</code></pre>
+      <p>This writes local outputs into <code>solutions/solution_6_alias_calibrated_retrieval/outputs/</code>.</p>
+    </section>
+
+    <section>
+      <h2>3. Regenerate Submission Packages</h2>
+      <pre><code>python -B solutions/prepare_submission_packages.py</code></pre>
+      <p>This copies Solution 6 outputs into <code>submission_package/extras/results/</code> and creates the checklist files.</p>
+    </section>
+
+    <section>
+      <h2>4. Check Required Files</h2>
+      <ul>
+        <li><code>submission_package/extras/results/nextstep.csv</code></li>
+        <li><code>submission_package/extras/results/completion.csv</code></li>
+        <li><code>submission_package/extras/results/anomaly.csv</code></li>
+        <li><code>submission_package/extras/results/metrics.md</code></li>
+        <li><code>submission_package/extras/results/per_family_breakdown.md</code></li>
+        <li><code>submission_package/REPORT.md</code></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>5. Use In The Tally Submission</h2>
+      <p>
+        The Tally form takes the public repo URL, slides PDF, and demo video.
+        The CSV files do not get uploaded separately unless organizers ask for
+        them; they live in the repo and should be referenced from the report.
+      </p>
+    </section>
+
+    <section>
+      <h2>6. Honest Pitch Sentence</h2>
+      <p>
+        "This solution tests whether exact-label alias choice can be learned as
+        a second-stage calibration problem after predicting the correct process
+        operation."
+      </p>
+    </section>
+  </main>
+</body>
+</html>

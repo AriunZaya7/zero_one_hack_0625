@@ -1,0 +1,8 @@
+METRIC,VALUE
+public_sequences,7009
+synthetic_template_families,100
+synthetic_template_sequences,2000
+total_template_training_sequences,9009
+exact_prefix_coverage,1.000000
+exact_prefix_rows,600
+valid_rows,600

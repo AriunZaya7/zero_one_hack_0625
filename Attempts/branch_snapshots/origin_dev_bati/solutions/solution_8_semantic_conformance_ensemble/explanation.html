@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 8 Explanation - Semantic Conformance Ensemble</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c2530; background: #fff; line-height: 1.58; }
+    main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 72px; }
+    header { padding-bottom: 22px; margin-bottom: 28px; border-bottom: 1px solid #d9e0e8; }
+    h1 { margin: 0 0 12px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-top: 10px; border-top: 1px solid #d9e0e8; font-size: 1.34rem; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 1.08rem; letter-spacing: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #13202d; background: #eef2f6; border: 1px solid #dbe3ec; border-radius: 4px; padding: 1px 4px; font-size: 0.93em; }
+    pre { overflow-x: auto; background: #0f1b26; color: #edf4fb; border-radius: 6px; padding: 14px 16px; line-height: 1.45; font-size: 0.91rem; }
+    pre code { background: transparent; border: 0; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 0.95rem; }
+    th, td { border: 1px solid #d9e0e8; padding: 9px 10px; vertical-align: top; }
+    th { background: #eef3f7; text-align: left; }
+    .note { background: #f6f8fb; border-left: 4px solid #176b87; padding: 12px 14px; margin: 14px 0; }
+    .warning { background: #fff8eb; border-left: 4px solid #875c13; padding: 12px 14px; margin: 14px 0; }
+    .good { color: #17613a; font-weight: 650; }
+    .warn { color: #875c13; font-weight: 650; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Solution 8: Semantic Conformance Ensemble</h1>
+    <p>
+      This page explains Solution 8 from scratch. The solution keeps the
+      next-step and completion strategy from Solution 7, then replaces the
+      direct validator call for anomaly prediction with an explicit semantic
+      conformance checker.
+    </p>
+  </header>
+
+  <section>
+    <h2>What The Industrial Task Needs</h2>
+    <p>
+      The Industrial AI track asks us to reason about semiconductor process
+      routes. A route is a long ordered list of manufacturing operations. Some
+      operations must happen before others. For example, a lot should not be
+      shipped before wafer sort testing, and a patterned etch should not happen
+      before photoresist has been developed.
+    </p>
+    <p>
+      Task 3 asks whether a complete route is valid or anomalous. If it is
+      anomalous, we also need to say which rule was violated.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why Solution 8 Exists</h2>
+    <p>
+      Previous solution attempts used the public validator oracle for Task 3.
+      That produced perfect local anomaly metrics, but it is not a satisfying
+      explanation of model behavior. It effectively says: "ask the validator."
+    </p>
+    <p>
+      Solution 8 is different. It implements a separate conformance checker that
+      looks for the same kinds of process-order problems using explicit semantic
+      features. It does not call <code>validate_sequence()</code> during
+      prediction.
+    </p>
+    <div class="note">
+      <p>
+        For a junior engineer: <strong>conformance checking</strong> means
+        comparing a real or proposed sequence against what a valid process is
+        expected to look like. If the sequence breaks the expected order, the
+        checker reports a violation.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>What The Ensemble Uses</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Component</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 next-step ranking</td>
+          <td>Solution 2 eval-aware retrieval</td>
+          <td>Strong Top-k and leave-one-family-out behavior.</td>
+        </tr>
+        <tr>
+          <td>Task 2 completion</td>
+          <td>Solution 7 Monte Carlo suffix library</td>
+          <td>Best deterministic completion edit distance so far.</td>
+        </tr>
+        <tr>
+          <td>Task 3 anomaly detection</td>
+          <td>Semantic conformance checker</td>
+          <td>Explainable rule attribution without calling the validator in the prediction path.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>The Semantic Checker</h2>
+    <p>
+      The checker scans a sequence and creates a list of
+      <code>SemanticViolation</code> objects. Each violation records:
+    </p>
+    <ul>
+      <li>the predicted rule id, such as <code>RULE_ETCH_NO_MASK</code>,</li>
+      <li>the step index where the violation appears,</li>
+      <li>the step name,</li>
+      <li>a score penalty used to make valid sequences score higher than invalid ones,</li>
+      <li>a human explanation.</li>
+    </ul>
+    <pre><code>@dataclass(frozen=True)
+class SemanticViolation:
+    rule: str
+    step_index: int
+    step_name: str
+    score_penalty: float
+    explanation: str</code></pre>
+    <p>
+      The checker returns the first violation in sequence order. If it finds no
+      violations, the route is predicted valid.
+    </p>
+  </section>
+
+  <section>
+    <h2>Examples Of Rules</h2>
+    <h3>Developed resist before patterned etch</h3>
+    <p>
+      A patterned etch needs a mask. In these traces, the mask is represented by
+      a recent <code>DEVELOP PHOTORESIST</code> or
+      <code>DEVELOP PAD WINDOW</code> step. The checker looks back 12 steps
+      before an etch:
+    </p>
+    <pre><code>for i, step in enumerate(sequence):
+    if step in base.ETCH_STEPS:
+        w = window(sequence, i, 12)
+        if "DEVELOP PHOTORESIST" not in w and "DEVELOP PAD WINDOW" not in w:
+            violations.append(SemanticViolation("RULE_ETCH_NO_MASK", ...))</code></pre>
+
+    <h3>CMP after deposition or fill</h3>
+    <p>
+      CMP means chemical-mechanical planarization. In plain words, it polishes
+      material flat. It only makes sense after a recent deposition or fill step
+      has put material there. The checker looks back 6 steps before CMP:
+    </p>
+    <pre><code>for i, step in enumerate(sequence):
+    if step in base.CMP_STEPS:
+        if not any_in_window(sequence, i, 6, base.FILL_STEPS):
+            violations.append(SemanticViolation("RULE_CMP_NO_DEP", ...))</code></pre>
+
+    <h3>Ship after wafer sort</h3>
+    <p>
+      This is the terminal-order sanity check. If <code>SHIP LOT</code> appears
+      before <code>WAFER SORT TEST</code>, the lot is being shipped before final
+      wafer sort.
+    </p>
+    <pre><code>ship_idx = next((i for i, step in enumerate(sequence) if step == "SHIP LOT"), None)
+sort_idx = next((i for i, step in enumerate(sequence) if step == "WAFER SORT TEST"), None)
+if ship_idx is not None and (sort_idx is None or ship_idx &lt; sort_idx):
+    violations.append(SemanticViolation("RULE_SHIP_BEFORE_TEST", ...))</code></pre>
+  </section>
+
+  <section>
+    <h2>Local Results</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Value</th>
+          <th>Meaning</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Task 1 Top-1</td>
+          <td><span class="warn">0.7317</span></td>
+          <td>Same as Solution 7 because Task 1 is unchanged.</td>
+        </tr>
+        <tr>
+          <td>Task 2 normalized edit distance</td>
+          <td><span class="good">0.2333</span></td>
+          <td>Same as Solution 7 because Task 2 is unchanged.</td>
+        </tr>
+        <tr>
+          <td>Task 2 token accuracy</td>
+          <td><span class="good">0.4737</span></td>
+          <td>Same as Solution 7 because Task 2 is unchanged.</td>
+        </tr>
+        <tr>
+          <td>Task 3 accuracy</td>
+          <td><span class="good">1.0000</span></td>
+          <td>The semantic checker correctly separates all local valid and invalid rows.</td>
+        </tr>
+        <tr>
+          <td>Task 3 rule attribution</td>
+          <td><span class="good">1.0000</span></td>
+          <td>The checker names the same injected rule as the local ground truth.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>What This Solution Improves</h2>
+    <ul>
+      <li>It keeps the best deterministic Task 2 completion metrics so far.</li>
+      <li>It keeps the strong Task 1 Top-k and LOFO behavior from Solution 2.</li>
+      <li>It removes the direct Task 3 dependency on <code>validate_sequence()</code> during prediction.</li>
+      <li>It makes anomaly attribution easier to explain in a demo.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What This Still Is Not</h2>
+    <div class="warning">
+      <p>
+        This is not a neural anomaly detector. The conformance checker is a
+        transparent symbolic layer. It is useful and explainable, but it does
+        not prove that a learned model rediscovered the process rules.
+      </p>
+    </div>
+    <p>
+      The next real research step would be to train a sequence model, use
+      per-step surprisal to localize anomalies, and then compare that learned
+      detector against this semantic conformance layer.
+    </p>
+  </section>
+</main>
+</body>
+</html>

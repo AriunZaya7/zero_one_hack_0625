@@ -1,0 +1,285 @@
+{
+  "model_name": "N-gram (n=10)",
+  "model_info": {
+    "model_type": "ngram",
+    "n": 10,
+    "vocab_size": 199,
+    "unique_contexts": 16069
+  },
+  "probe_results": [
+    {
+      "rule": "RULE_DEP_NO_CLEAN",
+      "description": "Deposition must always be preceded by a cleaning step",
+      "violation": "THERMAL OXIDATION (deposition) without prior clean step",
+      "valid_seq": [
+        "RECEIVE WAFER LOT",
+        "LOT IDENTIFICATION",
+        "PRE CLEAN INSPECTION",
+        "MEASURE INITIAL THICKNESS",
+        "HF DIP",
+        "DRY WAFER",
+        "THERMAL OXIDATION",
+        "MEASURE OXIDE THICKNESS"
+      ],
+      "invalid_seq": [
+        "RECEIVE WAFER LOT",
+        "LOT IDENTIFICATION",
+        "PRE CLEAN INSPECTION",
+        "MEASURE INITIAL THICKNESS",
+        "MEASURE SURFACE PLANARITY",
+        "THERMAL OXIDATION",
+        "MEASURE OXIDE THICKNESS"
+      ],
+      "valid_ppl": 3168.3323,
+      "invalid_ppl": 4642.476,
+      "ppl_ratio": 1.4653,
+      "learned": "PARTIAL"
+    },
+    {
+      "rule": "RULE_METAL_ETCH_NO_LITHO",
+      "description": "Lithography must precede metal etching",
+      "violation": "METAL ETCH without EXPOSE + DEVELOP preceding it",
+      "valid_seq": [
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT METAL 1",
+        "COAT PHOTORESIST",
+        "SOFT BAKE",
+        "EXPOSE LITHO LEVEL 3",
+        "DEVELOP PHOTORESIST",
+        "METAL ETCH",
+        "STRIP RESIST"
+      ],
+      "invalid_seq": [
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT METAL 1",
+        "COAT PHOTORESIST",
+        "SOFT BAKE",
+        "METAL ETCH",
+        "STRIP RESIST"
+      ],
+      "valid_ppl": 211320.4101,
+      "invalid_ppl": 2217864.5069,
+      "ppl_ratio": 10.4953,
+      "learned": "STRONG"
+    },
+    {
+      "rule": "RULE_ETCH_NO_MASK",
+      "description": "A developed mask must exist before any etch",
+      "violation": "OXIDE ETCH without DEVELOP PHOTORESIST first",
+      "valid_seq": [
+        "COAT PHOTORESIST",
+        "SOFT BAKE",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST",
+        "OXIDE ETCH",
+        "STRIP RESIST"
+      ],
+      "invalid_seq": [
+        "COAT PHOTORESIST",
+        "SOFT BAKE",
+        "EXPOSE LITHO LEVEL 1",
+        "OXIDE ETCH",
+        "STRIP RESIST"
+      ],
+      "valid_ppl": 161509.2632,
+      "invalid_ppl": 938609.7008,
+      "ppl_ratio": 5.8115,
+      "learned": "STRONG"
+    },
+    {
+      "rule": "RULE_LITHO_LEVEL_SKIP",
+      "description": "Lithography levels must increment sequentially",
+      "violation": "Jumped from LITHO LEVEL 1 directly to LITHO LEVEL 3",
+      "valid_seq": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST",
+        "OXIDE ETCH",
+        "STRIP RESIST",
+        "CLEAN AFTER ETCH",
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 2",
+        "DEVELOP PHOTORESIST"
+      ],
+      "invalid_seq": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST",
+        "OXIDE ETCH",
+        "STRIP RESIST",
+        "CLEAN AFTER ETCH",
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 3",
+        "DEVELOP PHOTORESIST"
+      ],
+      "valid_ppl": 194361.279,
+      "invalid_ppl": 194361.279,
+      "ppl_ratio": 1.0,
+      "learned": "NOT LEARNED"
+    },
+    {
+      "rule": "RULE_IMPLANT_NO_MASK",
+      "description": "An implant window must be opened before ion implantation",
+      "violation": "IMPLANT P BODY without prior OXIDE ETCH to open window",
+      "valid_seq": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST",
+        "OXIDE ETCH",
+        "IMPLANT P BODY",
+        "STRIP RESIST",
+        "ANNEAL"
+      ],
+      "invalid_seq": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 1",
+        "DEVELOP PHOTORESIST",
+        "IMPLANT P BODY",
+        "STRIP RESIST",
+        "ANNEAL"
+      ],
+      "valid_ppl": 2074677.513,
+      "invalid_ppl": 7539604.3545,
+      "ppl_ratio": 3.6341,
+      "learned": "STRONG"
+    },
+    {
+      "rule": "RULE_CMP_NO_DEP",
+      "description": "CMP planarization requires a prior deposition step",
+      "violation": "CMP DIELECTRIC with no prior deposition step",
+      "valid_seq": [
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT INTERLAYER DIELECTRIC",
+        "MEASURE ILD THICKNESS",
+        "CMP DIELECTRIC",
+        "MEASURE POST CMP"
+      ],
+      "invalid_seq": [
+        "MEASURE SURFACE PLANARITY",
+        "MEASURE INITIAL THICKNESS",
+        "CMP DIELECTRIC",
+        "MEASURE POST CMP"
+      ],
+      "valid_ppl": 613891071.6748,
+      "invalid_ppl": 4047938265.7138,
+      "ppl_ratio": 6.5939,
+      "learned": "STRONG"
+    },
+    {
+      "rule": "RULE_PAD_OPEN_BEFORE_DEP",
+      "description": "Bond pad window only after passivation deposited and cured",
+      "violation": "OPEN PAD WINDOW before DEPOSIT PASSIVATION and CURE PASSIVATION",
+      "valid_seq": [
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT PASSIVATION",
+        "CURE PASSIVATION",
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 4",
+        "DEVELOP PHOTORESIST",
+        "OPEN PAD WINDOW",
+        "STRIP RESIST"
+      ],
+      "invalid_seq": [
+        "COAT PHOTORESIST",
+        "EXPOSE LITHO LEVEL 4",
+        "DEVELOP PHOTORESIST",
+        "OPEN PAD WINDOW",
+        "STRIP RESIST",
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT PASSIVATION",
+        "CURE PASSIVATION"
+      ],
+      "valid_ppl": 219068.7951,
+      "invalid_ppl": 17165.0396,
+      "ppl_ratio": 0.0784,
+      "learned": "NOT LEARNED"
+    },
+    {
+      "rule": "RULE_TEST_BEFORE_PASSIVATION",
+      "description": "Electrical tests must come after passivation is cured",
+      "violation": "PARAMETRIC TEST before CURE PASSIVATION",
+      "valid_seq": [
+        "DEPOSIT PASSIVATION",
+        "CURE PASSIVATION",
+        "OPEN PAD WINDOW",
+        "PARAMETRIC TEST",
+        "WAFER SORT TEST"
+      ],
+      "invalid_seq": [
+        "DEPOSIT PASSIVATION",
+        "PARAMETRIC TEST",
+        "CURE PASSIVATION",
+        "OPEN PAD WINDOW",
+        "WAFER SORT TEST"
+      ],
+      "valid_ppl": 1369540.1906,
+      "invalid_ppl": 1369540.1906,
+      "ppl_ratio": 1.0,
+      "learned": "NOT LEARNED"
+    },
+    {
+      "rule": "RULE_SHIP_BEFORE_TEST",
+      "description": "Wafer sort test must complete before shipping",
+      "violation": "SHIP LOT appears before WAFER SORT TEST",
+      "valid_seq": [
+        "CURE PASSIVATION",
+        "OPEN PAD WINDOW",
+        "WAFER SORT TEST",
+        "FINAL INSPECTION",
+        "SHIP LOT"
+      ],
+      "invalid_seq": [
+        "CURE PASSIVATION",
+        "OPEN PAD WINDOW",
+        "FINAL INSPECTION",
+        "SHIP LOT",
+        "WAFER SORT TEST"
+      ],
+      "valid_ppl": 113364046.8449,
+      "invalid_ppl": 113364046.8449,
+      "ppl_ratio": 1.0,
+      "learned": "NOT LEARNED"
+    },
+    {
+      "rule": "RULE_BACKSIDE_BEFORE_PASSIVATION",
+      "description": "Backside metal only after frontside passivation is cured",
+      "violation": "DEPOSIT BACKSIDE METAL before DEPOSIT PASSIVATION",
+      "valid_seq": [
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT PASSIVATION",
+        "CURE PASSIVATION",
+        "BACKSIDE GRIND",
+        "BACKSIDE CLEAN",
+        "DEPOSIT BACKSIDE METAL"
+      ],
+      "invalid_seq": [
+        "BACKSIDE GRIND",
+        "BACKSIDE CLEAN",
+        "DEPOSIT BACKSIDE METAL",
+        "HF DIP",
+        "DRY WAFER",
+        "DEPOSIT PASSIVATION",
+        "CURE PASSIVATION"
+      ],
+      "valid_ppl": 108429.0973,
+      "invalid_ppl": 95215.3258,
+      "ppl_ratio": 0.8781,
+      "learned": "NOT LEARNED"
+    }
+  ],
+  "summary": {
+    "strong": 4,
+    "partial": 1,
+    "weak": 0,
+    "not_learned": 5,
+    "total": 10,
+    "score_pct": 45.0
+  },
+  "train_sequences": 6300
+}

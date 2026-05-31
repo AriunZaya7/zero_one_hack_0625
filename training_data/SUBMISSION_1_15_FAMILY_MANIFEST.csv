@@ -1,0 +1,16 @@
+family,split,source_file,litho_levels,second_field_via
+mosfet,train,MOSFET_variants.csv,4,
+igbt,train,IGBT_variants.csv,6,
+ic,train,IC_variants.csv,4,
+scfam01,train,SCFAM01_variants.csv,4,0
+scfam02,train,SCFAM02_variants.csv,4,1
+scfam03,train,SCFAM03_variants.csv,5,0
+scfam04,train,SCFAM04_variants.csv,5,1
+scfam05,train,SCFAM05_variants.csv,5,0
+scfam06,train,SCFAM06_variants.csv,6,0
+scfam07,train,SCFAM07_variants.csv,6,1
+scfam08,train,SCFAM08_variants.csv,6,0
+scfam09,train,SCFAM09_variants.csv,5,1
+scfam10,ood,SCFAM10_variants.csv,4,1
+scfam11,ood,SCFAM11_variants.csv,5,0
+scfam12,ood,SCFAM12_variants.csv,6,1

@@ -1,0 +1,34 @@
+{
+  "anomaly_rows": 987,
+  "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+  "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+  "mode": "official_participant_input_prediction",
+  "outputs": {
+    "anomaly": "solutions/solution_15_route_memory_mbr/outputs/anomaly.csv",
+    "completion": "solutions/solution_15_route_memory_mbr/outputs/completion.csv",
+    "nextstep": "solutions/solution_15_route_memory_mbr/outputs/nextstep.csv"
+  },
+  "route_memory": {
+    "ambiguous_rows_with_different_suffixes": 0,
+    "by_fraction": {
+      "0.6": 300,
+      "0.8": 300
+    },
+    "exact_prefix_coverage": 1.0,
+    "exact_prefix_rows": 600,
+    "fallback_rows_with_retrieved_candidates": 0,
+    "official_exact_prefix_rows": 600,
+    "route_memory_by_source": {
+      "generated_valid_route": 15000,
+      "official_validator_valid_anomaly": 300,
+      "public_training_route": 7009
+    },
+    "route_memory_total": 22309,
+    "synthetic_per_family": 5000,
+    "valid_rows": 600
+  },
+  "solution": "solution_15_route_memory_mbr",
+  "valid_rows": 600,
+  "validator_invalid_rows": 387,
+  "validator_valid_rows": 600
+}

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GPT Process Grammar Results</title>
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0E1117;color:#E8EAF6;font-family:'Inter',-apple-system,sans-serif;padding:28px 32px;line-height:1.5}
+  h1{font-size:1.9rem;font-weight:700;margin-bottom:4px}
+  .sub{color:#8B93B0;font-size:.9rem;margin-bottom:24px}
+  hr{border:none;border-top:1px solid #2A3149;margin:24px 0}
+  .sec{font-size:.85rem;font-weight:600;color:#8B93B0;text-transform:uppercase;
+        letter-spacing:.1em;margin:24px 0 12px}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .grid-1{display:grid;grid-template-columns:1fr;gap:14px}
+  .chart-card{background:#13161F;border:1px solid #2A3149;border-radius:10px;
+               padding:12px;overflow:hidden}
+  /* kpi cards */
+  .kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:20px}
+  .kpi{background:#13161F;border:1px solid #2A3149;border-radius:10px;
+         padding:16px 22px;flex:1;min-width:140px}
+  .kpi-label{color:#8B93B0;font-size:.72rem;text-transform:uppercase;
+              letter-spacing:.08em;margin-bottom:4px}
+  .kpi-value{font-size:1.8rem;font-weight:700}
+  .green{color:#82B366} .blue{color:#6C8EBF}
+  .red{color:#D1453B}   .gold{color:#D6A520}
+  /* demo table */
+  .tbl{overflow-x:auto;border-radius:10px;border:1px solid #2A3149}
+  table{width:100%;border-collapse:collapse;background:#13161F}
+  th{background:#1A1F2E;color:#8B93B0;font-size:.72rem;text-transform:uppercase;
+      letter-spacing:.07em;padding:10px 14px;text-align:left;
+      border-bottom:1px solid #2A3149}
+  td{padding:9px 14px;border-bottom:1px solid #1e2233;font-size:.86rem}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#1A1F2E}
+  footer{color:#444;font-size:.75rem;text-align:center;
+          margin-top:28px;padding-top:16px;border-top:1px solid #2A3149}
+  @media(max-width:800px){.grid-2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<h1>⚡ GPT-2 vs n-gram — Process Grammar Results</h1>
+<p class="sub">Industrial AI Hackathon · Semiconductor Process Sequences · 2026-05-30 22:53</p>
+
+<!-- KPI row -->
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-label">ID Top-1 Accuracy</div>
+    <div class="kpi-value blue">0.807</div>
+    <div class="green" style="font-size:.85rem">▲ +0.073 vs n-gram</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">OOD Top-1 (avg 3 families)</div>
+    <div class="kpi-value gold">0.497</div>
+    <div class="green" style="font-size:.85rem">▲ +0.028 vs n-gram avg</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">Task 3 — Anomaly F1</div>
+    <div class="kpi-value green">1.000</div>
+    <div style="color:#8B93B0;font-size:.85rem">Symbolic validator — perfect</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">ID Top-5 Accuracy</div>
+    <div class="kpi-value blue">1.000</div>
+    <div style="color:#8B93B0;font-size:.85rem">n-gram: 0.994</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-label">ID MRR</div>
+    <div class="kpi-value blue">0.901</div>
+    <div class="green" style="font-size:.85rem">▲ +0.049 vs n-gram</div>
+  </div>
+</div>
+
+<hr>
+<div class="sec">§1 — The Headline: Does GPT Beat n-gram?</div>
+<div class="grid-2">
+<div class="chart-card"><div id="fig_0"></div></div>
+<div class="chart-card"><div id="fig_1"></div></div>
+
+</div>
+
+<hr>
+<div class="sec">§2 — Training Convergence</div>
+<div class="grid-1">
+<div class="chart-card"><div id="fig_2"></div></div>
+
+</div>
+
+<hr>
+<div class="sec">§3 — Detailed Breakdown</div>
+<div class="grid-2">
+<div class="chart-card"><div id="fig_3"></div></div>
+<div class="chart-card"><div id="fig_4"></div></div>
+
+</div>
+
+<hr>
+<div class="sec">§4 — Example Predictions: n-gram vs GPT</div>
+<div class="tbl">
+
+    <table>
+      <thead><tr>
+        <th>Prefix (last 3 steps)</th>
+        <th>True next step</th>
+        <th>n-gram top-3 (✓/✗)</th>
+        <th>GPT top-3 (✓/✗)</th>
+      </tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…VIA OPENING INSPECTION → DIELECTRIC ETCH VIA → STRIP PHOTORESIST</td>
+          <td style="color:#AE85C9;font-weight:600">CLEAN AFTER VIA ETCH</td>
+          <td style="color:#82B366">✓ CLEAN AFTER VIA ETCH, CLEAN AFTER METAL ETCH, CLEAN PAD OPENING</td>
+          <td style="color:#82B366">✓ CLEAN AFTER VIA ETCH, CLEAN AFTER METAL ETCH, DEPOSIT METAL SEED</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…MEASURE PASSIVATION THICKNESS → OPEN PAD WINDOW → OPEN PAD WINDOW LITHO</td>
+          <td style="color:#AE85C9;font-weight:600">DEVELOP PHOTORESIST</td>
+          <td style="color:#82B366">✓ DEVELOP PAD WINDOW, DEVELOP PHOTORESIST, SOFT BAKE</td>
+          <td style="color:#82B366">✓ DEVELOP PAD WINDOW, DEVELOP PHOTORESIST, POST EXPOSE BAKE</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…HARD BAKE → DIELECTRIC ETCH VIA → STRIP RESIST</td>
+          <td style="color:#AE85C9;font-weight:600">CLEAN AFTER VIA ETCH</td>
+          <td style="color:#82B366">✓ CLEAN AFTER VIA ETCH, CLEAN PAD OPENING, CLEAN AFTER POLY ETCH</td>
+          <td style="color:#82B366">✓ CLEAN AFTER VIA ETCH, CLEAN AFTER METAL ETCH, DEPOSIT METAL SEED</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…OPEN PAD WINDOW → OPEN PAD WINDOW LITHO → DEVELOP PAD WINDOW</td>
+          <td style="color:#AE85C9;font-weight:600">PASSIVATION ETCH PAD OPENING</td>
+          <td style="color:#82B366">✓ PASSIVATION ETCH, PASSIVATION ETCH PAD OPENING, DEVELOP PHOTORESIST</td>
+          <td style="color:#82B366">✓ PASSIVATION ETCH PAD OPENING, PASSIVATION ETCH, METAL PATTERN INSPECTION</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…VIA ETCH THROUGH DIELECTRIC → STRIP PHOTORESIST → CLEAN AFTER VIA ETCH</td>
+          <td style="color:#AE85C9;font-weight:600">MEASURE VIA CD</td>
+          <td style="color:#82B366">✓ MEASURE VIA CD, DEPOSIT BARRIER METAL, DEVELOP PHOTORESIST</td>
+          <td style="color:#82B366">✓ MEASURE VIA CD, DEPOSIT BARRIER METAL, EXPOSE LITHO LEVEL 3</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…OPEN BOND PAD WINDOW → OPEN PAD WINDOW LITHO → DEVELOP PAD WINDOW</td>
+          <td style="color:#AE85C9;font-weight:600">PASSIVATION ETCH PAD OPENING</td>
+          <td style="color:#82B366">✓ PASSIVATION ETCH, PASSIVATION ETCH PAD OPENING, DEVELOP PHOTORESIST</td>
+          <td style="color:#82B366">✓ PASSIVATION ETCH, PASSIVATION ETCH PAD OPENING, CLEAN PAD OPENING</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…STRIP RESIST → CLEAN AFTER VIA ETCH → MEASURE VIA CD</td>
+          <td style="color:#AE85C9;font-weight:600">DEPOSIT BARRIER METAL</td>
+          <td style="color:#82B366">✓ DEPOSIT BARRIER METAL, DEVELOP PHOTORESIST, SOFT BAKE</td>
+          <td style="color:#82B366">✓ DEPOSIT BARRIER METAL, MEASURE VIA CD, SUBSTRATE CHECK</td>
+        </tr>
+        <tr>
+          <td style="color:#8B93B0;font-size:.8rem">…OPEN PAD WINDOW LITHO → DEVELOP PAD WINDOW → PASSIVATION ETCH</td>
+          <td style="color:#AE85C9;font-weight:600">STRIP RESIST</td>
+          <td style="color:#82B366">✓ STRIP RESIST, STRIP PHOTORESIST, DEVELOP PHOTORESIST</td>
+          <td style="color:#82B366">✓ STRIP RESIST, STRIP PHOTORESIST, STRIP RESIST LEVEL 2</td>
+        </tr></tbody>
+    </table>
+</div>
+
+<footer>
+  GPT-2 small (4.9M params) · from scratch · step-level tokenizer (198 steps) ·
+  12 000 training sequences · 20 epochs ·
+  <code>scp LOGIN:~/zero_one_hack_0625/results_report.html .</code>
+</footer>
+
+<script>Plotly.newPlot('fig_0',[{"type": "bar", "orientation": "h", "name": "n-gram", "x": [0.735, 0.501, 0.481, 0.425], "y": ["ID \u2014 all families", "OOD \u2014 MOSFET holdout", "OOD \u2014 IGBT holdout", "OOD \u2014 IC holdout"], "marker": {"color": "#8B93B0", "opacity": 0.7}, "text": ["0.735", "0.501", "0.481", "0.425"], "textposition": "auto"}, {"type": "bar", "orientation": "h", "name": "GPT", "x": [0.807, 0.551, 0.473, 0.467], "y": ["ID \u2014 all families", "OOD \u2014 MOSFET holdout", "OOD \u2014 IGBT holdout", "OOD \u2014 IC holdout"], "marker": {"color": "#6C8EBF"}, "text": ["0.807", "0.551", "0.473", "0.467"], "textposition": "auto"}],{"title": {"text": "Top-1 Accuracy: n-gram \u2192 GPT  (green = improvement)", "font": {"size": 15}}, "template": "plotly_dark", "paper_bgcolor": "#13161F", "plot_bgcolor": "#0E1117", "font": {"family": "Inter, sans-serif", "color": "#E8EAF6"}, "legend": {"bgcolor": "rgba(0,0,0,0)"}, "margin": {"l": 180, "r": 100, "t": 45, "b": 50}, "xaxis": {"title": "Top-1 accuracy", "range": [0, 1.0], "gridcolor": "#2A3149"}, "yaxis": {"gridcolor": "#2A3149", "automargin": true}, "barmode": "overlay", "annotations": [{"x": 0.8270000000000001, "y": "ID \u2014 all families", "text": "+0.072", "showarrow": false, "font": {"color": "#82B366", "size": 12, "family": "Inter, sans-serif"}, "xanchor": "left"}, {"x": 0.5710000000000001, "y": "OOD \u2014 MOSFET holdout", "text": "+0.050", "showarrow": false, "font": {"color": "#82B366", "size": 12, "family": "Inter, sans-serif"}, "xanchor": "left"}, {"x": 0.501, "y": "OOD \u2014 IGBT holdout", "text": "-0.008", "showarrow": false, "font": {"color": "#D1453B", "size": 12, "family": "Inter, sans-serif"}, "xanchor": "left"}, {"x": 0.48700000000000004, "y": "OOD \u2014 IC holdout", "text": "+0.042", "showarrow": false, "font": {"color": "#82B366", "size": 12, "family": "Inter, sans-serif"}, "xanchor": "left"}]},{responsive:true});
+Plotly.newPlot('fig_1',[{"type": "bar", "name": "n-gram baseline", "x": ["ID \u2014 all families", "ID \u2014 all families", "OOD \u2014 hold-out MOSFET", "OOD \u2014 hold-out MOSFET", "OOD \u2014 hold-out IGBT", "OOD \u2014 hold-out IGBT", "OOD \u2014 hold-out IC", "OOD \u2014 hold-out IC"], "y": [0.7272, 0.7347, 0.5005, 0.5009, 0.478, 0.4805, 0.4333, 0.4253], "marker": {"color": "#8B93B0", "opacity": 0.75}, "text": ["0.727", "0.735", "0.500", "0.501", "0.478", "0.480", "0.433", "0.425"], "textposition": "outside"}, {"type": "bar", "name": "GPT-2 small (4.9M)", "x": ["ID \u2014 all families", "ID \u2014 all families", "OOD \u2014 hold-out MOSFET", "OOD \u2014 hold-out MOSFET", "OOD \u2014 hold-out IGBT", "OOD \u2014 hold-out IGBT", "OOD \u2014 hold-out IC", "OOD \u2014 hold-out IC"], "y": [0.8113, 0.8074, 0.542, 0.5511, 0.4771, 0.4727, 0.456, 0.4666], "marker": {"color": "#6C8EBF"}, "text": ["0.811", "0.807", "0.542", "0.551", "0.477", "0.473", "0.456", "0.467"], "textposition": "outside"}],{"title": {"text": "Next-Step Top-1 Accuracy: GPT vs n-gram baseline", "font": {"size": 15}}, "template": "plotly_dark", "paper_bgcolor": "#13161F", "plot_bgcolor": "#0E1117", "font": {"family": "Inter, sans-serif", "color": "#E8EAF6"}, "legend": {"bgcolor": "rgba(0,0,0,0)"}, "margin": {"l": 50, "r": 20, "t": 45, "b": 50}, "xaxis": {"gridcolor": "#2A3149", "zerolinecolor": "#2A3149"}, "yaxis": {"title": "Top-1 accuracy", "range": [0, 1.0], "gridcolor": "#2A3149"}, "barmode": "group", "annotations": [{"x": "ID \u2014 all families", "y": 0.8513000000000001, "text": "\u25b20.084", "showarrow": false, "font": {"color": "#82B366", "size": 11, "family": "Inter"}}, {"x": "ID \u2014 all families", "y": 0.8474, "text": "\u25b20.073", "showarrow": false, "font": {"color": "#82B366", "size": 11, "family": "Inter"}}, {"x": "OOD \u2014 hold-out MOSFET", "y": 0.5820000000000001, "text": "\u25b20.042", "showarrow": false, "font": {"color": "#82B366", "size": 11, "family": "Inter"}}, {"x": "OOD \u2014 hold-out MOSFET", "y": 0.5911000000000001, "text": "\u25b20.050", "showarrow": false, "font": {"color": "#82B366", "size": 11, "family": "Inter"}}, {"x": "OOD \u2014 hold-out IGBT", "y": 0.518, "text": "\u25bc0.001", "showarrow": false, "font": {"color": "#D1453B", "size": 11, "family": "Inter"}}, {"x": "OOD \u2014 hold-out IGBT", "y": 0.5205, "text": "\u25bc0.008", "showarrow": false, "font": {"color": "#D1453B", "size": 11, "family": "Inter"}}, {"x": "OOD \u2014 hold-out IC", "y": 0.496, "text": "\u25b20.023", "showarrow": false, "font": {"color": "#82B366", "size": 11, "family": "Inter"}}, {"x": "OOD \u2014 hold-out IC", "y": 0.5066, "text": "\u25b20.041", "showarrow": false, "font": {"color": "#82B366", "size": 11, "family": "Inter"}}]},{responsive:true});
+Plotly.newPlot('fig_2',[{"x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], "y": [2.694, 0.411, 0.356, 0.342, 0.337, 0.334, 0.331, 0.33, 0.329, 0.328, 0.327, 0.326, 0.326, 0.325, 0.325, 0.324, 0.324, 0.324, 0.323, 0.323], "mode": "lines+markers", "name": "ID \u2014 all families", "line": {"color": "#6C8EBF", "width": 2}, "marker": {"size": 4}}, {"x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], "y": [3.489, 0.604, 0.41, 0.378, 0.364, 0.356, 0.353, 0.35, 0.348, 0.346, 0.345, 0.343, 0.343, 0.341, 0.341, 0.341, 0.34, 0.34, 0.339, 0.339], "mode": "lines+markers", "name": "LOO \u2014 hold-out MOSFET", "line": {"color": "#D6A520", "width": 2}, "marker": {"size": 4}}, {"x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], "y": [2.734, 0.412, 0.356, 0.343, 0.337, 0.334, 0.332, 0.33, 0.329, 0.328, 0.327, 0.327, 0.326, 0.326, 0.325, 0.325, 0.324, 0.324, 0.324, 0.324], "mode": "lines+markers", "name": "LOO \u2014 hold-out IGBT", "line": {"color": "#82B366", "width": 2}, "marker": {"size": 4}}, {"x": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20], "y": [2.739, 0.399, 0.341, 0.327, 0.321, 0.318, 0.316, 0.315, 0.314, 0.313, 0.312, 0.311, 0.311, 0.31, 0.31, 0.31, 0.31, 0.309, 0.309, 0.309], "mode": "lines+markers", "name": "LOO \u2014 hold-out IC", "line": {"color": "#AE85C9", "width": 2}, "marker": {"size": 4}}],{"title": {"text": "Training Loss \u2014 GPT-2 small (4.9M params) \u00b7 20 epochs", "font": {"size": 15}}, "template": "plotly_dark", "paper_bgcolor": "#13161F", "plot_bgcolor": "#0E1117", "font": {"family": "Inter, sans-serif", "color": "#E8EAF6"}, "legend": {"bgcolor": "rgba(0,0,0,0)"}, "margin": {"l": 50, "r": 20, "t": 45, "b": 50}, "xaxis": {"title": "Epoch", "gridcolor": "#2A3149"}, "yaxis": {"title": "Cross-entropy loss", "gridcolor": "#2A3149"}},{responsive:true});
+Plotly.newPlot('fig_3',[{"type": "bar", "name": "GPT OOD top-1", "x": ["IC", "IGBT", "MOSFET", "IC", "IGBT", "MOSFET"], "y": [0.456, 0.4771, 0.542, 0.4666, 0.4727, 0.5511], "marker": {"color": "#6C8EBF"}, "text": ["0.456", "0.477", "0.542", "0.467", "0.473", "0.551"], "textposition": "outside"}, {"type": "bar", "name": "n-gram OOD top-1", "x": ["IC", "IGBT", "MOSFET", "IC", "IGBT", "MOSFET"], "y": [0.4333, 0.478, 0.5005, 0.4253, 0.4805, 0.5009], "marker": {"color": "#8B93B0", "opacity": 0.7}, "text": ["0.433", "0.478", "0.500", "0.425", "0.480", "0.501"], "textposition": "outside"}],{"title": {"text": "OOD Top-1 per Held-out Family  (dotted lines = ID performance)", "font": {"size": 15}}, "template": "plotly_dark", "paper_bgcolor": "#13161F", "plot_bgcolor": "#0E1117", "font": {"family": "Inter, sans-serif", "color": "#E8EAF6"}, "legend": {"bgcolor": "rgba(0,0,0,0)"}, "margin": {"l": 50, "r": 100, "t": 45, "b": 50}, "xaxis": {"gridcolor": "#2A3149", "zerolinecolor": "#2A3149"}, "yaxis": {"title": "Top-1 accuracy", "range": [0, 1.0], "gridcolor": "#2A3149"}, "barmode": "group", "shapes": [{"type": "line", "xref": "paper", "yref": "y", "x0": 0, "x1": 1, "y0": 0.8113, "y1": 0.8113, "line": {"color": "#6C8EBF", "dash": "dot", "width": 1.5}}, {"type": "line", "xref": "paper", "yref": "y", "x0": 0, "x1": 1, "y0": 0.7272, "y1": 0.7272, "line": {"color": "#8B93B0", "dash": "dot", "width": 1.5}}], "annotations": [{"x": 1.01, "xref": "paper", "y": 0.8113, "yref": "y", "text": "GPT ID 0.811", "showarrow": false, "font": {"color": "#6C8EBF", "size": 10}, "xanchor": "left"}, {"x": 1.01, "xref": "paper", "y": 0.7272, "yref": "y", "text": "n-gram ID 0.727", "showarrow": false, "font": {"color": "#8B93B0", "size": 10}, "xanchor": "left"}]},{responsive:true});
+Plotly.newPlot('fig_4',[{"type": "bar", "name": "GPT \u2014 ID \u2014 all families", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.8113, 0.9944, 0.9996, 0.9024], "marker": {"color": "#6C8EBF"}, "text": ["0.811", "0.994", "1.000", "0.902"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "n-gram \u2014 ID baseline", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.7272, null, null, null], "marker": {"color": "#8B93B0", "opacity": 0.6}, "text": ["0.727", "", "", ""], "textposition": "outside"}, {"type": "bar", "name": "GPT \u2014 ID \u2014 all families", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.8074, 0.9952, 0.9999, 0.9007], "marker": {"color": "#D6A520"}, "text": ["0.807", "0.995", "1.000", "0.901"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "n-gram \u2014 ID baseline", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.7347, null, null, null], "marker": {"color": "#8B93B0", "opacity": 0.6}, "text": ["0.735", "", "", ""], "textposition": "outside"}, {"type": "bar", "name": "GPT \u2014 OOD \u2014 IC holdout", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.456, 0.6355, 0.6518, 0.552], "marker": {"color": "#82B366"}, "text": ["0.456", "0.635", "0.652", "0.552"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "GPT \u2014 OOD \u2014 IC holdout", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.4666, 0.6483, 0.6748, 0.5673], "marker": {"color": "#AE85C9"}, "text": ["0.467", "0.648", "0.675", "0.567"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "GPT \u2014 OOD \u2014 IGBT holdout", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.4771, 0.6748, 0.6966, 0.5792], "marker": {"color": "#6C8EBF"}, "text": ["0.477", "0.675", "0.697", "0.579"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "GPT \u2014 OOD \u2014 IGBT holdout", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.4727, 0.6635, 0.692, 0.5772], "marker": {"color": "#D6A520"}, "text": ["0.473", "0.663", "0.692", "0.577"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "GPT \u2014 OOD \u2014 MOSFET holdout", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.542, 0.7274, 0.7452, 0.6392], "marker": {"color": "#82B366"}, "text": ["0.542", "0.727", "0.745", "0.639"], "textposition": "outside", "opacity": 0.85}, {"type": "bar", "name": "GPT \u2014 OOD \u2014 MOSFET holdout", "x": ["Top-1", "Top-3", "Top-5", "MRR"], "y": [0.5511, 0.7438, 0.7854, 0.6549], "marker": {"color": "#AE85C9"}, "text": ["0.551", "0.744", "0.785", "0.655"], "textposition": "outside", "opacity": 0.85}],{"title": {"text": "All 4 Metrics \u2014 GPT-2 small across all runs", "font": {"size": 15}}, "template": "plotly_dark", "paper_bgcolor": "#13161F", "plot_bgcolor": "#0E1117", "font": {"family": "Inter, sans-serif", "color": "#E8EAF6"}, "legend": {"bgcolor": "rgba(0,0,0,0)"}, "margin": {"l": 50, "r": 20, "t": 45, "b": 50}, "xaxis": {"gridcolor": "#2A3149", "zerolinecolor": "#2A3149"}, "yaxis": {"title": "Score", "range": [0, 1.1], "gridcolor": "#2A3149"}, "barmode": "group"},{responsive:true});
+</script>
+</body>
+</html>

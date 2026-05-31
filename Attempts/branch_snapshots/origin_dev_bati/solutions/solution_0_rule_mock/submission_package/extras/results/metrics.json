@@ -1,0 +1,222 @@
+{
+  "data_inventory": [
+    {
+      "family": "ic",
+      "file": "training_data/IC_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 109,
+      "mean_len": 109.0,
+      "min_len": 109,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_generated_extra.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 123,
+      "mean_len": 115.076,
+      "min_len": 105,
+      "sequences": 2000,
+      "valid_sequences": 2000
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 109,
+      "mean_len": 109.0,
+      "min_len": 109,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "ic",
+      "file": "training_data/IC_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 122,
+      "mean_len": 115.075,
+      "min_len": 107,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 137,
+      "mean_len": 137.0,
+      "min_len": 137,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_generated_extra.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 157,
+      "mean_len": 147.9575,
+      "min_len": 138,
+      "sequences": 2000,
+      "valid_sequences": 2000
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 139,
+      "mean_len": 139.0,
+      "min_len": 139,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/IGBT_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 155,
+      "mean_len": 147.959,
+      "min_len": 139,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_Longdescr.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_longdescription_parameters.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/MOSFET_variants.csv",
+      "invalid_sequences": 0,
+      "kind": "long_format_sequence",
+      "max_len": 134,
+      "mean_len": 125.26,
+      "min_len": 117,
+      "sequences": 1000,
+      "valid_sequences": 1000
+    },
+    {
+      "family": "ic",
+      "file": "training_data/syntheticIC.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 107,
+      "mean_len": 107.0,
+      "min_len": 107,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "igbt",
+      "file": "training_data/syntheticIGBT.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 151,
+      "mean_len": 151.0,
+      "min_len": 151,
+      "sequences": 1,
+      "valid_sequences": 1
+    },
+    {
+      "family": "mosfet",
+      "file": "training_data/synthetic_mosfet.csv",
+      "invalid_sequences": 0,
+      "kind": "canonical_single_sequence",
+      "max_len": 126,
+      "mean_len": 126.0,
+      "min_len": 126,
+      "sequences": 1,
+      "valid_sequences": 1
+    }
+  ],
+  "seed": 42,
+  "self_eval": {
+    "anomaly_task_rows": 600,
+    "eval_per_family": 100,
+    "families": [
+      "mosfet",
+      "igbt",
+      "ic"
+    ],
+    "official_eval_available": false,
+    "train_sequences": 6709,
+    "valid_task_rows": 600
+  },
+  "solution": "solution_0_rule_mock",
+  "task1_next_step": {
+    "mrr": 0.833611111111111,
+    "n_examples": 600,
+    "top1": 0.68,
+    "top3": 0.9883333333333333,
+    "top5": 1.0
+  },
+  "task2_completion": {
+    "block_accuracy": 0.37524425247091125,
+    "exact_match": 0.0,
+    "n_examples": 600,
+    "normalized_edit_distance": 0.602640757617706,
+    "token_accuracy": 0.21014578110610074
+  },
+  "task3_anomaly": {
+    "accuracy": 1.0,
+    "f1_valid": 1.0,
+    "fn_valid_as_invalid": 0,
+    "fp_invalid_as_valid": 0,
+    "n_examples": 600,
+    "precision_valid": 1.0,
+    "recall_valid": 1.0,
+    "roc_auc_valid_probability": 1.0,
+    "rule_attribution_accuracy": 1.0,
+    "tn_invalid": 300,
+    "tp_valid": 300
+  },
+  "task4_ood_proxy_next_step": {
+    "ic": {
+      "mrr": 0.7979166666666667,
+      "n_examples": 200,
+      "top1": 0.635,
+      "top3": 0.965,
+      "top5": 0.97
+    },
+    "igbt": {
+      "mrr": 0.8375,
+      "n_examples": 200,
+      "top1": 0.715,
+      "top3": 0.965,
+      "top5": 0.965
+    },
+    "mosfet": {
+      "mrr": 0.8691666666666668,
+      "n_examples": 200,
+      "top1": 0.74,
+      "top3": 1.0,
+      "top5": 1.0
+    }
+  }
+}

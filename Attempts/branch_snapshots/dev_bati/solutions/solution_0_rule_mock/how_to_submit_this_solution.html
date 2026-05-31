@@ -1,0 +1,1059 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How To Submit solution_0_rule_mock</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17221f;
+      --muted: #5f6f69;
+      --line: #d7ded9;
+      --paper: #f7f8f4;
+      --panel: #ffffff;
+      --green: #126b57;
+      --green-2: #dff2e8;
+      --amber: #b46a16;
+      --amber-2: #fff0d8;
+      --red: #ad3434;
+      --red-2: #ffe4e4;
+      --blue: #285f95;
+      --blue-2: #dcebf8;
+      --violet: #604b8e;
+      --violet-2: #ebe6f6;
+      --shadow: 0 18px 46px rgba(38, 47, 43, 0.1);
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.56;
+    }
+
+    a {
+      color: var(--blue);
+      text-underline-offset: 3px;
+    }
+
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+    }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 12px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid rgba(23, 34, 31, 0.1);
+      background: rgba(247, 248, 244, 0.94);
+      backdrop-filter: blur(16px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 780;
+      white-space: nowrap;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: conic-gradient(from 90deg, var(--green-2), var(--blue-2), var(--amber-2), var(--violet-2), var(--green-2));
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .nav a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      color: var(--ink);
+      border-color: var(--line);
+      background: #fff;
+      outline: none;
+    }
+
+    .page-section {
+      padding: clamp(42px, 7vw, 86px) clamp(16px, 5vw, 76px);
+      scroll-margin-top: 80px;
+    }
+
+    .hero {
+      min-height: calc(100svh - 59px);
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
+      gap: clamp(24px, 5vw, 64px);
+      align-items: center;
+      padding-top: clamp(34px, 6vw, 76px);
+      padding-bottom: 42px;
+    }
+
+    .eyebrow,
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      max-width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      color: var(--green);
+      font-size: 13px;
+      font-weight: 780;
+    }
+
+    .tag {
+      border: 0;
+      background: var(--green-2);
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .tag.blue {
+      background: var(--blue-2);
+      color: var(--blue);
+    }
+
+    .tag.amber {
+      background: var(--amber-2);
+      color: var(--amber);
+    }
+
+    .tag.red {
+      background: var(--red-2);
+      color: var(--red);
+    }
+
+    .tag.violet {
+      background: var(--violet-2);
+      color: var(--violet);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      margin: 0;
+      line-height: 1.1;
+      letter-spacing: 0;
+    }
+
+    h1 {
+      max-width: 820px;
+      margin-top: 18px;
+      font-size: clamp(38px, 6.3vw, 84px);
+    }
+
+    h2 {
+      font-size: clamp(30px, 4vw, 52px);
+    }
+
+    h3 {
+      font-size: clamp(20px, 2.2vw, 27px);
+    }
+
+    h4 {
+      font-size: 16px;
+    }
+
+    p {
+      margin: 0;
+      color: #3e4e48;
+    }
+
+    .lede {
+      max-width: 780px;
+      margin: 22px 0 0;
+      font-size: clamp(18px, 2.05vw, 24px);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 10px 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      color: var(--ink);
+      text-decoration: none;
+      font-weight: 780;
+      transition: transform 150ms ease, border-color 150ms ease;
+    }
+
+    .btn:hover,
+    .btn:focus-visible {
+      transform: translateY(-1px);
+      border-color: rgba(23, 34, 31, 0.3);
+      outline: none;
+    }
+
+    .btn.primary {
+      border-color: var(--green);
+      background: var(--green);
+      color: #fff;
+    }
+
+    .panel,
+    .route-board {
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.06);
+    }
+
+    .route-board {
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(23, 34, 31, 0.055) 1px, transparent 1px),
+        linear-gradient(rgba(23, 34, 31, 0.055) 1px, transparent 1px),
+        #ffffff;
+      background-size: 34px 34px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .pad,
+    .board-inner {
+      padding: clamp(18px, 3vw, 28px);
+    }
+
+    .panel h3,
+    .panel h4 {
+      margin-top: 12px;
+    }
+
+    .panel p {
+      margin-top: 12px;
+    }
+
+    .section-head {
+      max-width: 980px;
+      margin-bottom: 24px;
+    }
+
+    .section-head p {
+      margin-top: 12px;
+      font-size: clamp(17px, 1.8vw, 21px);
+    }
+
+    .grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .callout {
+      padding: 18px 20px;
+      border: 1px solid rgba(18, 107, 87, 0.22);
+      border-left: 5px solid var(--green);
+      border-radius: var(--radius);
+      background: #fff;
+      color: #2f403a;
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.05);
+    }
+
+    .callout.warning {
+      border-color: rgba(180, 106, 22, 0.24);
+      border-left-color: var(--amber);
+      background: #fffaf2;
+    }
+
+    .callout.danger {
+      border-color: rgba(173, 52, 52, 0.2);
+      border-left-color: var(--red);
+      background: #fff8f8;
+    }
+
+    .callout strong {
+      color: var(--ink);
+    }
+
+    .step-list {
+      display: grid;
+      gap: 14px;
+      counter-reset: step;
+    }
+
+    .step-card {
+      position: relative;
+      padding: 18px 18px 18px 58px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .step-card::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      top: 18px;
+      left: 18px;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--green);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .step-card h3,
+    .step-card h4 {
+      margin-top: 0;
+    }
+
+    .step-card p {
+      margin-top: 8px;
+    }
+
+    .note-list {
+      margin: 12px 0 0;
+      padding-left: 20px;
+      color: #3e4e48;
+    }
+
+    .note-list li {
+      margin: 7px 0;
+    }
+
+    .checklist {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .check {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+
+    .box {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      border: 2px solid var(--green);
+      border-radius: 5px;
+      background: var(--green-2);
+    }
+
+    .check strong {
+      display: block;
+      color: var(--ink);
+    }
+
+    .check span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .code-box {
+      overflow: auto;
+      max-height: 520px;
+      margin: 14px 0 0;
+      padding: 16px;
+      border: 1px solid rgba(23, 34, 31, 0.14);
+      border-radius: var(--radius);
+      background: #14211d;
+      color: #e6f2ec;
+      font-size: 13px;
+      line-height: 1.55;
+      tab-size: 4;
+    }
+
+    .code-box.light {
+      background: #ffffff;
+      color: #21312b;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.04);
+    }
+
+    table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--ink);
+      background: #fbfcf8;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    td {
+      color: #34443e;
+      font-size: 14px;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .flow-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      max-width: 100%;
+      padding: 6px 9px;
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: 7px;
+      background: #fff;
+      color: #22312c;
+      font-size: 12px;
+      font-weight: 760;
+      white-space: normal;
+    }
+
+    .pill.green {
+      border-color: rgba(18, 107, 87, 0.28);
+      background: var(--green-2);
+      color: var(--green);
+    }
+
+    .pill.blue {
+      border-color: rgba(40, 95, 149, 0.28);
+      background: var(--blue-2);
+      color: var(--blue);
+    }
+
+    .pill.amber {
+      border-color: rgba(180, 106, 22, 0.28);
+      background: var(--amber-2);
+      color: var(--amber);
+    }
+
+    .arrow {
+      color: var(--muted);
+      font-weight: 900;
+    }
+
+    .footer-note {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    @media (max-width: 1050px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .nav {
+        justify-content: flex-start;
+      }
+
+      .grid.two,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: clamp(36px, 12vw, 56px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar" role="banner">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">S</span>
+      <span>How to submit solution_0_rule_mock</span>
+    </div>
+    <div class="nav" role="navigation" aria-label="Page sections">
+      <a href="#read-first">Read First</a>
+      <a href="#terminal">Terminal</a>
+      <a href="#repo">GitHub</a>
+      <a href="#slides">Slides</a>
+      <a href="#video">Video</a>
+      <a href="#tally">Tally</a>
+      <a href="#checklist">Checklist</a>
+    </div>
+  </div>
+
+  <div role="main">
+    <div class="page-section hero" id="top">
+      <div>
+        <div class="eyebrow">Manual submission guide / Solution 0</div>
+        <h1>Submit this baseline without accidentally overstating it.</h1>
+        <p class="lede">
+          This page explains the exact manual steps to package, verify, push, and submit <code>solution_0_rule_mock</code>. It includes terminal commands, GitHub clicks, Tally form steps, and the honesty notes that should go into the report, slides, and demo.
+        </p>
+        <div class="hero-actions">
+          <a class="btn primary" href="#terminal">Start with terminal steps</a>
+          <a class="btn" href="#tally">Jump to Tally form steps</a>
+        </div>
+      </div>
+
+      <div class="route-board">
+        <div class="board-inner">
+          <span class="tag amber">Current solution status</span>
+          <h3>Submit-able as a baseline, not a final trained-model win</h3>
+          <p>
+            Solution 0 runs end to end and creates the three official-shaped Industrial AI CSVs. It is valuable because it proves the pipeline. It is not enough for the strongest final submission because it has no trained transformer, no Leonardo training artifacts, no official hidden eval scores, and Task 3 uses a public rule oracle.
+          </p>
+          <div class="flow-line">
+            <span class="pill green">runs locally</span>
+            <span class="arrow">-&gt;</span>
+            <span class="pill green">writes CSVs</span>
+            <span class="arrow">-&gt;</span>
+            <span class="pill amber">self-eval metrics</span>
+            <span class="arrow">-&gt;</span>
+            <span class="pill amber">honest baseline submission</span>
+          </div>
+          <div class="callout warning" style="margin-top: 18px;">
+            <strong>Branch rule:</strong> all final git work for this solution should stay on <code>dev/bati</code>. Do not merge, commit, or push outside this branch unless the team explicitly decides to do that.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="read-first">
+      <div class="section-head">
+        <h2>Read This Before Touching the Form</h2>
+        <p>The official submission docs require a Tally form plus a public, runnable repository. The form URL is not in the repo; it is a placeholder in <code>submission/SUBMISSION.md</code>, so get the real link from Discord <code>#announcements</code>.</p>
+      </div>
+
+      <div class="grid three">
+        <div class="panel pad">
+          <span class="tag blue">Deadline</span>
+          <h3>Submit by Sunday 10:00</h3>
+          <p>
+            Based on the current event date, that means Sunday, May 31, 2026 at 10:00 local event time, if the event schedule has not changed. The official docs warn not to submit at 09:58. Aim for 09:45.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Tally fields</span>
+          <h3>Four things go into the form</h3>
+          <p>
+            Team name, public repository URL, slides as a PDF upload, and a demo video upload or link. The Tally timestamp is the official submission time.
+          </p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Repo requirements</span>
+          <h3>Repo must be reviewable</h3>
+          <p>
+            Public repo, MIT license, root <code>README.md</code>, root <code>REPORT.md</code>, dependency manifest, no secrets, and a clean-checkout run path.
+          </p>
+        </div>
+      </div>
+
+      <div class="callout danger" style="margin-top: 20px;">
+        <strong>Current gap to fix before a real final submission:</strong> this repo currently does not have root-level <code>LICENSE</code>, <code>REPORT.md</code>, or <code>requirements.txt</code> files. This guide tells you how to add them manually when the team is ready to commit and push. Do not treat Solution 0 as fully submission-ready until those exist in the pushed branch.
+      </div>
+
+      <div class="table-wrap" style="margin-top: 20px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Question</th>
+              <th>Answer for this solution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Which branch should be submitted?</td>
+              <td><code>dev/bati</code>, unless the team explicitly decides to merge it elsewhere.</td>
+            </tr>
+            <tr>
+              <td>Which repo URL is the fork origin?</td>
+              <td><code>https://github.com/AriunZaya7/zero_one_hack_0625</code></td>
+            </tr>
+            <tr>
+              <td>Which branch URL should the Tally form use if submitting this branch directly?</td>
+              <td><code>https://github.com/AriunZaya7/zero_one_hack_0625/tree/dev/bati</code></td>
+            </tr>
+            <tr>
+              <td>Where are Solution 0 outputs?</td>
+              <td><code>solutions/solution_0_rule_mock/outputs/nextstep.csv</code>, <code>completion.csv</code>, and <code>anomaly.csv</code></td>
+            </tr>
+            <tr>
+              <td>What must be said honestly?</td>
+              <td>Task 3 uses the public validator oracle. Metrics are local self-eval, not official hidden eval scores.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section" id="terminal">
+      <div class="section-head">
+        <h2>Terminal Steps</h2>
+        <p>Run these from the repository root. These commands are written for macOS/zsh, matching this workspace.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step-card">
+          <h3>Go to the repo and verify you are on <code>dev/bati</code></h3>
+          <p>This avoids accidentally preparing or pushing another branch.</p>
+          <pre class="code-box"><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current
+git status --short --branch</code></pre>
+          <p>Expected branch: <code>dev/bati</code>. If it is not <code>dev/bati</code>, stop and switch intentionally:</p>
+          <pre class="code-box"><code>git switch dev/bati</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Verify the git personal profile</h3>
+          <p>The current local identity in this workspace is the personal profile identity. Check it before any final commit.</p>
+          <pre class="code-box"><code>git config --get user.name
+git config --get user.email</code></pre>
+          <p>Expected values in this workspace:</p>
+          <pre class="code-box light"><code>BATIKAN BORA ORMANCI
+batikan.ormanci@pava.eu</code></pre>
+          <p>If those are not set and the team wants this exact personal identity, set it locally for this repo:</p>
+          <pre class="code-box"><code>git config --local user.name "BATIKAN BORA ORMANCI"
+git config --local user.email "batikan.ormanci@pava.eu"</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Refresh from upstream without leaving the branch</h3>
+          <p>This keeps <code>dev/bati</code> current with the organizer repo while preserving the rule that work stays on this branch.</p>
+          <pre class="code-box"><code>git fetch origin
+git fetch upstream
+git switch dev/bati
+git merge upstream/main</code></pre>
+          <p>If there are conflicts, resolve them carefully. Do not run destructive commands like <code>git reset --hard</code>. After resolving, rerun the solution and checks below.</p>
+        </div>
+
+        <div class="step-card">
+          <h3>Regenerate Solution 0 outputs</h3>
+          <p>This produces the local metrics and official-shaped CSV files.</p>
+          <pre class="code-box"><code>PYTHONDONTWRITEBYTECODE=1 python solutions/solution_0_rule_mock/solution.py</code></pre>
+          <p>Expected last line:</p>
+          <pre class="code-box light"><code>Wrote outputs to solutions/solution_0_rule_mock/outputs</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Inspect the generated files</h3>
+          <p>Do a quick sanity check before building slides or submitting.</p>
+          <pre class="code-box"><code>ls -lh solutions/solution_0_rule_mock/outputs
+head -n 3 solutions/solution_0_rule_mock/outputs/nextstep.csv
+head -n 3 solutions/solution_0_rule_mock/outputs/completion.csv
+head -n 3 solutions/solution_0_rule_mock/outputs/anomaly.csv
+sed -n '1,120p' solutions/solution_0_rule_mock/outputs/metrics.md</code></pre>
+          <p>The three CSV headers should be:</p>
+          <pre class="code-box light"><code>EXAMPLE_ID,RANK_1,RANK_2,RANK_3,RANK_4,RANK_5
+EXAMPLE_ID,PREDICTED_SEQUENCE
+EXAMPLE_ID,IS_VALID,SCORE,PREDICTED_RULE</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Put track deliverables somewhere obvious for the jury</h3>
+          <p>
+            Solution 0 already keeps its outputs under <code>solutions/solution_0_rule_mock/outputs/</code>. The official report template also mentions <code>extras/results/</code>. For a real final submission, copy the main CSVs and metric summaries to a root-level results folder so the jury can find them quickly.
+          </p>
+          <pre class="code-box"><code>mkdir -p extras/results/solution_0_rule_mock
+cp solutions/solution_0_rule_mock/outputs/nextstep.csv extras/results/solution_0_rule_mock/
+cp solutions/solution_0_rule_mock/outputs/completion.csv extras/results/solution_0_rule_mock/
+cp solutions/solution_0_rule_mock/outputs/anomaly.csv extras/results/solution_0_rule_mock/
+cp solutions/solution_0_rule_mock/outputs/metrics.md extras/results/solution_0_rule_mock/
+cp solutions/solution_0_rule_mock/outputs/input_audit.md extras/results/solution_0_rule_mock/</code></pre>
+          <p>Only run and commit this when the team is ready to package a real submission.</p>
+        </div>
+
+        <div class="step-card">
+          <h3>Add missing root submission files if they still do not exist</h3>
+          <p>The official docs require root-level <code>LICENSE</code>, <code>REPORT.md</code>, and a dependency manifest. The exact final wording is a team decision, but these checks tell you what is missing.</p>
+          <pre class="code-box"><code>test -f LICENSE &amp;&amp; echo "LICENSE exists" || echo "MISSING LICENSE"
+test -f REPORT.md &amp;&amp; echo "REPORT.md exists" || echo "MISSING REPORT.md"
+test -f requirements.txt &amp;&amp; echo "requirements.txt exists" || echo "MISSING requirements.txt"</code></pre>
+          <p>For Solution 0 specifically, the dependency manifest can honestly say that the runnable baseline uses the Python standard library plus local repo modules:</p>
+          <pre class="code-box"><code>cat &gt; requirements.txt &lt;&lt;'EOF'
+# solution_0_rule_mock uses Python standard library only.
+# Other future solutions may add torch/transformers/wandb/etc.
+EOF</code></pre>
+          <p>
+            For <code>LICENSE</code>, use the standard MIT license text and the correct team/contributor copyright holder. For <code>REPORT.md</code>, use <code>submission/REPORT_TEMPLATE.md</code> as the structure.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <h3>Write the root <code>REPORT.md</code> honestly</h3>
+          <p>Do not oversell Solution 0. The report should make clear this is a baseline/mock solution.</p>
+          <pre class="code-box light"><code>Required honesty text to include:
+- Task 1 and Task 2 use a trigram n-gram baseline.
+- Task 3 uses the public validator as an oracle, not a learned detector.
+- Scores are deterministic local self-eval scores because official eval files and eval_metrics.py were not present in reachable repo history.
+- There are no trained transformer checkpoints or Leonardo training logs for Solution 0.
+- Future work should train a step-level transformer and compare against this baseline.</code></pre>
+          <p>Useful links to put in <code>REPORT.md</code>:</p>
+          <ul class="note-list">
+            <li><code>solutions/solution_0_rule_mock/explanation.html</code></li>
+            <li><code>solutions/solution_0_rule_mock/how_to_submit_this_solution.html</code></li>
+            <li><code>solutions/solution_0_rule_mock/outputs/metrics.md</code></li>
+            <li><code>solutions/solutions_comparison.md</code></li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <h3>Check for secrets and accidental scratch files</h3>
+          <p>The official docs say no secrets. Also respect the earlier rule: do not accidentally commit personal scratch docs or unrelated files.</p>
+          <pre class="code-box"><code>git status --short
+git grep -nE '(api[_-]?key|secret|token|password|BEGIN PRIVATE KEY)' -- . ':!test_baseline_*/wandb' ':!**/*.html' || true
+find . -name '__pycache__' -o -name '.DS_Store'</code></pre>
+          <p>
+            If <code>problem_learning/</code> appears in <code>git status</code> and it is only personal learning material, do not commit it unless the team deliberately wants it in the submitted repo.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <h3>Run a clean-checkout test after pushing</h3>
+          <p>This is the best way to catch "works on my machine" failures. Run it after the branch exists on GitHub.</p>
+          <pre class="code-box"><code>rm -rf /tmp/zero-one-submit-check
+git clone --branch dev/bati https://github.com/AriunZaya7/zero_one_hack_0625.git /tmp/zero-one-submit-check
+cd /tmp/zero-one-submit-check
+PYTHONDONTWRITEBYTECODE=1 python solutions/solution_0_rule_mock/solution.py
+test -f solutions/solution_0_rule_mock/outputs/nextstep.csv
+test -f solutions/solution_0_rule_mock/outputs/completion.csv
+test -f solutions/solution_0_rule_mock/outputs/anomaly.csv</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Commit and push only when explicitly ready</h3>
+          <p>This guide includes the commands, but do not run them until the team has explicitly decided this branch should be published.</p>
+          <pre class="code-box"><code>git status --short
+git add solutions/solution_0_rule_mock solutions/solutions_comparison.md extras/results/solution_0_rule_mock requirements.txt REPORT.md LICENSE
+git commit -m "Add solution 0 rule mock submission package"
+git push origin dev/bati</code></pre>
+          <p>If you are only submitting the solution folder and have not created root files yet, adjust <code>git add</code> accordingly. Do not add unrelated untracked folders by habit.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="repo">
+      <div class="section-head">
+        <h2>GitHub Clicking Steps</h2>
+        <p>These are the manual browser actions to make the pushed branch reviewable.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step-card">
+          <h3>Open the fork on GitHub</h3>
+          <p>In a browser, go to:</p>
+          <pre class="code-box light"><code>https://github.com/AriunZaya7/zero_one_hack_0625</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Confirm the repository is public</h3>
+          <p>On GitHub, look near the repository name. It should say <code>Public</code>.</p>
+          <p>If it is private and you have permission to change it:</p>
+          <ul class="note-list">
+            <li>Click <strong>Settings</strong>.</li>
+            <li>Scroll to the visibility section.</li>
+            <li>Use GitHub's <strong>Change visibility</strong> flow.</li>
+            <li>Confirm the repo is public before submitting the Tally form.</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <h3>Open the branch URL and verify files are visible</h3>
+          <p>After pushing, open:</p>
+          <pre class="code-box light"><code>https://github.com/AriunZaya7/zero_one_hack_0625/tree/dev/bati</code></pre>
+          <p>Click through these paths and confirm GitHub displays them:</p>
+          <ul class="note-list">
+            <li><code>solutions/solution_0_rule_mock/solution.py</code></li>
+            <li><code>solutions/solution_0_rule_mock/explanation.html</code></li>
+            <li><code>solutions/solution_0_rule_mock/how_to_submit_this_solution.html</code></li>
+            <li><code>solutions/solution_0_rule_mock/outputs/nextstep.csv</code></li>
+            <li><code>solutions/solution_0_rule_mock/outputs/completion.csv</code></li>
+            <li><code>solutions/solution_0_rule_mock/outputs/anomaly.csv</code></li>
+            <li><code>REPORT.md</code>, <code>LICENSE</code>, and <code>requirements.txt</code> at repo root</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <h3>Copy the exact URL for the Tally form</h3>
+          <p>If submitting this branch directly, copy the branch URL from the browser address bar:</p>
+          <pre class="code-box light"><code>https://github.com/AriunZaya7/zero_one_hack_0625/tree/dev/bati</code></pre>
+          <p>If the team later merges to the default branch, submit the default repo URL instead. Do not merge outside <code>dev/bati</code> unless explicitly decided.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="slides">
+      <div class="section-head">
+        <h2>Slides PDF Steps</h2>
+        <p>The official docs say max 10 slides for a 3-minute pitch. For this exact solution, the slides should be honest that this is a baseline package.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="panel pad">
+          <span class="tag blue">Recommended structure</span>
+          <h3>Use 6 to 8 slides</h3>
+          <ol class="note-list">
+            <li>Team name and one-sentence summary.</li>
+            <li>Industrial AI problem: learning semiconductor process logic.</li>
+            <li>What Solution 0 implements: n-gram next-step, greedy completion, validator-oracle anomaly detection.</li>
+            <li>Data coverage: all sequence sources used, 6709 train sequences, 600 valid self-eval rows, 600 anomaly rows.</li>
+            <li>Results: Task 1 strong, Task 2 weak, Task 3 oracle-perfect.</li>
+            <li>Honesty: no official eval files, no trained transformer, no Leonardo logs.</li>
+            <li>What this baseline enables next: trained step-level transformer and OOD proxy.</li>
+            <li>Demo link and repo link.</li>
+          </ol>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Export checklist</span>
+          <h3>Before uploading</h3>
+          <div class="checklist">
+            <div class="check"><span class="box"></span><span><strong>PDF format</strong> The Tally form asks for PDF slides.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Max 10 slides</strong> Do not exceed the official limit.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Under 20 MB</strong> The official checklist says slides should be under 20 MB.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Numbers match metrics</strong> Use values from <code>outputs/metrics.md</code>.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Mock/oracle caveat present</strong> Say Task 3 uses the validator oracle.</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="video">
+      <div class="section-head">
+        <h2>Demo Video Steps</h2>
+        <p>The official docs say max 2 minutes, MP4 1080p with audio, uploaded directly to Tally or linked from YouTube/Vimeo/Loom. The video should show the system actually running.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step-card">
+          <h3>Record a short run-through</h3>
+          <p>Suggested 2-minute script:</p>
+          <ul class="note-list">
+            <li><strong>0:00-0:15:</strong> "We are benchmarking semiconductor process sequence logic for the Industrial AI track."</li>
+            <li><strong>0:15-0:45:</strong> Show terminal running <code>PYTHONDONTWRITEBYTECODE=1 python solutions/solution_0_rule_mock/solution.py</code>.</li>
+            <li><strong>0:45-1:10:</strong> Show generated <code>nextstep.csv</code>, <code>completion.csv</code>, and <code>anomaly.csv</code>.</li>
+            <li><strong>1:10-1:35:</strong> Show <code>outputs/metrics.md</code> and explain Task 1, Task 2, Task 3 in one sentence each.</li>
+            <li><strong>1:35-1:50:</strong> Open <code>explanation.html</code> in a normal browser/Finder and show the judging-style results section.</li>
+            <li><strong>1:50-2:00:</strong> State the honest caveat: "This is a baseline/mock; the next solution should train a transformer and beat it, especially on OOD."</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <h3>Terminal commands to show in the video</h3>
+          <pre class="code-box"><code>cd /Users/batikanorpava/Documents/other_development/2026-may30-vienna/zero_one_hack_0625
+git branch --show-current
+PYTHONDONTWRITEBYTECODE=1 python solutions/solution_0_rule_mock/solution.py
+sed -n '1,80p' solutions/solution_0_rule_mock/outputs/metrics.md
+head -n 3 solutions/solution_0_rule_mock/outputs/nextstep.csv
+head -n 3 solutions/solution_0_rule_mock/outputs/anomaly.csv
+open solutions/solution_0_rule_mock/explanation.html</code></pre>
+        </div>
+
+        <div class="step-card">
+          <h3>Video upload or link</h3>
+          <p>If uploading directly to Tally, make sure the file is under the form limit. If using Loom/YouTube/Vimeo, make sure the link is public or unlisted but viewable without logging in.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="tally">
+      <div class="section-head">
+        <h2>Tally Form Clicking Steps</h2>
+        <p>The real Tally URL is not in the repo. It will be shared in Discord <code>#announcements</code>.</p>
+      </div>
+
+      <div class="step-list">
+        <div class="step-card">
+          <h3>Open Discord and find the form</h3>
+          <ul class="note-list">
+            <li>Open Discord.</li>
+            <li>Go to the hackathon server.</li>
+            <li>Click <code>#announcements</code>.</li>
+            <li>Find the message with the Tally submission form.</li>
+            <li>Open the Tally link in a browser.</li>
+          </ul>
+        </div>
+
+        <div class="step-card">
+          <h3>Fill field 1: Team name</h3>
+          <p>Use the exact team name used at registration. Keep spelling and capitalization consistent.</p>
+        </div>
+
+        <div class="step-card">
+          <h3>Fill field 2: Repository URL</h3>
+          <p>If submitting this branch directly, paste:</p>
+          <pre class="code-box light"><code>https://github.com/AriunZaya7/zero_one_hack_0625/tree/dev/bati</code></pre>
+          <p>Before pasting, open the URL in a private/incognito window to confirm it is public.</p>
+        </div>
+
+        <div class="step-card">
+          <h3>Fill field 3: Slides PDF</h3>
+          <p>Click the upload control, select the exported PDF, wait until upload completes, and confirm the filename appears in the form.</p>
+        </div>
+
+        <div class="step-card">
+          <h3>Fill field 4: Demo video</h3>
+          <p>Either upload the MP4 file or paste a viewable video link. If using a link, open it in a private/incognito window before submitting.</p>
+        </div>
+
+        <div class="step-card">
+          <h3>Submit and save proof</h3>
+          <p>Click the final submit button. Wait for the Tally confirmation screen. Take a screenshot of the confirmation page and post in the team chat that submission is done.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-section" id="checklist">
+      <div class="section-head">
+        <h2>Final Checklist</h2>
+        <p>Use this immediately before pressing submit.</p>
+      </div>
+
+      <div class="grid two">
+        <div class="panel pad">
+          <span class="tag blue">Repository</span>
+          <h3>GitHub checks</h3>
+          <div class="checklist">
+            <div class="check"><span class="box"></span><span><strong>Branch is <code>dev/bati</code></strong> Work is not accidentally on another branch.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Repo is public</strong> Incognito browser can open it.</span></div>
+            <div class="check"><span class="box"></span><span><strong>MIT license exists</strong> Root <code>LICENSE</code> file is present.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Root report exists</strong> Root <code>REPORT.md</code> is present and honest.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Dependencies documented</strong> Root <code>requirements.txt</code> or equivalent exists.</span></div>
+            <div class="check"><span class="box"></span><span><strong>No secrets</strong> Secret scan was checked.</span></div>
+          </div>
+        </div>
+
+        <div class="panel pad">
+          <span class="tag green">Industrial AI deliverables</span>
+          <h3>Solution files</h3>
+          <div class="checklist">
+            <div class="check"><span class="box"></span><span><strong>Task 1 CSV</strong> <code>nextstep.csv</code> exists and has rank columns.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Task 2 CSV</strong> <code>completion.csv</code> exists and predicts only suffixes.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Task 3 CSV</strong> <code>anomaly.csv</code> exists and has validity/rule columns.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Metrics included</strong> <code>metrics.md</code> and <code>metrics.json</code> exist.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Audit included</strong> <code>input_audit.md</code> and <code>input_audit.json</code> exist.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Honesty caveat visible</strong> Report/slides/video say Task 3 is an oracle and scores are local self-eval.</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid two" style="margin-top: 18px;">
+        <div class="panel pad">
+          <span class="tag amber">Tally assets</span>
+          <h3>Form files</h3>
+          <div class="checklist">
+            <div class="check"><span class="box"></span><span><strong>Team name ready</strong> Matches registration.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Repo URL ready</strong> Use branch URL if submitting <code>dev/bati</code>.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Slides PDF ready</strong> Max 10 slides, under 20 MB.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Demo video ready</strong> Under 2 minutes, link/upload works.</span></div>
+            <div class="check"><span class="box"></span><span><strong>Submit early</strong> Aim for 09:45, not 09:58.</span></div>
+          </div>
+        </div>
+
+        <div class="panel pad">
+          <span class="tag red">Do not accidentally do this</span>
+          <h3>Common mistakes</h3>
+          <ul class="note-list">
+            <li>Do not submit a private repo URL.</li>
+            <li>Do not forget root <code>REPORT.md</code>.</li>
+            <li>Do not claim official eval scores if we only have local self-eval.</li>
+            <li>Do not hide that Task 3 uses <code>validate_sequence()</code>.</li>
+            <li>Do not commit <code>problem_learning/</code> or unrelated scratch material unless the team deliberately wants it submitted.</li>
+            <li>Do not push to <code>main</code> or another branch unless explicitly asked.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="footer-note">
+        This guide is specific to <code>solutions/solution_0_rule_mock</code>. Future solution folders should get their own copy with their own run command, output paths, metrics, caveats, and demo script.
+      </p>
+    </div>
+  </div>
+</body>
+</html>

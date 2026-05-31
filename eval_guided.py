@@ -5,7 +5,7 @@ For every experimental split (ID + 3 LOO) this script:
   2. Builds a GrammarGuide from the SAME training split
   3. Runs next-step eval WITHOUT guidance   (baseline)
   4. Runs next-step eval WITH guidance      (constrained)
-  5. Prints a side-by-side comparison table and writes results/guided_*.json
+  5. Prints a side-by-side comparison table and writes JSON results
 
 Usage:
     python eval_guided.py --kind gpt --size small   # uses outputs/gpt_small_*
@@ -22,7 +22,15 @@ import time
 
 import torch
 
-from data import FAMILIES, load_all, load_family, leave_one_family_out, train_val_split
+from data import (
+    FAMILIES,
+    OOD_3_FAMILIES,
+    TRAIN_12_FAMILIES,
+    leave_one_family_out,
+    load_all,
+    train12_test3_by_family,
+    train_val_split,
+)
 from grammar_guide import GrammarGuide
 from tokenizer import StepTokenizer
 
@@ -33,6 +41,14 @@ EVAL_SEQS = 200   # sequences to eval per split (more = slower but more accurate
 def set_seed():
     random.seed(SEED)
     torch.manual_seed(SEED)
+
+
+def best_torch_device() -> str:
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        return "mps"
+    return "cpu"
 
 
 # ── fast teacher-forced eval ──────────────────────────────────────────────────
@@ -153,6 +169,38 @@ def run_split(ckpt_path: str | None, split_name: str,
     }
 
 
+def _mean_metric(results: list[dict], section: str, metric: str) -> float:
+    return round(sum(r[section][metric] for r in results) / max(len(results), 1), 4)
+
+
+def aggregate_ood3(results: list[dict]) -> dict:
+    """Average the three SUBMISSION_1 OOD family results family-wise."""
+    return {
+        "split": "OOD3 average — train12/test3",
+        "families": OOD_3_FAMILIES,
+        "base": {
+            "top1": _mean_metric(results, "base", "top1"),
+            "top3": _mean_metric(results, "base", "top3"),
+            "top5": _mean_metric(results, "base", "top5"),
+            "mrr": _mean_metric(results, "base", "mrr"),
+        },
+        "guided": {
+            "top1": _mean_metric(results, "guided", "top1"),
+            "top3": _mean_metric(results, "guided", "top3"),
+            "top5": _mean_metric(results, "guided", "top5"),
+            "mrr": _mean_metric(results, "guided", "mrr"),
+        },
+        "delta_top1": round(
+            _mean_metric(results, "guided", "top1") - _mean_metric(results, "base", "top1"),
+            4,
+        ),
+        "delta_mrr": round(
+            _mean_metric(results, "guided", "mrr") - _mean_metric(results, "base", "mrr"),
+            4,
+        ),
+    }
+
+
 # ── main ──────────────────────────────────────────────────────────────────────
 
 def main():
@@ -161,16 +209,61 @@ def main():
     ap.add_argument("--kind",      default="gpt")
     ap.add_argument("--size",      default="large", choices=["tiny", "small", "large"])
     ap.add_argument("--leave-out", default=None, choices=FAMILIES)
+    ap.add_argument(
+        "--submission-1-ood",
+        action="store_true",
+        help="Evaluate the fixed 15-family protocol: train on 12, report average over 3 held-out OOD families.",
+    )
+    ap.add_argument(
+        "--checkpoint",
+        default=None,
+        help="Checkpoint to evaluate. Defaults to outputs/gpt_<size>_train12 for --submission-1-ood.",
+    )
     ap.add_argument("--eval-seqs", type=int, default=EVAL_SEQS)
     args = ap.parse_args()
     set_seed()
     EVAL_SEQS = args.eval_seqs
 
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    device = best_torch_device()
     print(f"[eval_guided]  kind={args.kind}  size={args.size}  device={device}")
 
-    # Build shared tokenizer from FULL vocab (including held-out family steps)
-    all_seqs = load_all()
+    if args.submission_1_ood:
+        train_seqs, tests_by_family = train12_test3_by_family(seed=SEED)
+        tok = StepTokenizer.build_from_sequences(train_seqs.values())
+        print(f"  Tokenizer: {tok.vocab_size} tokens "
+              f"({tok.vocab_size-4} process steps + 4 special)")
+        ckpt_path = args.checkpoint or f"outputs/gpt_{args.size}_train12"
+        results = []
+        print("\nSUBMISSION_1 protocol: 15 families total")
+        print(f"  train families ({len(TRAIN_12_FAMILIES)}): {', '.join(TRAIN_12_FAMILIES)}")
+        print(f"  held-out families ({len(OOD_3_FAMILIES)}): {', '.join(OOD_3_FAMILIES)}")
+        for family, test_seqs in tests_by_family.items():
+            split_name = f"OOD3 — hold-out {family.upper()}"
+            r = run_split(ckpt_path, split_name, train_seqs, test_seqs, tok, device, args.size)
+            if r:
+                results.append(r)
+        if not results:
+            print("No SUBMISSION_1 OOD results produced; checkpoint is missing or unreadable.")
+            return
+        if len(results) != len(OOD_3_FAMILIES):
+            print(f"WARNING: expected {len(OOD_3_FAMILIES)} OOD family results, got {len(results)}.")
+        avg = aggregate_ood3(results)
+        print(f"\n{'='*65}")
+        print("  SUBMISSION_1 OOD3 FAMILY-WISE AVERAGE")
+        print(f"{'='*65}")
+        print(f"  Base top1={avg['base']['top1']:.4f} top3={avg['base']['top3']:.4f} "
+              f"top5={avg['base']['top5']:.4f} mrr={avg['base']['mrr']:.4f}")
+        print(f"  Guided   top1={avg['guided']['top1']:.4f} top3={avg['guided']['top3']:.4f} "
+              f"top5={avg['guided']['top5']:.4f} mrr={avg['guided']['mrr']:.4f}")
+        results.append(avg)
+        os.makedirs("results", exist_ok=True)
+        out = f"results/submission_1_ood3_{args.size}_{int(time.time())}.json"
+        with open(out, "w") as f:
+            json.dump(results, f, indent=2)
+        print(f"Results saved -> {out}")
+        return
+
+    all_seqs = load_all(FAMILIES)
     tok      = StepTokenizer.build_from_sequences(all_seqs.values())
     print(f"  Tokenizer: {tok.vocab_size} tokens "
           f"({tok.vocab_size-4} process steps + 4 special)")
@@ -192,8 +285,8 @@ def main():
             train_seqs, test_seqs = leave_one_family_out(holdout, seed=SEED)
             split_name = f"OOD — hold-out {holdout.upper()}"
             ckpt_path  = f"outputs/gpt_{args.size}_loo_{holdout}"
-            # For kremsians (or any new family), the allfam checkpoint is the right
-            # model — it was trained on the same mosfet+igbt+ic split.
+            # For legacy one-off holdouts, the allfam checkpoint is the fallback
+            # model when a dedicated leave-one-out checkpoint is unavailable.
             if not os.path.isdir(ckpt_path):
                 fallback = f"outputs/gpt_{args.size}_allfam"
                 print(f"  [{split_name}] LOO checkpoint not found, "

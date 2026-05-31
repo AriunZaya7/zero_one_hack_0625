@@ -1,0 +1,51 @@
+
+Loading data...
+  Loaded  5400 records from dataset_train.jsonl
+  Loaded   600 records from dataset_id_val.jsonl
+  Loaded  1000 records from dataset_ood_test.jsonl
+
+Train: 5400 | ID Val: 600 | OOD: 1000
+
+[WARNING] 103 steps not in category map:
+  'ALIGN MASK LEVEL 5'
+  'ALIGN MASK LEVEL 6'
+  'ANNEAL DIELECTRIC'
+  'ANNEAL METAL'
+  'ANNEAL METAL 1'
+  'ANNEAL OXIDE'
+  'ANNEAL POLYSILICON'
+  'BACKSIDE CLEAN FINAL'
+  'BACKSIDE DRY'
+  'BACKSIDE ETCH CLEAN'
+  Consider adding these to STEP_CATEGORIES for better accuracy
+
+=======================================================
+  Training CRF (max_iter=100)
+=======================================================
+  CRF trained | classes: 27
+
+  Evaluating CRF...
+  CRF ID Val  Top-1: 100.00%
+  CRF OOD     Top-1: 99.20%
+  CRF OOD drop:      0.80%
+
+=======================================================
+  Building XGBoost features...
+=======================================================
+  Fitting LabelEncoder on training labels...
+  LabelEncoder fitted on 27 classes
+Traceback (most recent call last):
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction\compare_xgboost_crf.py", line 771, in <module>
+    main()
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction\compare_xgboost_crf.py", line 655, in main
+    X_ood_xgb,   y_ood_xgb   = build_xgb_dataset(ood_seqs,    label_encoder)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\zero_one_hack_0625\testing_rule_extraction\compare_xgboost_crf.py", line 401, in build_xgb_dataset
+    y = label_encoder.transform(safe_y)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\sklearn\preprocessing\_label.py", line 144, in transform
+    return _encode(y, uniques=self.classes_)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\sklearn\utils\_encode.py", line 236, in _encode
+    raise ValueError(f"y contains previously unseen labels: {diff}")
+ValueError: y contains previously unseen labels: [12]

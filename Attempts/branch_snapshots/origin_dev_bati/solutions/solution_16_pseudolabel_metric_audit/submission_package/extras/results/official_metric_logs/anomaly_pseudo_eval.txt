@@ -1,0 +1,29 @@
+  Supplemented with 600 valid examples from pseudo_valid_supplement.csv
+
+============================================================
+EVAL RESULTS — ANOMALY DETECTION (FORBIDDEN PATTERNS)
+============================================================
+Evaluated       : 987/987 examples
+Ground-truth    : 387 invalid  /  600 valid
+
+Binary Accuracy : 1.0000  (100.0%)
+Precision (invalid class) : 1.0000
+Recall (invalid class)    : 1.0000
+F1 (invalid class)        : 1.0000
+Confusion Matrix (invalid as positive):
+  TP=387  FP=0
+  FN=0  TN=600
+ROC-AUC         : 1.0000  (requires --valid-supplement for meaningful value)
+Rule Attribution Accuracy : 1.0000  (among 387 correctly-detected invalid sequences)
+
+Detection rate by rule:
+  RULE_BACKSIDE_BEFORE_PASSIVATION          1.00  (30/30)
+  RULE_CMP_NO_DEP                           1.00  (45/45)
+  RULE_DEP_NO_CLEAN                         1.00  (45/45)
+  RULE_ETCH_NO_MASK                         1.00  (26/26)
+  RULE_IMPLANT_NO_MASK                      1.00  (16/16)
+  RULE_LITHO_LEVEL_SKIP                     1.00  (45/45)
+  RULE_METAL_ETCH_NO_LITHO                  1.00  (45/45)
+  RULE_PAD_OPEN_BEFORE_DEP                  1.00  (45/45)
+  RULE_SHIP_BEFORE_TEST                     1.00  (45/45)
+  RULE_TEST_BEFORE_PASSIVATION              1.00  (45/45)

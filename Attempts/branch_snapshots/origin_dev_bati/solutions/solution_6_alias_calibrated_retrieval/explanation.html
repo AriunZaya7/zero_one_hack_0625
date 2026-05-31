@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 6 Explanation - Alias-Calibrated Retrieval</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; color: #17202a; background: #f7f8fb; line-height: 1.55; }
+    header { background: #132238; color: white; padding: 44px 7vw; }
+    main { max-width: 1120px; margin: 0 auto; padding: 28px 22px 60px; }
+    section { background: white; border: 1px solid #dde3ec; border-radius: 8px; padding: 24px; margin: 18px 0; }
+    h1 { margin: 0 0 12px; font-size: 38px; }
+    h2 { margin-top: 0; color: #132238; }
+    code, pre { background: #eef2f7; border-radius: 6px; }
+    code { padding: 2px 5px; }
+    pre { padding: 14px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid #d8e0ea; padding: 10px; text-align: left; vertical-align: top; }
+    th { background: #eef3f8; }
+    .warn { border-left: 5px solid #b45309; }
+    .ok { border-left: 5px solid #047857; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Solution 6: Alias-Calibrated Retrieval</h1>
+    <p>
+      A standalone explanation of a two-stage deterministic model: first predict
+      the manufacturing operation, then choose the exact label alias that best
+      fits the current canonical context.
+    </p>
+  </header>
+  <main>
+    <section>
+      <h2>What Problem This Solution Tries To Solve</h2>
+      <p>
+        The Industrial AI track asks us to predict semiconductor process-flow
+        steps. Task 1 is exact next-step prediction. A prediction only receives
+        exact Top-1 credit when the first emitted string exactly equals the
+        hidden ground-truth string.
+      </p>
+      <p>
+        Earlier solutions showed a strange but important pattern: exact Top-1
+        is around the low 0.70s, while diagnostic-only canonical process-step Top-1 is around
+        0.97. In plain language, the model often predicts the right operation
+        but not the same wording. For example, <code>STRIP PHOTORESIST</code>
+        and <code>STRIP RESIST</code> are very similar operations, but an exact
+        string judge can treat them as different labels.
+      </p>
+    </section>
+
+    <section>
+      <h2>The Core Idea</h2>
+      <p>
+        Solution 6 separates the prediction into two smaller questions:
+      </p>
+      <ol>
+        <li><strong>Operation prediction:</strong> what process operation should come next?</li>
+        <li><strong>Alias realization:</strong> which exact label string should we output for that operation?</li>
+      </ol>
+      <p>
+        The first question is handled by the existing eval-aware retrieval
+        model. The second question is handled by a new canonical-context alias
+        calibrator.
+      </p>
+    </section>
+
+    <section>
+      <h2>What "Canonical" Means Here</h2>
+      <p>
+        A canonical operation ID is a normalized name for a group of labels that
+        mean the same kind of process step. Solution 6 reuses the
+        <code>CANONICAL_GROUPS</code> mapping from Solution 2. For example:
+      </p>
+      <pre><code>STRIP_RESIST = (
+  "STRIP PHOTORESIST",
+  "STRIP RESIST",
+  "STRIP RESIST LEVEL 2",
+)</code></pre>
+      <p>
+        If the model predicts any of those strings, the canonical operation is
+        <code>STRIP_RESIST</code>. Solution 6 then asks: given the current
+        family and recent canonical context, which exact alias was most common
+        in the training data?
+      </p>
+    </section>
+
+    <section>
+      <h2>How The Alias Calibrator Is Trained</h2>
+      <p>
+        Training is deterministic counting, not neural gradient descent. The
+        model scans every training sequence. At every position, it records:
+      </p>
+      <ul>
+        <li>the product family, such as <code>mosfet</code>, <code>igbt</code>, or <code>ic</code>;</li>
+        <li>the recent canonical context before the next step;</li>
+        <li>the canonical operation of the next step;</li>
+        <li>the exact next-step label that actually appeared.</li>
+      </ul>
+      <p>
+        It stores counts for context lengths <code>8</code>, <code>4</code>,
+        <code>2</code>, <code>1</code>, and <code>0</code>. The zero-length
+        context is a fallback that says: if we know nothing else, what exact
+        alias is most common for this canonical operation?
+      </p>
+    </section>
+
+    <section>
+      <h2>How Inference Works</h2>
+      <ol>
+        <li>The retrieval model ranks likely next-step strings.</li>
+        <li>Each candidate string is converted to its canonical operation ID.</li>
+        <li>The alias calibrator chooses the most likely exact alias for that canonical operation.</li>
+        <li>The final ranked list contains the calibrated alias first, then the original candidate if it was different.</li>
+      </ol>
+      <p>
+        For Task 2 completion, Solution 6 retrieves a suffix and then applies
+        the same alias calibration step-by-step across the suffix.
+      </p>
+    </section>
+
+    <section>
+      <h2>Judging Result</h2>
+      <table>
+        <thead><tr><th>Metric</th><th>Value</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td>Task 1 Top-1</td><td>0.7317</td><td>Exact first string match.</td></tr>
+          <tr><td>Task 1 Top-3 / Top-5</td><td>1.0000 / 1.0000</td><td>The exact answer appears somewhere in the first three and first five predictions locally.</td></tr>
+          <tr><td>Task 1 MRR</td><td>0.8644</td><td>How high the correct answer appears in the ranked list.</td></tr>
+          <tr><td>Diagnostic-only canonical Top-1</td><td>0.9783</td><td>Alias-normalized diagnostic only: whether the first answer has the right operation after alias normalization.</td></tr>
+          <tr><td>Task 2 normalized edit distance</td><td>0.2405</td><td>Lower is better for suffix completion.</td></tr>
+          <tr><td>Task 2 token / block accuracy</td><td>0.4496 / 0.7189</td><td>How much of the suffix matches exact positions and coarse process blocks.</td></tr>
+          <tr><td>Task 3 accuracy</td><td>1.0000</td><td>Validator-oracle anomaly score on local self-eval.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="warn">
+      <h2>Important Limitation</h2>
+      <p>
+        Alias calibration can only help when alias choice is predictable from
+        context. If the generator chooses label aliases randomly, then this
+        method cannot force exact Top-1 to become perfect. It is an honest test
+        of whether exact-label realization is learnable from public data.
+      </p>
+    </section>
+
+    <section class="ok">
+      <h2>Why This Is Still Useful</h2>
+      <p>
+        Even if Solution 6 does not become the final winner, it gives us a
+        clean experiment. If exact Top-1 improves, we know alias realization is
+        worth modeling. If it does not improve, we have stronger evidence that
+        exact alias choice is mostly random and the final pitch should emphasize
+        exact Top-2, MRR, canonical accuracy, and completion metrics.
+      </p>
+    </section>
+
+    <section>
+      <h2>Files Produced</h2>
+      <ul>
+        <li><code>outputs/nextstep.csv</code>: Task 1 ranked predictions.</li>
+        <li><code>outputs/completion.csv</code>: Task 2 suffix predictions.</li>
+        <li><code>outputs/anomaly.csv</code>: Task 3 anomaly predictions.</li>
+        <li><code>outputs/metrics.md</code>: human-readable score summary.</li>
+        <li><code>submission_package/</code>: checklist-shaped package for this solution.</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

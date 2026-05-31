@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Approach Comparison — morgan vs dev/bati</title>
+<style>
+  :root {
+    --bg: #0e1116;
+    --panel: #161b22;
+    --panel-2: #1c2230;
+    --border: #2b3340;
+    --text: #e6edf3;
+    --muted: #9aa7b4;
+    --accent: #58a6ff;
+    --mine: #3fb950;
+    --theirs: #d29922;
+    --bad: #f85149;
+    --good: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 40px 24px 80px; }
+  header h1 { font-size: 30px; margin: 0 0 6px; }
+  header .sub { color: var(--muted); font-size: 15px; margin-bottom: 4px; }
+  header .meta { color: var(--muted); font-size: 13px; }
+  h2 { font-size: 21px; margin: 44px 0 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 16px; margin: 26px 0 10px; }
+  p { color: var(--text); }
+  .muted { color: var(--muted); }
+  code { background: var(--panel-2); padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 18px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+  .card.mine { border-top: 3px solid var(--mine); }
+  .card.theirs { border-top: 3px solid var(--theirs); }
+  .card h3 { margin-top: 0; display: flex; align-items: center; gap: 8px; }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+  .tag.mine { background: rgba(63,185,80,.15); color: var(--mine); }
+  .tag.theirs { background: rgba(210,153,34,.15); color: var(--theirs); }
+  .card ul { margin: 8px 0 0; padding-left: 18px; }
+  .card li { margin-bottom: 6px; }
+
+  table { width: 100%; border-collapse: collapse; margin-top: 14px; font-size: 14px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: .03em; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; }
+  tr:hover td { background: rgba(255,255,255,.02); }
+  .col-mine { color: var(--mine); font-weight: 600; }
+  .col-theirs { color: var(--theirs); font-weight: 600; }
+
+  .callout { border-radius: 10px; padding: 16px 18px; margin-top: 18px; border: 1px solid var(--border); background: var(--panel); }
+  .callout.agree { border-left: 4px solid var(--accent); }
+  .callout.gap { border-left: 4px solid var(--theirs); }
+  .callout.edge { border-left: 4px solid var(--mine); }
+  .callout h3 { margin-top: 0; }
+
+  .pill { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 5px; font-weight: 600; }
+  .pill.good { background: rgba(63,185,80,.15); color: var(--good); }
+  .pill.bad { background: rgba(248,81,73,.15); color: var(--bad); }
+  .pill.warn { background: rgba(210,153,34,.15); color: var(--theirs); }
+
+  .bottomline { background: linear-gradient(135deg, var(--panel) 0%, var(--panel-2) 100%); border: 1px solid var(--border); border-radius: 10px; padding: 22px; margin-top: 28px; }
+  footer { margin-top: 50px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); padding-top: 16px; }
+  .note { font-size: 13px; color: var(--muted); font-style: italic; }
+  @media (max-width: 720px) { .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Approach Comparison: <span style="color:var(--mine)">morgan</span> vs <span style="color:var(--theirs)">dev/bati</span></h1>
+    <div class="sub">Industrial AI (Infineon) — semiconductor process-sequence modeling across Tasks 1–3 + OOD</div>
+    <div class="meta">Generated 2026-05-30 · <code>morgan</code> = current local branch · <code>dev/bati</code> = AriunZaya7/zero_one_hack_0625 @ dev/bati</div>
+  </header>
+
+  <p class="note">
+    The <code>morgan</code> column is reconstructed from <code>PLAN.md</code>, <code>solution/results/*.json</code>, and the
+    scale-comparison sweep CSV (this branch has no consolidated findings doc). The <code>dev/bati</code> column is from
+    <code>FINAL_PITCH_OOD_STRATEGY.html</code> and <code>solutions/many_family_scaling_probe/analysis.html</code>.
+  </p>
+
+  <h2>1 · The two philosophies</h2>
+  <div class="cards">
+    <div class="card mine">
+      <h3><span class="tag mine">morgan</span> Trained ML pipeline</h3>
+      <ul>
+        <li><strong>XGBoost</strong> (best) and CatBoost gradient boosting on context-window step features</li>
+        <li>n-gram baselines (n = 2, 3, 4)</li>
+        <li>Separate <strong>Qwen-0.5B</strong> transformer fine-tune with its own OOD test split</li>
+        <li>One model serves all 3 tasks; beam search for completion; anomaly scoring + rule checker for Task 3</li>
+        <li>WandB logs, checkpoints, loss curves, hybrid-vs-legacy completion sweep</li>
+      </ul>
+    </div>
+    <div class="card theirs">
+      <h3><span class="tag theirs">dev/bati</span> Evidence-first cascade ("Solution 18")</h3>
+      <ul>
+        <li>4-layer fallback: <strong>exact route memory</strong> → <code>__FAMILY__</code> <strong>template normalization</strong> → generated-route retrieval → canonical op IDs</li>
+        <li>18 solution attempts evaluated</li>
+        <li>Retrieval / memory heavy, lighter on <em>learned</em> weights</li>
+        <li>Framed for judges as an information-availability taxonomy</li>
+        <li>110-family synthetic scaling probe (2 → 100 train families)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>2 · Head-to-head metrics</h2>
+
+  <h3>In-distribution next-step (Top-1)</h3>
+  <table>
+    <thead><tr><th>Metric</th><th class="num">morgan (XGBoost)</th><th class="num">dev/bati (raw retr.)</th><th class="num">dev/bati (template)</th></tr></thead>
+    <tbody>
+      <tr><td>Top-1</td><td class="num col-mine">0.743</td><td class="num">0.62</td><td class="num col-theirs">0.77</td></tr>
+      <tr><td>Top-3</td><td class="num col-mine">0.998</td><td class="num muted">—</td><td class="num muted">—</td></tr>
+      <tr><td>Top-5</td><td class="num col-mine">1.000</td><td class="num muted">—</td><td class="num muted">—</td></tr>
+      <tr><td>MRR</td><td class="num col-mine">0.870</td><td class="num muted">—</td><td class="num muted">—</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Same ceiling (~0.74) regardless of method.</p>
+
+  <h3>Out-of-distribution — held-out family (Top-1)</h3>
+  <table>
+    <thead><tr><th>Held-out family</th><th class="num">morgan Top-1</th><th class="num">morgan MRR</th><th class="num">morgan completion exact</th></tr></thead>
+    <tbody>
+      <tr><td>IC (train IGBT+MOSFET)</td><td class="num">0.56</td><td class="num">0.753</td><td class="num">0.00</td></tr>
+      <tr><td>IGBT (train IC+MOSFET)</td><td class="num">0.70</td><td class="num">0.828</td><td class="num">0.00</td></tr>
+      <tr><td>MOSFET (train IC+IGBT)</td><td class="num">0.62–0.65</td><td class="num">0.81–0.82</td><td class="num">0.00</td></tr>
+    </tbody>
+  </table>
+  <p class="note">A ~14–18 pt drop from in-distribution. <code>dev/bati</code> synthetic OOD: raw retrieval 0.59–0.62, template-adapted 0.73–0.78.</p>
+
+  <h3>The exact-string ceiling — confirmed independently by both</h3>
+  <table>
+    <thead><tr><th>Branch</th><th>Exact novel-family strings</th><th>Interpretation</th></tr></thead>
+    <tbody>
+      <tr><td class="col-mine">morgan</td><td><span class="pill bad">exact_match ≈ 0.0</span> on every held-out family</td><td>Cannot emit unseen exact strings</td></tr>
+      <tr><td class="col-theirs">dev/bati (raw)</td><td><span class="pill bad">0.0000</span> holdout-family strings</td><td>Cannot emit unseen exact strings</td></tr>
+      <tr><td class="col-theirs">dev/bati (template)</td><td><span class="pill good">1.0000</span> holdout-family strings</td><td>Templates make <em>derivable</em> strings recoverable</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3 · Where they agree</h2>
+  <div class="callout agree">
+    <h3>Shared conclusions</h3>
+    <ul>
+      <li><strong>You cannot output exact step strings never seen in training.</strong> Both hit 0.0 on novel-family exact strings — this is the central shared finding.</li>
+      <li>In-distribution next-step accuracy plateaus around <strong>~0.74</strong> regardless of method.</li>
+      <li>OOD degrades substantially without family-specific evidence.</li>
+    </ul>
+  </div>
+
+  <h2>4 · Where dev/bati goes further (the real gap)</h2>
+  <div class="callout gap">
+    <h3>What to borrow</h3>
+    <ul>
+      <li><strong>Template normalization is their key OOD lever — morgan doesn't have it.</strong> Replacing the family prefix with a <code>__FAMILY__</code> token recovers holdout-family next-step from <span class="pill bad">0.0</span> → <span class="pill good">1.0</span> in the scaling probe (overall Top-1 0.62 → 0.77). morgan's boosting features don't exploit this, which is exactly why its OOD Top-1 stalls at 0.56–0.70 and completion exact stays 0. <strong>Highest-leverage fix.</strong></li>
+      <li><strong>Bigger scaling evidence:</strong> the 110-family sweep proves "more training families help <em>only when a template transfers to the visible new family name</em>." morgan has just 3 real families + leave-one-out, so it can't make the scaling argument.</li>
+      <li><strong>Judge-ready narrative:</strong> exact route visible → perfect; related routes visible → ~0.76; fully unseen → hard limit.</li>
+    </ul>
+  </div>
+
+  <h2>5 · Where morgan is stronger / more honest</h2>
+  <div class="callout edge">
+    <h3>morgan's edge</h3>
+    <ul>
+      <li><strong>Genuinely trained models</strong> (XGBoost + CatBoost + Qwen fine-tune, WandB logs, checkpoints, loss curves). The Infineon rubric explicitly wants "training artifacts: checkpoints, logs, loss curves" and penalizes "basic LLM wrappers." dev/bati's Solution 18 is largely retrieval + template grammar — lighter on learned modeling.</li>
+      <li><strong>More conservative, honest headline numbers.</strong> dev/bati's "1.0000" results are <em>conditioned on exact validator-valid routes being visible in the eval input</em> — i.e. string-matching, not generalization. morgan's own <code>solutions_comparison.md</code> already makes this critique ("Public-overlap diagnostic: exact Top-1 1.0000 if held-out rows are allowed in the lookup"). dev/bati discloses it as a caveat but leads with the perfect score.</li>
+      <li><strong>Cleaner reproducible eval harness:</strong> per-task / per-family JSON, hybrid-vs-legacy completion sweep, Task 3 rule-attribution accuracy 1.0 via an actual rule checker (f1 0.82 in-distribution).</li>
+    </ul>
+  </div>
+
+  <h2>6 · Task 3 (anomaly) snapshot</h2>
+  <table>
+    <thead><tr><th>Setting</th><th class="num">F1</th><th class="num">ROC-AUC</th><th class="num">Rule attribution</th></tr></thead>
+    <tbody>
+      <tr><td>morgan — in-distribution</td><td class="num">0.821</td><td class="num">0.818</td><td class="num">1.00</td></tr>
+      <tr><td>morgan — IC holdout</td><td class="num">0.635</td><td class="num">0.642</td><td class="num">1.00</td></tr>
+      <tr><td>morgan — IGBT holdout</td><td class="num">0.632</td><td class="num">0.710</td><td class="num">1.00</td></tr>
+      <tr><td>morgan — MOSFET holdout</td><td class="num">0.727</td><td class="num">0.773</td><td class="num">1.00</td></tr>
+      <tr><td>dev/bati (validator oracle)</td><td class="num">1.000</td><td class="num">—</td><td class="num">1.00</td></tr>
+    </tbody>
+  </table>
+  <p class="note">dev/bati's Task 3 = 1.0 leans on the public validator oracle; morgan's is a learned anomaly score thresholded on a held-out split.</p>
+
+  <div class="bottomline">
+    <h3 style="margin-top:0">Bottom line</h3>
+    <p>
+      Both branches reach the <strong>same core conclusion</strong> — exact unseen strings are unrecoverable and in-distribution
+      tops out ~0.74 — but via opposite philosophies: morgan <em>trains models</em>, dev/bati <em>builds an evidence cascade</em>.
+      dev/bati's decisive edge is <strong>family-template normalization</strong> plus a <strong>110-family scaling probe</strong>
+      that turns the exact-string ceiling from a wall into a solvable-for-derivable-strings problem. morgan's edge is a real
+      trained-model pipeline with more honest headline numbers.
+    </p>
+    <p style="margin-bottom:0">
+      <strong>Highest-leverage move:</strong> add <code>__FAMILY__</code> template normalization to the XGBoost / transformer
+      pipeline and re-run leave-one-family-out — that's the lever that took dev/bati from 0.0 to 1.0 on held-out-family strings.
+    </p>
+  </div>
+
+  <footer>
+    Sources — morgan: <code>solution/results/xgb_hybrid_robust_val100.json</code>, <code>xgb_holdout_{ic,igbt,mosfet}_*_eval100.json</code>,
+    <code>solution/results/sweeps/xgb_default_scale_comparison.csv</code>, <code>PLAN.md</code>, <code>solutions_comparison.md</code>.
+    dev/bati: <code>FINAL_PITCH_OOD_STRATEGY.html</code>, <code>solutions/many_family_scaling_probe/analysis.html</code>.
+  </footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,539 @@
+{
+  "attempt_id": "attempt_0",
+  "title": "LLM-derived sequence ordering rules from step descriptions and public process references",
+  "created_date": "2026-05-30",
+  "status": "candidate_not_ground_truth",
+  "intended_use": [
+    "rerank next-step predictions",
+    "constrain sequence completion",
+    "provide anomaly explanation priors",
+    "derive step-occurrence features from descriptions"
+  ],
+  "source_refs": {
+    "repo_generation_rules": "training_data/generation_rules.md",
+    "repo_long_descriptions": "training_data/*_Longdescr.csv",
+    "repo_parameter_descriptions": "training_data/*_longdescription_parameters.csv",
+    "nist_cleaning": "https://www.nist.gov/publications/wet-chemical-cleaning-plasma-oxide-grown-heated-001-inp-surfaces",
+    "ubc_hf_boe": "https://nanofab.ubc.ca/processes/buffer-oxide-etch-boe-dip",
+    "universitywafer_rca": "https://www.universitywafer.com/rca-cleaning-process.html",
+    "semiconductorx_lithography": "https://semiconductorx.com/mfg-front-end-photolithography.html",
+    "techtarget_fabrication": "https://www.techtarget.com/whatis/feature/core-steps-in-the-semiconductor-manufacturing-process",
+    "uva_doping": "https://www.virginia.edu/ms/research/wadley/high-temp/doping.htm",
+    "nist_tsv_fill": "https://www.nist.gov/publications/simulation-copper-electrodeposition-millimeter-size-through-silicon-vias",
+    "osha_wafer_sort": "https://www.osha.gov/semiconductors",
+    "wevolver_passivation": "https://www.wevolver.com/article/passivation-techniques-in-semiconductor-manufacturing"
+  },
+  "feature_hints": [
+    {
+      "name": "operation_family",
+      "description": "Classify each STEP into clean, lithography, etch, deposition, implant, anneal, measurement, CMP, test, logistics, backside, or passivation."
+    },
+    {
+      "name": "mask_level",
+      "description": "Parse N from ALIGN MASK LEVEL N or EXPOSE LITHO LEVEL N. Useful for monotonic lithography-level checks."
+    },
+    {
+      "name": "block_state",
+      "description": "Infer current macro block from local context: prefix, pre-clean, family prep, litho cycle, ILD, via, metal, passivation, backside, final inspection, test, suffix."
+    },
+    {
+      "name": "distance_since_clean",
+      "description": "Count steps since last clean/HF/dry/anneal/surface-prep event. Useful before deposition or oxidation."
+    },
+    {
+      "name": "distance_since_develop",
+      "description": "Count steps since last DEVELOP PHOTORESIST or DEVELOP PAD WINDOW. Useful before patterned etch or implant."
+    },
+    {
+      "name": "measurement_subject",
+      "description": "Map MEASURE steps to the operation they probably verify, e.g. oxide thickness after oxidation, via CD after via etch, sheet resistance after implant/anneal."
+    }
+  ],
+  "rules": [
+    {
+      "rule_id": "LLM_DESC_001_CLEAN_BEFORE_SURFACE_GROWTH_OR_DEPOSITION",
+      "confidence": 0.9,
+      "severity": "hard_or_strong_penalty",
+      "title": "Clean or surface preparation should precede oxidation, epitaxy, and deposition",
+      "trigger_step_patterns": [
+        "THERMAL OXIDATION",
+        "GATE OXIDE GROWTH",
+        "EPITAXIAL DEPOSITION",
+        "DEPOSIT *",
+        "DEPOSIT PASSIVATION*",
+        "DEPOSIT BACKSIDE METAL"
+      ],
+      "requires_before": {
+        "window_steps": 12,
+        "any_operation_family": [
+          "clean",
+          "hf_dip",
+          "dry",
+          "surface_prep",
+          "anneal"
+        ]
+      },
+      "local_basis": [
+        "MOSFET_Longdescr.csv: EPITAXIAL DEPOSITION mentions epitaxial growth parameters.",
+        "MOSFET_longdescription_parameters.csv: HF DIP, RCA cleans, and epitaxy prep appear immediately before epitaxy.",
+        "IC_longdescription_parameters.csv: THERMAL OXIDATION follows cleans and has dry O2 furnace parameters."
+      ],
+      "online_basis": [
+        "nist_cleaning",
+        "ubc_hf_boe",
+        "universitywafer_rca"
+      ],
+      "valid_pattern": [
+        "RCA CLEAN 1",
+        "RCA CLEAN 2",
+        "HF DIP",
+        "DRY WAFER",
+        "THERMAL OXIDATION"
+      ],
+      "invalid_pattern": [
+        "MEASURE SURFACE PARTICLES",
+        "DEPOSIT POLYSILICON"
+      ],
+      "future_solution_hint": "Use as a validator check and as a next-step reranking penalty when a deposition candidate appears after a long non-clean context."
+    },
+    {
+      "rule_id": "LLM_DESC_002_LITHOGRAPHY_INTERNAL_ORDER",
+      "confidence": 0.95,
+      "severity": "hard",
+      "title": "Lithography has a stable internal order",
+      "trigger_step_patterns": [
+        "ALIGN MASK LEVEL *",
+        "EXPOSE LITHO LEVEL *",
+        "DEVELOP PHOTORESIST",
+        "PATTERN INSPECTION*",
+        "HARD BAKE"
+      ],
+      "requires_order": [
+        "SPIN COAT PHOTORESIST",
+        "SOFT BAKE",
+        "ALIGN MASK LEVEL N",
+        "EXPOSE LITHO LEVEL N",
+        "optional POST EXPOSE BAKE",
+        "DEVELOP PHOTORESIST",
+        "PATTERN INSPECTION or equivalent",
+        "optional HARD BAKE"
+      ],
+      "local_basis": [
+        "MOSFET_Longdescr.csv: SPIN COAT PHOTORESIST records spin speed and resist thickness.",
+        "MOSFET_Longdescr.csv: EXPOSE LITHO LEVEL 1 mentions dose and focus.",
+        "MOSFET_Longdescr.csv: DEVELOP PHOTORESIST reveals the intended pattern."
+      ],
+      "online_basis": [
+        "semiconductorx_lithography",
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "SPIN COAT PHOTORESIST",
+        "SOFT BAKE",
+        "ALIGN MASK LEVEL 2",
+        "EXPOSE LITHO LEVEL 2",
+        "DEVELOP PHOTORESIST"
+      ],
+      "invalid_pattern": [
+        "EXPOSE LITHO LEVEL 2",
+        "SOFT BAKE",
+        "SPIN COAT PHOTORESIST"
+      ],
+      "future_solution_hint": "Constrain completions so a lithography block is generated as a coherent unit, not one step at a time."
+    },
+    {
+      "rule_id": "LLM_DESC_003_PATTERN_TRANSFER_REQUIRES_DEVELOPED_RESIST",
+      "confidence": 0.93,
+      "severity": "hard",
+      "title": "Patterned etch or implant should follow developed resist or an opened window",
+      "trigger_step_patterns": [
+        "* ETCH",
+        "* ETCH DRY",
+        "VIA ETCH*",
+        "METAL ETCH*",
+        "PASSIVATION ETCH*",
+        "IMPLANT *"
+      ],
+      "requires_before": {
+        "window_steps": 15,
+        "any_steps_or_patterns": [
+          "DEVELOP PHOTORESIST",
+          "DEVELOP PAD WINDOW",
+          "OXIDE ETCH*",
+          "ETCH SILICON OR OXIDE WINDOW"
+        ]
+      },
+      "local_basis": [
+        "MOSFET_Longdescr.csv: OXIDE ETCH etches oxide in patterned areas.",
+        "IC_longdescription_parameters.csv: OXIDE ETCH uses RIE after develop and pattern inspection.",
+        "IGBT_longdescription_parameters.csv: implant steps follow window/opening steps."
+      ],
+      "online_basis": [
+        "semiconductorx_lithography",
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "DEVELOP PHOTORESIST",
+        "PATTERN INSPECTION LEVEL 1",
+        "OXIDE ETCH"
+      ],
+      "invalid_pattern": [
+        "MEASURE OXIDE THICKNESS",
+        "OXIDE ETCH"
+      ],
+      "future_solution_hint": "Strong anomaly rule and strong next-step blocker."
+    },
+    {
+      "rule_id": "LLM_DESC_004_STRIP_AND_CLEAN_AFTER_PATTERN_TRANSFER",
+      "confidence": 0.78,
+      "severity": "medium_or_strong_penalty",
+      "title": "After etch or patterned transfer, strip resist and clean before the next deposition-sensitive block",
+      "trigger_step_patterns": [
+        "* ETCH",
+        "* ETCH DRY",
+        "VIA ETCH*",
+        "METAL ETCH*",
+        "PASSIVATION ETCH*"
+      ],
+      "expects_after": {
+        "window_steps": 6,
+        "ordered_or_near_ordered": [
+          "STRIP PHOTORESIST or STRIP RESIST",
+          "CLEAN AFTER * or CLEAN PAD OPENING"
+        ]
+      },
+      "local_basis": [
+        "MOSFET_Longdescr.csv: STRIP PHOTORESIST removes remaining photoresist after etch.",
+        "MOSFET_Longdescr.csv: CLEAN AFTER ETCH removes post-etch residues.",
+        "IC_longdescription_parameters.csv: STRIP PHOTORESIST and CLEAN AFTER ETCH follow etch examples."
+      ],
+      "online_basis": [
+        "semiconductorx_lithography",
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "OXIDE ETCH",
+        "STRIP PHOTORESIST",
+        "CLEAN AFTER ETCH"
+      ],
+      "invalid_pattern": [
+        "OXIDE ETCH",
+        "DEPOSIT POLYSILICON"
+      ],
+      "future_solution_hint": "Use as a completion prior. Do not make it absolute for all blanket spacer etches unless local grammar confirms it."
+    },
+    {
+      "rule_id": "LLM_DESC_005_IMPLANT_REQUIRES_ACTIVATION_OR_DRIVE_IN",
+      "confidence": 0.88,
+      "severity": "medium_or_strong_penalty",
+      "title": "Implant steps should be followed by anneal or diffusion activation",
+      "trigger_step_patterns": [
+        "IMPLANT *"
+      ],
+      "expects_after": {
+        "window_steps": 10,
+        "any_steps_or_patterns": [
+          "DRIVE IN DIFFUSION",
+          "RAPID THERMAL ANNEAL",
+          "LIGHT ANNEAL",
+          "* ANNEAL"
+        ]
+      },
+      "local_basis": [
+        "MOSFET_Longdescr.csv: RAPID THERMAL ANNEAL activates dopants and repairs implant damage.",
+        "MOSFET_longdescription_parameters.csv: IMPLANT WELL is followed by DRIVE IN DIFFUSION and RAPID THERMAL ANNEAL.",
+        "IGBT_longdescription_parameters.csv: implant blocks are followed by activation anneals."
+      ],
+      "online_basis": [
+        "uva_doping",
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "IMPLANT WELL",
+        "DRIVE IN DIFFUSION",
+        "RAPID THERMAL ANNEAL"
+      ],
+      "invalid_pattern": [
+        "IMPLANT SOURCE DRAIN",
+        "DEPOSIT INTERLAYER DIELECTRIC"
+      ],
+      "future_solution_hint": "Useful for suffix completion: after an implant, rank anneal/drive-in highly."
+    },
+    {
+      "rule_id": "LLM_DESC_006_MEASUREMENT_SHOULD_MATCH_PRECEDING_SUBJECT",
+      "confidence": 0.72,
+      "severity": "soft_penalty",
+      "title": "Measurement steps should follow the operation they measure",
+      "trigger_step_patterns": [
+        "MEASURE *",
+        "* TEST"
+      ],
+      "subject_alignment_examples": [
+        {
+          "measurement": "MEASURE OXIDE THICKNESS",
+          "should_follow_any": [
+            "THERMAL OXIDATION",
+            "GATE OXIDE GROWTH",
+            "DEPOSIT PAD OXIDE"
+          ]
+        },
+        {
+          "measurement": "MEASURE VIA CD",
+          "should_follow_any": [
+            "VIA ETCH",
+            "VIA ETCH THROUGH DIELECTRIC",
+            "DIELECTRIC ETCH VIA"
+          ]
+        },
+        {
+          "measurement": "MEASURE SHEET RESISTANCE",
+          "should_follow_any": [
+            "IMPLANT *",
+            "* ANNEAL"
+          ]
+        },
+        {
+          "measurement": "MEASURE PASSIVATION THICKNESS",
+          "should_follow_any": [
+            "DEPOSIT PASSIVATION",
+            "DEPOSIT PASSIVATION LAYER",
+            "CURE PASSIVATION"
+          ]
+        }
+      ],
+      "local_basis": [
+        "MOSFET_Longdescr.csv: MEASURE EPITAXY THICKNESS follows epitaxial deposition.",
+        "IC_longdescription_parameters.csv: MEASURE OXIDE THICKNESS follows THERMAL OXIDATION.",
+        "IGBT_longdescription_parameters.csv: MEASURE SHEET RESISTANCE has different expected ranges in different implant contexts."
+      ],
+      "online_basis": [
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "THERMAL OXIDATION",
+        "MEASURE OXIDE THICKNESS"
+      ],
+      "invalid_pattern": [
+        "DEVELOP PHOTORESIST",
+        "MEASURE BACKSIDE CONTACT"
+      ],
+      "future_solution_hint": "Use as a soft score. Measurements can be optional, so absence is not necessarily invalid."
+    },
+    {
+      "rule_id": "LLM_DESC_007_CMP_REQUIRES_MATERIAL_TO_PLANARIZE",
+      "confidence": 0.9,
+      "severity": "hard_or_strong_penalty",
+      "title": "CMP should follow dielectric/metal deposition or via fill",
+      "trigger_step_patterns": [
+        "CMP *"
+      ],
+      "requires_before": {
+        "window_steps": 8,
+        "any_steps_or_patterns": [
+          "DEPOSIT INTERLAYER DIELECTRIC",
+          "DEPOSIT INTERLEVEL DIELECTRIC",
+          "FILL VIA METAL",
+          "FILL VIA TUNGSTEN",
+          "DEPOSIT METAL *",
+          "DEPOSIT TOP METAL"
+        ]
+      },
+      "local_basis": [
+        "generation_rules.md: CMP rule already exists.",
+        "IC_longdescription_parameters.csv: CMP DIELECTRIC follows ILD deposition and densification.",
+        "IGBT_longdescription_parameters.csv: CMP INTERLAYER DIELECTRIC is described as oxide slurry planarization."
+      ],
+      "online_basis": [
+        "nist_tsv_fill",
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "DEPOSIT INTERLAYER DIELECTRIC",
+        "DENSIFY DIELECTRIC",
+        "CMP DIELECTRIC"
+      ],
+      "invalid_pattern": [
+        "MEASURE PLANARITY",
+        "CMP METAL"
+      ],
+      "future_solution_hint": "Keep as a strong anomaly feature and a completion-order prior."
+    },
+    {
+      "rule_id": "LLM_DESC_008_VIA_METALLIZATION_STACK_ORDER",
+      "confidence": 0.86,
+      "severity": "medium_or_strong_penalty",
+      "title": "Via processing should move from via litho/etch to clean, barrier/seed, fill, CMP, and resistance measurement",
+      "requires_order_when_present": [
+        "via lithography and develop",
+        "VIA ETCH or equivalent",
+        "STRIP and CLEAN AFTER VIA ETCH",
+        "DEPOSIT BARRIER METAL",
+        "DEPOSIT METAL SEED or DEPOSIT TUNGSTEN SEED",
+        "FILL VIA METAL or FILL VIA TUNGSTEN",
+        "CMP METAL or CMP VIA FILL",
+        "MEASURE CONTACT RESISTANCE or MEASURE VIA RESISTANCE"
+      ],
+      "local_basis": [
+        "generation_rules.md: VIA_BLOCK defines barrier, seed, fill, CMP, measure.",
+        "IC_longdescription_parameters.csv: via etch, strip, clean, and via metallization steps appear in this order."
+      ],
+      "online_basis": [
+        "nist_tsv_fill"
+      ],
+      "valid_pattern": [
+        "VIA ETCH",
+        "CLEAN AFTER VIA ETCH",
+        "DEPOSIT BARRIER METAL",
+        "DEPOSIT METAL SEED",
+        "FILL VIA METAL",
+        "CMP METAL",
+        "MEASURE VIA RESISTANCE"
+      ],
+      "invalid_pattern": [
+        "FILL VIA METAL",
+        "DEPOSIT BARRIER METAL"
+      ],
+      "future_solution_hint": "Useful as a block-level automaton for completion."
+    },
+    {
+      "rule_id": "LLM_DESC_009_METAL_PATTERN_ORDER",
+      "confidence": 0.84,
+      "severity": "medium_or_strong_penalty",
+      "title": "Metal interconnect patterning should deposit metal before metal lithography and etch",
+      "requires_order_when_present": [
+        "DEPOSIT METAL 1 or DEPOSIT TOP METAL",
+        "ANNEAL METAL 1 or ANNEAL METAL",
+        "optional MEASURE METAL THICKNESS",
+        "metal lithography block",
+        "METAL ETCH or METAL ETCH DRY",
+        "STRIP RESIST or STRIP PHOTORESIST",
+        "CLEAN AFTER METAL ETCH",
+        "optional MEASURE LINE WIDTH"
+      ],
+      "local_basis": [
+        "generation_rules.md: METAL_BLOCK and metal etch rules.",
+        "IC_longdescription_parameters.csv: metal lithography repeats the coat/bake/expose/develop sequence before etch."
+      ],
+      "online_basis": [
+        "techtarget_fabrication",
+        "semiconductorx_lithography"
+      ],
+      "valid_pattern": [
+        "DEPOSIT METAL 1",
+        "ANNEAL METAL",
+        "SPIN COAT PHOTORESIST",
+        "DEVELOP PHOTORESIST",
+        "METAL ETCH DRY",
+        "CLEAN AFTER METAL ETCH"
+      ],
+      "invalid_pattern": [
+        "METAL ETCH",
+        "DEPOSIT METAL 1"
+      ],
+      "future_solution_hint": "Useful for detecting reversed metal operations and for retrieving correct suffix blocks."
+    },
+    {
+      "rule_id": "LLM_DESC_010_PASSIVATION_BEFORE_PAD_OPEN_FINAL_TEST",
+      "confidence": 0.88,
+      "severity": "hard_or_strong_penalty",
+      "title": "Passivation should be deposited and cured before pad opening and final electrical tests",
+      "requires_order_when_present": [
+        "DEPOSIT PASSIVATION or DEPOSIT PASSIVATION LAYER",
+        "CURE PASSIVATION",
+        "MEASURE PASSIVATION THICKNESS or MEASURE PASSIVATION QUALITY",
+        "OPEN PAD WINDOW or OPEN BOND PAD WINDOW",
+        "pad-window lithography and develop",
+        "PASSIVATION ETCH or PASSIVATION ETCH PAD OPENING",
+        "STRIP RESIST",
+        "CLEAN PAD OPENING",
+        "MEASURE PAD OPENING",
+        "final electrical tests"
+      ],
+      "local_basis": [
+        "generation_rules.md: passivation block and test-before-passivation forbidden rule.",
+        "MOSFET_longdescription_parameters.csv: passivation measurement and pad opening steps appear late in the flow."
+      ],
+      "online_basis": [
+        "wevolver_passivation",
+        "techtarget_fabrication"
+      ],
+      "valid_pattern": [
+        "DEPOSIT PASSIVATION",
+        "CURE PASSIVATION",
+        "OPEN PAD WINDOW",
+        "PASSIVATION ETCH",
+        "CLEAN PAD OPENING",
+        "PARAMETRIC TEST"
+      ],
+      "invalid_pattern": [
+        "PARAMETRIC TEST",
+        "CURE PASSIVATION"
+      ],
+      "future_solution_hint": "Strong anomaly rule. Also helps completion near the 80 percent cut point."
+    },
+    {
+      "rule_id": "LLM_DESC_011_WAFER_SORT_BEFORE_SHIP",
+      "confidence": 0.92,
+      "severity": "hard",
+      "title": "Wafer sort and yield analysis should happen before lot release and shipment",
+      "requires_order_when_present": [
+        "PARAMETRIC TEST or ELECTRICAL PARAMETRIC TEST",
+        "LEAKAGE TEST",
+        "family-specific electrical test",
+        "SWITCHING TEST",
+        "WAFER SORT TEST",
+        "YIELD ANALYSIS",
+        "LOT RELEASE or FINAL LOT RELEASE",
+        "optional PACKAGE PREPARATION",
+        "SHIP LOT"
+      ],
+      "local_basis": [
+        "generation_rules.md: TEST_SUITE and SUFFIX define the terminal order.",
+        "training_data variants: sequences end with release and SHIP LOT."
+      ],
+      "online_basis": [
+        "osha_wafer_sort"
+      ],
+      "valid_pattern": [
+        "WAFER SORT TEST",
+        "YIELD ANALYSIS",
+        "FINAL LOT RELEASE",
+        "SHIP LOT"
+      ],
+      "invalid_pattern": [
+        "SHIP LOT",
+        "WAFER SORT TEST"
+      ],
+      "future_solution_hint": "Use as a hard terminal constraint in any completion generator."
+    },
+    {
+      "rule_id": "LLM_DESC_012_REPEATED_STEP_NAMES_REQUIRE_CONTEXT",
+      "confidence": 0.82,
+      "severity": "implementation_warning",
+      "title": "Repeated step names need local context to choose the right description or parameters",
+      "problem_examples": [
+        "SPIN COAT PHOTORESIST appears multiple times for different mask levels.",
+        "SOFT BAKE and DEVELOP PHOTORESIST appear in several lithography cycles.",
+        "MEASURE THICKNESS can mean initial wafer thickness or backside/post-grind thickness.",
+        "MEASURE SHEET RESISTANCE can have different expected ranges after different implants."
+      ],
+      "recommended_join_key": [
+        "family",
+        "step",
+        "nearest mask level",
+        "macro block",
+        "position fraction",
+        "nearby preceding operation"
+      ],
+      "local_basis": [
+        "MOSFET_longdescription_parameters.csv contains repeated THERMAL OXIDATION and repeated lithography rows.",
+        "IGBT_longdescription_parameters.csv contains repeated MEASURE SHEET RESISTANCE rows with different expected ranges.",
+        "IC_longdescription_parameters.csv repeats SPIN COAT PHOTORESIST and DEVELOP PHOTORESIST for different cycles."
+      ],
+      "online_basis": [
+        "semiconductorx_lithography"
+      ],
+      "future_solution_hint": "Do not build a naive dictionary from STEP to one parameter row. Use an ordered per-family reference sequence alignment or block-aware matching."
+    }
+  ]
+}

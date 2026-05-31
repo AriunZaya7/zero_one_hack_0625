@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 10 Explanation - Confidence-Gated Consensus</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #1c2530; background: #fff; line-height: 1.58; }
+    main { width: min(1060px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 72px; }
+    header { padding-bottom: 22px; margin-bottom: 28px; border-bottom: 1px solid #d9e0e8; }
+    h1 { margin: 0 0 12px; font-size: 2rem; line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 34px 0 12px; padding-top: 10px; border-top: 1px solid #d9e0e8; font-size: 1.34rem; letter-spacing: 0; }
+    h3 { margin: 22px 0 8px; font-size: 1.08rem; letter-spacing: 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #13202d; background: #eef2f6; border: 1px solid #dbe3ec; border-radius: 4px; padding: 1px 4px; font-size: 0.93em; }
+    pre { overflow-x: auto; background: #0f1b26; color: #edf4fb; border-radius: 6px; padding: 14px 16px; line-height: 1.45; font-size: 0.91rem; }
+    pre code { background: transparent; border: 0; color: inherit; padding: 0; }
+    table { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 0.95rem; }
+    th, td { border: 1px solid #d9e0e8; padding: 9px 10px; vertical-align: top; }
+    th { background: #eef3f7; text-align: left; }
+    .note { background: #f6f8fb; border-left: 4px solid #176b87; padding: 12px 14px; margin: 14px 0; }
+    .warning { background: #fff8eb; border-left: 4px solid #875c13; padding: 12px 14px; margin: 14px 0; }
+    .good { color: #17613a; font-weight: 650; }
+    .warn { color: #875c13; font-weight: 650; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Solution 10: Confidence-Gated Consensus</h1>
+    <p>
+      Solution 10 keeps the strongest visible Task 1 and Task 3 specialists from
+      Solution 9, then improves Task 2 with a confidence-gated consensus decoder.
+      It is a complete standalone submission candidate and does not require
+      reading any earlier solution first.
+    </p>
+  </header>
+
+  <section>
+    <h2>The Industrial AI Task</h2>
+    <p>
+      A semiconductor process route is an ordered list of manufacturing steps.
+      The route might include wafer cleaning, lithography, etching, deposition,
+      measurement, passivation, testing, and shipping. The submitted model must
+      produce three CSV files:
+    </p>
+    <table>
+      <thead><tr><th>File</th><th>Question answered</th><th>Solution 10 specialist</th></tr></thead>
+      <tbody>
+        <tr><td><code>nextstep.csv</code></td><td>What are the top five likely next steps?</td><td>Solution 3 synthetic-augmented retrieval.</td></tr>
+        <tr><td><code>completion.csv</code></td><td>What suffix completes the partial route?</td><td>New confidence-gated consensus decoder.</td></tr>
+        <tr><td><code>anomaly.csv</code></td><td>Is the full route valid, and which rule is violated?</td><td>Solution 8 semantic conformance checker.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>The New Idea</h2>
+    <p>
+      Earlier completion solutions copied one retrieved suffix. That is safe
+      because the suffix came from a valid generated or public route, but it can
+      be brittle: the nearest route might have a slightly different later block.
+    </p>
+    <p>
+      Solution 10 asks a different question: if the nearest generated routes
+      mostly agree on the next few suffix tokens, can we use that agreement
+      instead of trusting only one route? This is similar in spirit to
+      consensus or minimum-risk decoding in sequence generation: choose output
+      tokens that are strongly supported by the candidate set.
+    </p>
+    <div class="note">
+      <p>
+        For a junior engineer: a <strong>candidate suffix</strong> is one
+        possible remaining sequence after the visible prefix. A
+        <strong>consensus suffix</strong> is built by looking across several
+        candidate suffixes and taking the token that receives the strongest
+        weighted vote at each position.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why It Is Gated</h2>
+    <p>
+      Consensus is useful only when candidates are aligned and agree. If the
+      candidates disagree, taking one token from one suffix and the next token
+      from another suffix can create a worse sequence. Solution 10 therefore
+      computes an agreement score.
+    </p>
+    <p>
+      The model uses the consensus suffix only when the average winning vote
+      share is at least <code>0.80</code>. Otherwise it falls back to Solution
+      7's valid single-suffix retrieval. On the seed-42 local split, the gate
+      used consensus on <code>117</code> out of <code>600</code> completion rows
+      and used fallback on the other <code>483</code> rows.
+    </p>
+  </section>
+
+  <section>
+    <h2>Important Code</h2>
+    <p>
+      The key logic lives in <code>ConfidenceGatedConsensusPortfolio.complete()</code>:
+    </p>
+    <pre><code>def complete(self, prefix, family, completion_fraction):
+    consensus, avg_share = self.consensus_suffix(prefix, family, completion_fraction)
+    self.avg_consensus_share_sum += avg_share
+
+    if avg_share >= CONSENSUS_AVG_SHARE_THRESHOLD:
+        self.consensus_used += 1
+        return consensus
+
+    self.fallback_used += 1
+    return self.task2_model.complete(prefix, family, completion_fraction)</code></pre>
+    <p>
+      The threshold is deliberately simple. It makes the behavior explainable:
+      use consensus when candidate agreement is high; otherwise use the valid
+      single-route fallback.
+    </p>
+  </section>
+
+  <section>
+    <h2>How The Consensus Is Built</h2>
+    <p>
+      For each Task 2 row:
+    </p>
+    <ol>
+      <li>Retrieve candidate suffixes from the generated/public completion library.</li>
+      <li>Keep the top <code>10</code> candidate suffixes.</li>
+      <li>Weight each suffix by retrieval score, rank, and same-family match.</li>
+      <li>Estimate the output length with a weighted median suffix length.</li>
+      <li>For each suffix position, choose the token with the highest weighted vote.</li>
+      <li>Use the consensus only if the average winning vote share is at least <code>0.80</code>.</li>
+    </ol>
+    <p>
+      The model does not use the hidden true suffix length. It only uses the
+      visible prefix, product family, completion fraction, and public/generated
+      route library.
+    </p>
+  </section>
+
+  <section>
+    <h2>Output Files Produced</h2>
+    <p>
+      Running <code>python -B solutions/solution_10_confidence_gated_consensus/solution.py</code>
+      writes these files:
+    </p>
+    <table>
+      <thead><tr><th>File</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td><code>outputs/nextstep.csv</code></td><td>Task 1 ranked next-step predictions.</td></tr>
+        <tr><td><code>outputs/completion.csv</code></td><td>Task 2 predicted suffixes.</td></tr>
+        <tr><td><code>outputs/anomaly.csv</code></td><td>Task 3 validity, confidence score, and predicted rule.</td></tr>
+        <tr><td><code>outputs/metrics.json</code></td><td>Machine-readable metrics, data inventory, and consensus gate statistics.</td></tr>
+        <tr><td><code>outputs/metrics.md</code></td><td>Human-readable metric summary.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Local Seed-42 Metrics</h2>
+    <table>
+      <thead><tr><th>Metric</th><th>Value</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td>Task 1 Top-1</td><td><span class="good">0.7350</span></td><td>Same strong visible next-step score as Solution 9.</td></tr>
+        <tr><td>Task 1 MRR</td><td><span class="good">0.8661</span></td><td>Same strong rank quality as Solution 9.</td></tr>
+        <tr><td>Task 2 normalized edit distance</td><td><span class="good">0.2319</span></td><td>Lower is better; this improves on Solution 9's <code>0.2333</code>.</td></tr>
+        <tr><td>Task 2 token accuracy</td><td><span class="good">0.4752</span></td><td>Slightly better than Solution 9's <code>0.4737</code>.</td></tr>
+        <tr><td>Task 2 block accuracy</td><td><span class="good">0.7374</span></td><td>Slightly better than Solution 9's <code>0.7367</code>.</td></tr>
+        <tr><td>Task 2 exact match</td><td><span class="warn">0.0033</span></td><td>Lower than Solution 9's <code>0.0067</code>; this is the main tradeoff.</td></tr>
+        <tr><td>Task 3 accuracy</td><td><span class="good">1.0000</span></td><td>Semantic conformance checker separates all local valid/invalid rows.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Honest Tradeoff</h2>
+    <div class="warning">
+      <p>
+        Solution 10 is stronger than Solution 9 for the local normalized edit
+        distance and block/token completion metrics, but weaker for exact
+        completion match. If the official judge weights exact full-suffix match
+        heavily, Solution 9 can still be safer. If the judge rewards edit
+        distance or partial suffix quality, Solution 10 is the better visible
+        Task 2 candidate.
+      </p>
+    </div>
+    <p>
+      It also keeps the same hidden-family caveat as Solution 9: the Task 1
+      specialist is Solution 3, whose IC leave-one-family-out proxy is weaker
+      than Solution 2/Solution 8.
+    </p>
+  </section>
+
+  <section>
+    <h2>Submission Readiness</h2>
+    <p>
+      This solution is complete as a standalone candidate. It has a runnable
+      script, generated output CSVs, local metrics, this explanation page, a
+      manual submission guide, and a generated <code>submission_package/</code>
+      folder with result CSVs, metrics, per-family proxy breakdown, training
+      notes, demo notes, and a solution-level report.
+    </p>
+  </section>
+</main>
+</body>
+</html>

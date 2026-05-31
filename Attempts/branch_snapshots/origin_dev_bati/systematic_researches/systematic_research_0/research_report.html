@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Systematic Research 0 - Industrial AI Methods</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #17221f;
+      --muted: #5f6f69;
+      --line: #d7ded9;
+      --paper: #f7f8f4;
+      --panel: #ffffff;
+      --green: #126b57;
+      --green-2: #dff2e8;
+      --amber: #b46a16;
+      --amber-2: #fff0d8;
+      --red: #ad3434;
+      --red-2: #ffe4e4;
+      --blue: #285f95;
+      --blue-2: #dcebf8;
+      --violet: #604b8e;
+      --violet-2: #ebe6f6;
+      --radius: 8px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.58;
+    }
+    a { color: var(--blue); text-underline-offset: 3px; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px clamp(16px, 4vw, 44px);
+      border-bottom: 1px solid rgba(23, 34, 31, 0.1);
+      background: rgba(247, 248, 244, 0.94);
+      backdrop-filter: blur(16px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; white-space: nowrap; }
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 2px solid var(--ink);
+      border-radius: 50%;
+      background: conic-gradient(from 90deg, var(--green-2), var(--blue-2), var(--amber-2), var(--violet-2), var(--green-2));
+      font-weight: 900;
+    }
+    .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+    .nav a {
+      min-height: 34px;
+      padding: 7px 10px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .nav a:hover { color: var(--ink); border-color: var(--line); background: #fff; }
+    .page-section {
+      padding: clamp(42px, 7vw, 86px) clamp(16px, 5vw, 76px);
+      scroll-margin-top: 80px;
+    }
+    .hero {
+      min-height: calc(100svh - 59px);
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, 0.9fr);
+      gap: clamp(24px, 5vw, 64px);
+      align-items: center;
+    }
+    h1, h2, h3, h4 { margin: 0; line-height: 1.1; letter-spacing: 0; }
+    h1 { max-width: 820px; margin-top: 18px; font-size: clamp(38px, 6.3vw, 84px); }
+    h2 { font-size: clamp(30px, 4vw, 52px); }
+    h3 { font-size: clamp(20px, 2.2vw, 27px); }
+    h4 { font-size: 16px; }
+    p { margin: 0; color: #3e4e48; }
+    .lede { max-width: 820px; margin-top: 22px; font-size: clamp(18px, 2.05vw, 24px); }
+    .eyebrow, .tag {
+      display: inline-flex;
+      width: fit-content;
+      max-width: 100%;
+      padding: 7px 10px;
+      border-radius: 999px;
+      color: var(--green);
+      background: #fff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .tag { border: 0; background: var(--green-2); font-size: 12px; }
+    .tag.blue { background: var(--blue-2); color: var(--blue); }
+    .tag.amber { background: var(--amber-2); color: var(--amber); }
+    .tag.red { background: var(--red-2); color: var(--red); }
+    .tag.violet { background: var(--violet-2); color: var(--violet); }
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .panel {
+      border: 1px solid rgba(23, 34, 31, 0.12);
+      border-radius: var(--radius);
+      background: var(--panel);
+      box-shadow: 0 10px 28px rgba(38, 47, 43, 0.06);
+    }
+    .pad { padding: clamp(18px, 3vw, 28px); }
+    .panel h3, .panel h4 { margin-top: 12px; }
+    .panel p { margin-top: 12px; }
+    .section-head { max-width: 980px; margin-bottom: 24px; }
+    .section-head p { margin-top: 12px; font-size: clamp(17px, 1.8vw, 21px); }
+    .callout {
+      padding: 18px 20px;
+      border: 1px solid rgba(18, 107, 87, 0.22);
+      border-left: 5px solid var(--green);
+      border-radius: var(--radius);
+      background: #fff;
+      color: #2f403a;
+    }
+    .callout.warning { border-left-color: var(--amber); background: #fffaf2; }
+    .callout.danger { border-left-color: var(--red); background: #fff8f8; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+    }
+    table { width: 100%; min-width: 820px; border-collapse: collapse; text-align: left; }
+    th, td { padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    th { color: var(--ink); background: #fbfcf8; font-size: 13px; font-weight: 800; }
+    td { color: #34443e; font-size: 14px; }
+    tr:last-child td { border-bottom: 0; }
+    .note-list { margin: 12px 0 0; padding-left: 20px; color: #3e4e48; }
+    .note-list li { margin: 7px 0; }
+    .code-box {
+      overflow: auto;
+      margin-top: 14px;
+      padding: 16px;
+      border: 1px solid rgba(23, 34, 31, 0.14);
+      border-radius: var(--radius);
+      background: #14211d;
+      color: #e6f2ec;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    @media (max-width: 1000px) {
+      .hero, .grid.two, .grid.three { grid-template-columns: 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+      .nav { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar" role="banner">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">R</span><span>systematic_research_0</span></div>
+    <div class="nav" role="navigation" aria-label="Page sections">
+      <a href="#answer">Answer</a>
+      <a href="#mapping">Mapping</a>
+      <a href="#sources">Sources</a>
+      <a href="#matrix">Matrix</a>
+      <a href="#solution">Solution 1</a>
+    </div>
+  </div>
+
+  <div role="main">
+    <div class="page-section hero" id="top">
+      <div>
+        <div class="eyebrow">Industrial AI method research</div>
+        <h1>The best first upgrade is hybrid retrieval plus process constraints, not RL-first.</h1>
+        <p class="lede">
+          The track is an offline process-sequence benchmark: predict next steps, complete suffixes, and detect process-rule violations. The closest literature is predictive process monitoring, log anomaly detection, retrieval-augmented sequence modeling, and constrained decoding.
+        </p>
+      </div>
+      <div class="panel pad">
+        <span class="tag amber">Recommendation</span>
+        <h3>Build in stages</h3>
+        <ul class="note-list">
+          <li><strong>Solution 1:</strong> context retrieval + trigram fallback + validator oracle.</li>
+          <li><strong>Solution 2:</strong> from-scratch step-level transformer.</li>
+          <li><strong>Solution 3:</strong> transformer with validator-guided constrained decoding or reranking.</li>
+          <li><strong>RL later:</strong> sequence-level fine-tuning only after supervised baselines are strong.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="page-section" id="answer">
+      <div class="section-head">
+        <h2>Short Answer</h2>
+        <p>Use the simplest method that matches the shape of the data and metrics before training expensive models.</p>
+      </div>
+      <div class="grid three">
+        <div class="panel pad">
+          <span class="tag blue">Task 1</span>
+          <h3>Next step</h3>
+          <p>Use retrieval votes plus trigram counts. Local context is highly informative in semiconductor route traces.</p>
+        </div>
+        <div class="panel pad">
+          <span class="tag violet">Task 2</span>
+          <h3>Completion</h3>
+          <p>Use retrieved historical suffixes. This directly fixes the greedy n-gram failure where small mistakes compound into poor long completions.</p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Task 3</span>
+          <h3>Anomaly</h3>
+          <p>Use the validator for measurable performance, but label it as an oracle. A later learned model should imitate or localize the same constraints.</p>
+        </div>
+      </div>
+      <div class="callout warning" style="margin-top: 20px;">
+        <strong>Why not RL first?</strong> There is no live environment, no sequential control loop, and no interactive reward. The current problem is offline supervised prediction plus conformance checking. RL can be useful later for sequence-level rewards, but it is the wrong first tool.
+      </div>
+    </div>
+
+    <div class="page-section" id="mapping">
+      <div class="section-head">
+        <h2>Problem Mapping</h2>
+        <p>Mapping the hackathon tasks to known research areas keeps us from choosing methods by buzzword.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Hackathon task</th><th>Closest research problem</th><th>Strong method family</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Next-step prediction</td><td>Next activity prediction in predictive process monitoring</td><td>n-gram, LSTM/GRU, transformer, retrieval-augmented ranking</td></tr>
+            <tr><td>Sequence completion</td><td>Suffix prediction in event logs</td><td>retrieval, sequence-to-sequence, transformer, constrained decoding</td></tr>
+            <tr><td>Anomaly detection</td><td>Conformance checking and log anomaly detection</td><td>validator rules, language-model surprisal, DeepLog-style next-event checks</td></tr>
+            <tr><td>Hidden OOD family</td><td>Cross-domain or out-of-distribution process generalization</td><td>leave-one-family-out validation, no hard family token, invariant features</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section" id="sources">
+      <div class="section-head">
+        <h2>Sources Reviewed</h2>
+        <p>The main research report is in <a href="README.md">README.md</a>. The most important sources are listed here for quick reading.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source</th><th>Use in our decision</th></tr></thead>
+          <tbody>
+            <tr><td><a href="https://www.win.tue.nl/ieeetfpm/lib/exe/fetch.php?media=shared:process_mining_manifesto.pdf">Process Mining Manifesto</a></td><td>Frames event logs as process-mining objects.</td></tr>
+            <tr><td><a href="https://doi.org/10.1016/j.is.2007.07.001">Rozinat and van der Aalst conformance checking</a></td><td>Task 3 is conformance checking against process logic.</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/1612.02130">Tax et al. LSTM predictive monitoring</a></td><td>Direct analogue for next activity and suffix prediction.</td></tr>
+            <tr><td><a href="https://doi.org/10.1016/j.dss.2016.12.003">Evermann et al. deep process behavior prediction</a></td><td>Shows process traces can be modeled as learned sequences.</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2104.00721">ProcessTransformer</a></td><td>Supports a future transformer hero model.</td></tr>
+            <tr><td><a href="https://www.cs.utah.edu/~lifeifei/papers/deeplog.pdf">DeepLog</a></td><td>Comparable log-sequence anomaly setup.</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/1911.00172">kNN-LM</a></td><td>Supports retrieval memory for sequence prediction.</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/2109.05093">PICARD</a></td><td>Supports constrained decoding using an external checker.</td></tr>
+            <tr><td><a href="https://aclanthology.org/P17-1141/">Grid beam search</a></td><td>Shows constraints can guide decoding.</td></tr>
+            <tr><td><a href="https://arxiv.org/abs/1511.06732">MIXER sequence-level RL</a></td><td>RL is a later fine-tuning option, not the first baseline.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section" id="matrix">
+      <div class="section-head">
+        <h2>Decision Matrix</h2>
+        <p>Scores are qualitative. They measure fit for this repo, not universal model quality.</p>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Method</th><th>Task 1</th><th>Task 2</th><th>Task 3</th><th>OOD</th><th>Now</th><th>Story</th><th>Total</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>N-gram only</td><td>4</td><td>1</td><td>2</td><td>3</td><td>5</td><td>2</td><td>17</td></tr>
+            <tr><td>Retrieval + n-gram</td><td>4</td><td>4</td><td>2</td><td>3</td><td>5</td><td>3</td><td>21</td></tr>
+            <tr><td>Validator only</td><td>1</td><td>1</td><td>5</td><td>2</td><td>5</td><td>2</td><td>16</td></tr>
+            <tr><td>LSTM/GRU</td><td>4</td><td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>19</td></tr>
+            <tr><td>Step-level transformer</td><td>5</td><td>4</td><td>4</td><td>4</td><td>2</td><td>5</td><td>24</td></tr>
+            <tr><td>Transformer + constraints</td><td>5</td><td>5</td><td>5</td><td>4</td><td>2</td><td>5</td><td>26</td></tr>
+            <tr><td>RL-first</td><td>3</td><td>3</td><td>3</td><td>2</td><td>1</td><td>3</td><td>15</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="page-section" id="solution">
+      <div class="section-head">
+        <h2>What This Produced</h2>
+        <p>The research led directly to <a href="../../solutions/solution_1_hybrid_retrieval/solution.py">solution_1_hybrid_retrieval</a>.</p>
+      </div>
+      <div class="grid two">
+        <div class="panel pad">
+          <span class="tag green">Local result</span>
+          <h3>Improves the biggest Solution 0 weakness</h3>
+          <p>Task 2 normalized edit distance improves from <code>0.6152</code> to <code>0.2420</code>, token accuracy from <code>0.2073</code> to <code>0.4485</code>, and block accuracy from <code>0.3922</code> to <code>0.7167</code>.</p>
+        </div>
+        <div class="panel pad">
+          <span class="tag amber">Still not final</span>
+          <h3>The winning model should still be trained</h3>
+          <p>Solution 1 is a strong hybrid baseline. The final winning direction should train a step-level transformer, evaluate leave-one-family-out, and add validator-guided decoding or reranking.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

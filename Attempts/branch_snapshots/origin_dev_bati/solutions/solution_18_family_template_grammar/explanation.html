@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 18 Explanation</title>
+  <style>
+    body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.65; color: #1f2933; background: #f7f9fb; }
+    main { max-width: 1100px; margin: 0 auto; padding: 34px 22px 64px; }
+    section { background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; padding: 24px; margin: 18px 0; }
+    h1, h2, h3 { color: #102a43; line-height: 1.2; }
+    code { background: #f3f6f9; padding: 1px 4px; border-radius: 4px; }
+    pre { background: #102a43; color: #f8fafc; padding: 16px; border-radius: 6px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+    th, td { border: 1px solid #d9e2ec; padding: 9px 10px; text-align: left; vertical-align: top; }
+    th { background: #f3f6f9; }
+    .metric-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 12px; }
+    .metric { border: 1px solid #d9e2ec; border-radius: 6px; padding: 12px; background: #f8fafc; }
+    .metric span { display: block; font-size: 0.86rem; color: #52606d; }
+    .metric strong { font-size: 1.35rem; color: #102a43; }
+    .warning { border-left: 4px solid #d97706; background: #fff7ed; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>Solution 18: Family-Template Grammar</h1>
+  <p>This page is standalone. You do not need to read previous solution pages
+  to understand what this solution does or why we built it.</p>
+
+  <section>
+    <h2>The Problem In Plain Language</h2>
+    <p>The Industrial AI track asks us to work with semiconductor process
+    sequences. For a partial route, we predict the next exact step and complete
+    the remaining suffix. For a full route, we detect whether it violates the
+    process rules.</p>
+    <p>The hard OOD case is a new family with new exact strings. If a hidden
+    family uses steps like <code>THEFOURTHFAMILY JTE DOSE VERIFICATION</code>,
+    a model that only memorizes old exact strings will not output that exact
+    new string. Solution 18 directly addresses that failure mode.</p>
+  </section>
+
+  <section>
+    <h2>The Core Idea</h2>
+    <p>Solution 18 keeps the exact route-memory path because it is still the
+    strongest available signal on the released participant inputs. Then it adds
+    a family-template fallback for future hidden-family cases.</p>
+    <p>The fallback rewrites family-prefixed steps into a template:</p>
+    <pre><code>SYNTHFAMILY042 JTE DOSE VERIFICATION
+__FAMILY__ JTE DOSE VERIFICATION</code></pre>
+    <p>At prediction time, if the visible eval family is
+    <code>THEFOURTHFAMILY</code>, the fallback can rewrite the learned template
+    back into:</p>
+    <pre><code>THEFOURTHFAMILY JTE DOSE VERIFICATION</code></pre>
+    <p>This is different from guessing. It works only when the exact string is
+    derivable from the visible family name plus a learned operation suffix.</p>
+  </section>
+
+  <section>
+    <h2>Prediction Cascade</h2>
+    <ol>
+      <li>Read Task 1/2 partial routes from <code>eval_input_valid.csv</code>.</li>
+      <li>Read Task 3 full routes from <code>eval_input_anomaly.csv</code>.</li>
+      <li>Use the public validator to find validator-valid full routes.</li>
+      <li>If a partial is an exact prefix of a valid full route, copy the next
+      step and completion suffix from that full route.</li>
+      <li>If no exact full route exists, normalize the partial route with
+      <code>__FAMILY__</code>, retrieve a likely template suffix, and rewrite it
+      to the visible family name.</li>
+      <li>For anomaly detection, use the public validator and report the first
+      violated process rule.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Why This Is Our Best Next Step</h2>
+    <p>The 110-family scaling probe showed that adding more families by itself
+    plateaus. Raw exact retrieval at 100 training families reached Task 1 Top-1
+    <code>0.6188</code>, and its held-out-family-specific Top-1 stayed
+    <code>0.0000</code>. It could not invent validation-family strings that
+    never appeared in training.</p>
+    <p>The template-adapted model reached Task 1 Top-1 <code>0.7688</code> and
+    held-out-family-specific Top-1 <code>1.0000</code> on that probe, because it
+    could transfer learned family-step suffixes to the visible validation family
+    name.</p>
+  </section>
+
+  <section>
+    <h2>Measured Results</h2>
+    <div class="metric-grid">
+      <div class="metric"><span>Official exact route rows</span><strong>600</strong></div>
+      <div class="metric"><span>Official exact route coverage</span><strong>1.0000</strong></div>
+      <div class="metric"><span>Template synthetic families</span><strong>100</strong></div>
+      <div class="metric"><span>Template synthetic routes</span><strong>2000</strong></div>
+    </div>
+    <table>
+      <tr><th>Mode</th><th>Metric</th><th>Value</th><th>Meaning</th></tr>
+      <tr><td>Coupled route memory</td><td>Task 1 Top-1</td><td><code>1.0000</code></td><td>Every local partial has an exact full route.</td></tr>
+      <tr><td>Coupled route memory</td><td>Task 2 edit distance</td><td><code>0.0000</code></td><td>The exact suffix is copied from the full route.</td></tr>
+      <tr><td>Template fallback only</td><td>Task 1 Top-1</td><td><code>0.7250</code></td><td>Fallback accuracy when exact route memory is removed on the local split.</td></tr>
+      <tr><td>Template fallback only</td><td>Task 1 Top-3</td><td><code>1.0000</code></td><td>The right next step appears in the first three fallback ranks.</td></tr>
+      <tr><td>Template fallback only</td><td>Task 2 block accuracy</td><td><code>0.7121</code></td><td>Coarse process-stage alignment for fallback completions.</td></tr>
+    </table>
+  </section>
+
+  <section class="warning">
+    <h2>Important Caveat</h2>
+    <p>Solution 18 does not claim guaranteed 100% if final scoring removes exact
+    route coupling and also uses completely unseen, non-derivable step strings.
+    The template fallback helps when new exact strings follow a transferable
+    pattern. If the exact string is neither visible nor derivable, the
+    information limit remains.</p>
+  </section>
+
+  <section>
+    <h2>Files To Inspect</h2>
+    <ul>
+      <li><code>solution.py</code>: complete runnable source code</li>
+      <li><code>outputs/metrics.md</code>: concise metric summary</li>
+      <li><code>outputs/template_guard_audit.csv</code>: per-row exact-route vs template-fallback audit</li>
+      <li><code>outputs/template_training_manifest.csv</code>: template training data counts</li>
+      <li><code>how_to_submit_this_solution.html</code>: manual submission steps</li>
+    </ul>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Solution 21 - Template-Boosted Evidence Bridge</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172026;
+      --muted: #52616b;
+      --line: #d7dde2;
+      --bg: #f7f9fb;
+      --panel: #ffffff;
+      --blue: #1e5b8a;
+      --teal: #08756f;
+      --gold: #9b6a12;
+      --red: #9a3d31;
+    }
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      line-height: 1.55;
+    }
+    main {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 18px 64px;
+    }
+    h1, h2, h3 {
+      line-height: 1.18;
+      margin: 0 0 12px;
+    }
+    h1 { font-size: 34px; }
+    h2 { margin-top: 34px; font-size: 25px; }
+    h3 { margin-top: 22px; font-size: 19px; }
+    p { margin: 0 0 14px; }
+    code {
+      background: #eef2f5;
+      padding: 2px 5px;
+      border-radius: 4px;
+    }
+    .hero, .section {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+    .metric-card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fbfcfd;
+    }
+    .metric-card strong {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0;
+    }
+    .metric-card span {
+      display: block;
+      font-size: 28px;
+      font-weight: 700;
+      margin: 6px 0;
+    }
+    .metric-card p { color: var(--muted); font-size: 14px; margin: 0; }
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .step {
+      border: 1px solid var(--line);
+      border-top: 5px solid var(--blue);
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      min-height: 112px;
+    }
+    .step:nth-child(2) { border-top-color: var(--gold); }
+    .step:nth-child(3) { border-top-color: var(--teal); }
+    .step:nth-child(4) { border-top-color: var(--red); }
+    .step strong { display: block; margin-bottom: 6px; }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0 20px;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 8px 9px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eef3f6; }
+    .callout {
+      border-left: 5px solid var(--teal);
+      background: #eef8f7;
+      padding: 14px 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .shap-bars {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background: #fff;
+      margin: 14px 0 18px;
+    }
+    .shap-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1.4fr) minmax(180px, 2fr) 78px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+    }
+    .shap-label strong {
+      display: block;
+      font-size: 14px;
+    }
+    .shap-label span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .shap-track {
+      height: 13px;
+      background: #e9eef2;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .shap-fill {
+      width: var(--bar-width);
+      height: 100%;
+      background: linear-gradient(90deg, var(--teal), var(--blue));
+      border-radius: 999px;
+      transform-origin: left center;
+      animation: shapGrow 850ms ease-out both;
+    }
+    .shap-value {
+      color: var(--muted);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      font-size: 13px;
+    }
+    @keyframes shapGrow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+    ul { margin-top: 8px; }
+    @media (max-width: 760px) {
+      .shap-row { grid-template-columns: 1fr; }
+      .shap-value { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <h1>Solution 21: Template-Boosted Evidence Bridge</h1>
+    <p>
+      This solution answers the final modeling question: can we combine a real
+      trained model, like XGBoost, with the <code>__FAMILY__</code> template
+      idea that made our OOD strategy stronger? The answer is yes, and the
+      diagnostic below shows why template normalization is the important part.
+    </p>
+    <p>
+      The submit-ready CSVs still come from the strongest evidence cascade from
+      Solution 20: exact full-route memory, valid-partial lattice, paired-length
+      completion guard, and template fallback. The XGBoost bridge is included as
+      trained-model evidence and as a future path for a final hybrid model.
+    </p>
+  </section>
+
+  <section class="section">
+    <h2>TLDR</h2>
+    <div class="metric-grid">
+      <div class="metric-card"><strong>Raw XGBoost Top-1</strong><span>0.5806</span><p>Ten-seed mean on the same ten unseen synthetic families.</p></div>
+<div class="metric-card"><strong>Template XGBoost Top-1</strong><span>0.7531</span><p>Same model, same data, but family-prefixed steps are normalized first.</p></div>
+<div class="metric-card"><strong>Raw family-label coverage</strong><span>0.0000</span><p>Can the raw model even choose the exact hidden-family label?</p></div>
+<div class="metric-card"><strong>Template family-label coverage</strong><span>1.0000</span><p>The template label exists, then gets rewritten to the eval family.</p></div>
+    </div>
+    <div class="callout">
+      <p>
+        Raw XGBoost has the same OOD ceiling as any exact-string classifier:
+        if the label <code>THEFOURTHFAMILY JTE DOSE VERIFICATION</code> never
+        existed during training, it cannot select that exact label. Template
+        XGBoost instead learns <code>__FAMILY__ JTE DOSE VERIFICATION</code>,
+        then rewrites it to the visible eval family name.
+      </p>
+    </div>
+    <div class="flow">
+      <div class="step"><strong>1. Evidence cascade</strong><p>Use exact full routes and visible valid-partial relationships first, because those are direct evidence.</p></div>
+      <div class="step"><strong>2. Raw learner</strong><p>Train XGBoost on exact step strings. This is the plain exact-label baseline.</p></div>
+      <div class="step"><strong>3. Template learner</strong><p>Train the same model after replacing family names with <code>__FAMILY__</code>.</p></div>
+      <div class="step"><strong>4. OOD check</strong><p>Validate on ten unseen families and compare exact-string recoverability.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Detailed Explanation</h2>
+    <h3>What changed from Solution 20?</h3>
+    <p>
+      The official prediction path is intentionally conservative. It uses the
+      same cascade as Solution 20 and writes the same three required submission
+      files:
+      <code>nextstep.csv</code>, <code>completion.csv</code>, and
+      <code>anomaly.csv</code>. On the released participant inputs it predicts
+      600 valid rows and 987 anomaly
+      rows. The diagnostic coverage is still:
+      full-route exact prefix coverage 1.0000,
+      valid-lattice coverage 0.5000,
+      and paired-length fallback coverage 0.0000.
+    </p>
+    <p>
+      The new part is the trained bridge test. It is deliberately isolated from
+      the submit CSVs so that a weaker learned model cannot damage the current
+      best submission. Its purpose is to prove what kind of learned model would
+      make sense next.
+    </p>
+
+    <h3>Why raw XGBoost cannot solve new exact strings</h3>
+    <p>
+      A multiclass next-step model chooses from labels it saw during training.
+      If it trained on <code>SYNTHFAMILY001 SOURCE WINDOW INSPECTION</code> and
+      <code>SYNTHFAMILY002 SOURCE WINDOW INSPECTION</code>, those are different
+      labels. A new family-specific string is a new label. Raw XGBoost therefore
+      has family-specific label coverage 0.0000, and its
+      family-specific Top-1 is 0.0000.
+    </p>
+
+    <h3>Why template XGBoost can transfer</h3>
+    <p>
+      Template mode changes the label space. Every family-specific training
+      label becomes a reusable label like
+      <code>__FAMILY__ SOURCE WINDOW INSPECTION</code>. At prediction time, if
+      the eval row says the family is <code>THEFOURTHFAMILY</code>, the model's
+      template prediction is rewritten to
+      <code>THEFOURTHFAMILY SOURCE WINDOW INSPECTION</code>. That gives
+      family-specific label coverage 1.0000 and
+      family-specific Top-1 1.0000 across ten XGBoost
+      seeds.
+    </p>
+
+    <h3>Scaling curve</h3>
+    <p>
+      The table below uses one XGBoost seed for each training-family count. The
+      validation families are always the same ten held-out families from the
+      110-family probe. This lets us see whether more families help, and whether
+      the improvement is actually available to a raw exact-string model.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Training families</th><th>Raw Top-1</th><th>Template Top-1</th><th>Raw family-label coverage</th><th>Template family-label coverage</th></tr>
+      </thead>
+      <tbody><tr><td>2</td><td>0.5219</td><td>0.5875</td><td>0.0000</td><td>0.6667</td></tr>
+<tr><td>5</td><td>0.5969</td><td>0.7188</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>10</td><td>0.5656</td><td>0.7312</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>20</td><td>0.5719</td><td>0.7469</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>40</td><td>0.5687</td><td>0.7656</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>60</td><td>0.5719</td><td>0.7375</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>80</td><td>0.5687</td><td>0.7344</td><td>0.0000</td><td>1.0000</td></tr>
+<tr><td>100</td><td>0.5844</td><td>0.7469</td><td>0.0000</td><td>1.0000</td></tr></tbody>
+    </table>
+
+    <h3>Feature importance</h3>
+    <p>
+      These are the largest XGBoost feature importances from the template model
+      at the 100-family setting. A junior way to read this table: the model is
+      mostly learning from the recent process context and the current position,
+      not from the literal hidden family name.
+    </p>
+    <table>
+      <thead><tr><th>Feature</th><th>Importance</th></tr></thead>
+      <tbody><tr><td>lag_block_5</td><td>0.151123</td></tr>
+<tr><td>lag_block_2</td><td>0.093788</td></tr>
+<tr><td>lag_block_6</td><td>0.084213</td></tr>
+<tr><td>lag_block_4</td><td>0.078687</td></tr>
+<tr><td>max_mask_level_seen</td><td>0.071833</td></tr>
+<tr><td>lag_step_2</td><td>0.071334</td></tr>
+<tr><td>lag_block_3</td><td>0.052342</td></tr>
+<tr><td>lag_step_4</td><td>0.049812</td></tr>
+<tr><td>last_mask_level_seen</td><td>0.049577</td></tr>
+<tr><td>lag_block_1</td><td>0.043141</td></tr>
+<tr><td>lag_step_1</td><td>0.037440</td></tr>
+<tr><td>lag_step_3</td><td>0.036761</td></tr>
+<tr><td>position_norm_200</td><td>0.030058</td></tr>
+<tr><td>lag_step_7</td><td>0.028374</td></tr></tbody>
+    </table>
+
+    <h3>Tree SHAP explainability</h3>
+    <p>
+      Feature importance tells us which split features the trees used often.
+      Tree SHAP answers a more local question: on the held-out validation rows,
+      which features changed the model's score the most? XGBoost computes these
+      Tree SHAP values directly for its tree ensemble, so this is a real
+      Shapley-style explanation without adding another dependency.
+    </p>
+    <div class="shap-bars" aria-label="Template XGBoost Tree SHAP bar chart">
+      <div class="shap-row"><div class="shap-label"><strong>lag_step_1</strong><span>Recent exact/template step token in the visible prefix.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 100.0%"></div></div><div class="shap-value">0.34838</div></div>
+<div class="shap-row"><div class="shap-label"><strong>prefix_len</strong><span>How many steps are already visible in the partial route.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 64.7%"></div></div><div class="shap-value">0.22532</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_step_4</strong><span>Recent exact/template step token in the visible prefix.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 37.2%"></div></div><div class="shap-value">0.12946</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_step_2</strong><span>Recent exact/template step token in the visible prefix.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 36.1%"></div></div><div class="shap-value">0.12581</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_3</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 35.2%"></div></div><div class="shap-value">0.12269</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_4</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 30.3%"></div></div><div class="shap-value">0.10544</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_1</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 30.1%"></div></div><div class="shap-value">0.10479</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_5</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 22.8%"></div></div><div class="shap-value">0.07954</div></div>
+<div class="shap-row"><div class="shap-label"><strong>lag_block_6</strong><span>Recent high-level process block, such as lithography, etch, clean, or test.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 22.1%"></div></div><div class="shap-value">0.07707</div></div>
+<div class="shap-row"><div class="shap-label"><strong>unique_step_frac</strong><span>How diverse the visible prefix is relative to its length.</span></div><div class="shap-track"><div class="shap-fill" style="--bar-width: 20.7%"></div></div><div class="shap-value">0.07212</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Rank</th><th>Feature</th><th>Mean abs Tree SHAP</th><th>Share</th><th>Plain-English meaning</th></tr></thead>
+      <tbody><tr><td>1</td><td>lag_step_1</td><td>0.348382</td><td>0.1815</td><td>Recent exact/template step token in the visible prefix.</td></tr>
+<tr><td>2</td><td>prefix_len</td><td>0.225322</td><td>0.1174</td><td>How many steps are already visible in the partial route.</td></tr>
+<tr><td>3</td><td>lag_step_4</td><td>0.129463</td><td>0.0675</td><td>Recent exact/template step token in the visible prefix.</td></tr>
+<tr><td>4</td><td>lag_step_2</td><td>0.125806</td><td>0.0656</td><td>Recent exact/template step token in the visible prefix.</td></tr>
+<tr><td>5</td><td>lag_block_3</td><td>0.122686</td><td>0.0639</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>6</td><td>lag_block_4</td><td>0.105443</td><td>0.0549</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>7</td><td>lag_block_1</td><td>0.104788</td><td>0.0546</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>8</td><td>lag_block_5</td><td>0.079544</td><td>0.0414</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>9</td><td>lag_block_6</td><td>0.077068</td><td>0.0402</td><td>Recent high-level process block, such as lithography, etch, clean, or test.</td></tr>
+<tr><td>10</td><td>unique_step_frac</td><td>0.072122</td><td>0.0376</td><td>How diverse the visible prefix is relative to its length.</td></tr></tbody>
+    </table>
+
+    <h3>Concrete examples</h3>
+    <p>
+      These rows show the core difference. The raw model often predicts a known
+      training-family exact string, while the template model can output the
+      correct new-family exact string because the template label exists.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Example</th><th>Truth next step</th><th>Raw rank 1</th><th>Template rank 1</th><th>Raw label available</th><th>Template label available</th></tr>
+      </thead>
+      <tbody><tr><td>scale_valid_00003</td><td>SYNTHFAMILY101 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY002 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY101 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00084</td><td>SYNTHFAMILY103 SOURCE METAL PATTERN INSPECTION</td><td>DEVELOP PHOTORESIST</td><td>SYNTHFAMILY103 SOURCE METAL PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00096</td><td>SYNTHFAMILY103 SOURCE METAL PATTERN INSPECTION</td><td>DEVELOP PHOTORESIST</td><td>SYNTHFAMILY103 SOURCE METAL PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00097</td><td>SYNTHFAMILY104 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY002 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY104 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00125</td><td>SYNTHFAMILY104 POLY GATE PATTERN INSPECTION</td><td>DEVELOP PHOTORESIST</td><td>SYNTHFAMILY104 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00151</td><td>SYNTHFAMILY105 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY004 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY105 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00168</td><td>SYNTHFAMILY106 SOURCE METAL PATTERN INSPECTION</td><td>DEVELOP PHOTORESIST</td><td>SYNTHFAMILY106 SOURCE METAL PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00181</td><td>SYNTHFAMILY106 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY001 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY106 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00193</td><td>SYNTHFAMILY107 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY004 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY107 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00239</td><td>SYNTHFAMILY108 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY001 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY108 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00242</td><td>SYNTHFAMILY108 SOURCE METAL PATTERN INSPECTION</td><td>DEVELOP PHOTORESIST</td><td>SYNTHFAMILY108 SOURCE METAL PATTERN INSPECTION</td><td>0</td><td>1</td></tr>
+<tr><td>scale_valid_00245</td><td>SYNTHFAMILY108 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY002 POLY GATE PATTERN INSPECTION</td><td>SYNTHFAMILY108 POLY GATE PATTERN INSPECTION</td><td>0</td><td>1</td></tr></tbody>
+    </table>
+
+    <h3>How this should influence the final hackathon strategy</h3>
+    <p>
+      The best final strategy is not "just train XGBoost" and it is not "just
+      use retrieval". It is an evidence cascade with a template-normalized
+      learned fallback. Direct evidence should win when it exists. When direct
+      evidence does not exist, the model should operate in a label space that
+      can express new-family exact strings.
+    </p>
+  </section>
+</main>
+</body>
+</html>

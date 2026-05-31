@@ -1,0 +1,36 @@
+{
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "CPython 3.11.3",
+  "startedAt": "2026-05-29T22:07:13.762372Z",
+  "args": [
+    "--train_dir",
+    "../tracks/industrial-infineon/training_data",
+    "--wandb_project",
+    "industrial-ai-hackathon",
+    "--seed",
+    "42"
+  ],
+  "program": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\zero_one_hack_0625\\test_baseline_1\\baseline_random.py",
+  "codePath": "test_baseline_1\\baseline_random.py",
+  "codePathLocal": "baseline_random.py",
+  "git": {
+    "remote": "https://github.com/AriunZaya7/zero_one_hack_0625.git",
+    "commit": "e5df1f4df86e578537eac4fa510ffd6fcd1d66b8"
+  },
+  "email": "angiezaya7@gmail.com",
+  "root": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\zero_one_hack_0625\\test_baseline_1",
+  "host": "LAPTOP-UBNDF6IL",
+  "executable": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\venv\\Scripts\\python.exe",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "768014807040",
+      "used": "527891476480"
+    }
+  },
+  "memory": {
+    "total": "16505954304"
+  },
+  "writerId": "axvhgktlok74bkc7afewyzf2e3s7k4ym"
+}

@@ -1,0 +1,28 @@
+{
+  "os": "Windows-10-10.0.26200-SP0",
+  "python": "CPython 3.11.3",
+  "startedAt": "2026-05-30T15:48:52.122796Z",
+  "program": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\zero_one_hack_0625\\testing_rule_extraction\\compare_xgboost_crf.py",
+  "codePath": "testing_rule_extraction\\compare_xgboost_crf.py",
+  "codePathLocal": "compare_xgboost_crf.py",
+  "git": {
+    "remote": "https://github.com/AriunZaya7/zero_one_hack_0625.git",
+    "commit": "6a117989a8a2b741a7895d4819b27c5bba2f83fb"
+  },
+  "email": "angiezaya7@gmail.com",
+  "root": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\zero_one_hack_0625\\testing_rule_extraction",
+  "host": "LAPTOP-UBNDF6IL",
+  "executable": "D:\\Angie\\3. IMC Krems\\Masters\\Hackathon_2026\\venv\\Scripts\\python.exe",
+  "cpu_count": 8,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "768014807040",
+      "used": "528092987392"
+    }
+  },
+  "memory": {
+    "total": "16505954304"
+  },
+  "writerId": "vma42b7wlga8khdk03ejs18c4h4p4195"
+}

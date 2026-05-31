@@ -1,0 +1,19 @@
+{
+  "anomaly_rows": 987,
+  "eval_anomaly": "tracks/industrial-infineon/participant_files/eval_input_anomaly.csv",
+  "eval_valid": "tracks/industrial-infineon/participant_files/eval_input_valid.csv",
+  "mode": "official_participant_input_prediction",
+  "solution": "solution_12_mbr_completion",
+  "task2_mbr": {
+    "fallback_rows_used": 0,
+    "mbr_min_items": 120,
+    "mbr_rows_used": 600,
+    "mbr_top_n": 15,
+    "mean_candidate_count": 14.803333333333333,
+    "mean_selected_adjusted_risk": 0.13178343115456126,
+    "retrieval_score_mix": 0.03,
+    "rows_total": 600
+  },
+  "train_sequences": 7009,
+  "valid_rows": 600
+}

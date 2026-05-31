@@ -1,0 +1,114 @@
+[
+  {
+    "split": "OOD3 \u2014 hold-out SCFAM10",
+    "checkpoint": "outputs/gpt_large_train12",
+    "gpt_size": "large",
+    "n_train": 2400,
+    "n_test": 200,
+    "base": {
+      "top1": 0.7141,
+      "top3": 0.9795,
+      "top5": 0.9986,
+      "mrr": 0.8429,
+      "n_preds": 30399
+    },
+    "guided": {
+      "top1": 0.7141,
+      "top3": 0.9795,
+      "top5": 0.9986,
+      "mrr": 0.8429,
+      "n_preds": 30399
+    },
+    "delta_top1": 0.0,
+    "delta_mrr": 0.0,
+    "guide_stats": {
+      "bigram_contexts": 197,
+      "trigram_contexts": 575,
+      "avg_bigram_successors": 2.93,
+      "avg_trigram_successors": 2.28,
+      "vocab_size": 198
+    }
+  },
+  {
+    "split": "OOD3 \u2014 hold-out SCFAM11",
+    "checkpoint": "outputs/gpt_large_train12",
+    "gpt_size": "large",
+    "n_train": 2400,
+    "n_test": 200,
+    "base": {
+      "top1": 0.7332,
+      "top3": 0.9809,
+      "top5": 0.9994,
+      "mrr": 0.8539,
+      "n_preds": 27936
+    },
+    "guided": {
+      "top1": 0.7332,
+      "top3": 0.9809,
+      "top5": 0.9994,
+      "mrr": 0.8539,
+      "n_preds": 27936
+    },
+    "delta_top1": 0.0,
+    "delta_mrr": 0.0,
+    "guide_stats": {
+      "bigram_contexts": 197,
+      "trigram_contexts": 575,
+      "avg_bigram_successors": 2.93,
+      "avg_trigram_successors": 2.28,
+      "vocab_size": 198
+    }
+  },
+  {
+    "split": "OOD3 \u2014 hold-out SCFAM12",
+    "checkpoint": "outputs/gpt_large_train12",
+    "gpt_size": "large",
+    "n_train": 2400,
+    "n_test": 200,
+    "base": {
+      "top1": 0.7173,
+      "top3": 0.981,
+      "top5": 0.9986,
+      "mrr": 0.8453,
+      "n_preds": 35888
+    },
+    "guided": {
+      "top1": 0.7174,
+      "top3": 0.981,
+      "top5": 0.9986,
+      "mrr": 0.8453,
+      "n_preds": 35888
+    },
+    "delta_top1": 0.0001,
+    "delta_mrr": 0.0,
+    "guide_stats": {
+      "bigram_contexts": 197,
+      "trigram_contexts": 575,
+      "avg_bigram_successors": 2.93,
+      "avg_trigram_successors": 2.28,
+      "vocab_size": 198
+    }
+  },
+  {
+    "split": "OOD3 average \u2014 train12/test3",
+    "families": [
+      "scfam10",
+      "scfam11",
+      "scfam12"
+    ],
+    "base": {
+      "top1": 0.7215,
+      "top3": 0.9805,
+      "top5": 0.9989,
+      "mrr": 0.8474
+    },
+    "guided": {
+      "top1": 0.7216,
+      "top3": 0.9805,
+      "top5": 0.9989,
+      "mrr": 0.8474
+    },
+    "delta_top1": 0.0001,
+    "delta_mrr": 0.0
+  }
+]

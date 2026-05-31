@@ -1,0 +1,19 @@
+task mode: create
+primary deck-profile: engineering-platform
+secondary gates: evidence-led hackathon pitch, evaluator reproducibility
+required proof objects:
+- final OOD3 metric table and n-gram vs GPT comparison
+- 15-family train-12/test-3 protocol
+- official-format CSV validation and checkpoint location
+- legal boundary: no final eval sequences used as training data
+source requirements:
+- use repository artifacts only: REPORT.md, training_artifacts, final_submission, root CSVs
+brand constraints:
+- do not use unverified Infineon or organizer logos
+- use neutral technical palette and editable artifact-tool primitives
+QA gates:
+- no more than 8 slides
+- every slide has one claim and one proof object
+- deck must be readable as thumbnails and as a 2-minute talk track
+known missing inputs:
+- live judge portal upload is external to the repository

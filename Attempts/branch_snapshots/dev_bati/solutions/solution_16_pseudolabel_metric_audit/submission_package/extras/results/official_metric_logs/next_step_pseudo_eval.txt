@@ -1,0 +1,19 @@
+
+============================================================
+EVAL RESULTS — NEXT-STEP PREDICTION
+============================================================
+Evaluated : 600/600 examples
+
+Top-1 Accuracy : 1.0000  (100.0%)
+Top-3 Accuracy : 1.0000  (100.0%)
+Top-5 Accuracy : 1.0000  (100.0%)
+MRR            : 1.0000
+
+By family:
+  IC        Top-1: 1.0000  Top-3: 1.0000  Top-5: 1.0000  MRR: 1.0000
+  IGBT      Top-1: 1.0000  Top-3: 1.0000  Top-5: 1.0000  MRR: 1.0000
+  MOSFET    Top-1: 1.0000  Top-3: 1.0000  Top-5: 1.0000  MRR: 1.0000
+
+By completion fraction:
+  0.6     Top-1: 1.0000  Top-3: 1.0000  Top-5: 1.0000  MRR: 1.0000
+  0.8     Top-1: 1.0000  Top-3: 1.0000  Top-5: 1.0000  MRR: 1.0000

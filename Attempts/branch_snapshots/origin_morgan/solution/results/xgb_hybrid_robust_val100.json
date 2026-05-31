@@ -1,0 +1,106 @@
+{
+  "model": "xgb_hybrid_robust_val100",
+  "model_type": "xgboost_hybrid",
+  "checkpoint": null,
+  "checkpoints": null,
+  "next_checkpoints": [
+    "solution/checkpoints/xgboost"
+  ],
+  "completion_checkpoint": "solution/checkpoints/xgboost",
+  "anomaly_checkpoint": "solution/checkpoints/xgb_v2_reg_100k_300",
+  "families": [
+    "IC",
+    "IGBT",
+    "MOSFET"
+  ],
+  "train_families": [
+    "IC",
+    "IGBT",
+    "MOSFET"
+  ],
+  "eval_split": "val",
+  "eval_strategy": "all_family",
+  "task1": {
+    "top1": 0.7433333333333333,
+    "top3": 0.9983333333333333,
+    "top5": 1.0,
+    "mrr": 0.8698611111111112,
+    "n": 600
+  },
+  "task2": {
+    "exact_match": 0.0033333333333333335,
+    "norm_edit_dist": 0.25555457649799496,
+    "token_acc": 0.42789616100245476,
+    "block_acc": 0.7404271883750112,
+    "n": 600
+  },
+  "task3": {
+    "binary_acc": 0.7866666666666666,
+    "precision": 0.7033492822966507,
+    "recall": 0.9865771812080537,
+    "f1": 0.8212290502793297,
+    "roc_auc": 0.8181696964309525,
+    "confusion": {
+      "tp": 147,
+      "tn": 89,
+      "fp": 62,
+      "fn": 2
+    },
+    "n": 300,
+    "threshold": 0.46704331815103217,
+    "rule_attribution_acc": 1.0,
+    "rule_attribution_n": 147
+  },
+  "by_family": {
+    "IC": {
+      "task1": {
+        "top1": 0.725,
+        "top3": 0.995,
+        "top5": 1.0,
+        "mrr": 0.8604166666666666,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.0,
+        "norm_edit_dist": 0.33811977312439806,
+        "token_acc": 0.3396891644240743,
+        "block_acc": 0.6925932527168074,
+        "n": 200
+      }
+    },
+    "IGBT": {
+      "task1": {
+        "top1": 0.755,
+        "top3": 1.0,
+        "top5": 1.0,
+        "mrr": 0.8741666666666665,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.0,
+        "norm_edit_dist": 0.23951659258436592,
+        "token_acc": 0.4602724200510002,
+        "block_acc": 0.7570330847967162,
+        "n": 200
+      }
+    },
+    "MOSFET": {
+      "task1": {
+        "top1": 0.75,
+        "top3": 1.0,
+        "top5": 1.0,
+        "mrr": 0.875,
+        "n": 200
+      },
+      "task2": {
+        "exact_match": 0.01,
+        "norm_edit_dist": 0.18902736378522203,
+        "token_acc": 0.4837268985322918,
+        "block_acc": 0.771655227611513,
+        "n": 200
+      }
+    }
+  },
+  "elapsed_s": 239.2,
+  "timestamp": "2026-05-30 20:04:33"
+}

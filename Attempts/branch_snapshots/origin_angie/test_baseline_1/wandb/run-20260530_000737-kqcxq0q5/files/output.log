@@ -1,0 +1,36 @@
+Found training files: ['IC_Longdescr.csv', 'IC_longdescription_parameters.csv', 'IC_variants.csv', 'IGBT_Longdescr.csv', 'IGBT_longdescription_parameters.csv', 'IGBT_variants.csv', 'MOSFET_Longdescr.csv', 'MOSFET_longdescription_parameters.csv', 'MOSFET_variants.csv', 'syntheticIC.csv', 'syntheticIGBT.csv', 'synthetic_mosfet.csv']
+Loaded 3000 total sequences
+Val sequences: 300
+Loading: gpt2
+Device: cpu
+D:\Angie\3. IMC Krems\Masters\Hackathon_2026\venv\Lib\site-packages\huggingface_hub\file_download.py:138: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\Tugsuu\.cache\huggingface\hub\models--gpt2. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[transformers] `torch_dtype` is deprecated! Use `dtype` instead!
+Loading weights: 100%|██████████| 148/148 [00:00<00:00, 6054.81it/s]
+Model loaded: gpt2
+
+Evaluating next-step prediction (n=100)...
+  Task 1: 20/100
+  Task 1: 40/100
+  Task 1: 60/100
+  Task 1: 80/100
+  Task 1: 100/100
+{'next_step/top1_acc': 0.0, 'next_step/mrr': 0.0, 'next_step/n_examples': 100}
+
+Evaluating sequence completion (n=50)...
+  Task 2: 10/50
+  Task 2: 20/50
+  Task 2: 30/50
+  Task 2: 40/50
+  Task 2: 50/50
+{'completion/token_accuracy': 0.0, 'completion/n_examples': 50}
+
+Evaluating anomaly detection (n=50)...
+  Task 3: 10/50
+  Task 3: 20/50
+  Task 3: 30/50
+  Task 3: 40/50
+  Task 3: 50/50
+{'anomaly/accuracy_on_valid_seqs': 1.0, 'anomaly/n_examples': 50}
