@@ -1,17 +1,15 @@
-# SUBMISSION_1 Presentation Package
+# Team Kremsians Presentation Package
 
 Use these files for the final hackathon presentation layer:
 
-- `SUBMISSION_1_WIN_DECK.pptx` - editable 8-slide deck.
-- `SUBMISSION_1_WIN_DECK.pdf` - upload-ready slide PDF.
-- `SUBMISSION_1_DEMO_STORYBOARD.mp4` - 64-second silent demo storyboard.
-- `SUBMISSION_1_DEMO_STORYBOARD.gif` - lightweight fallback preview.
-- `SUBMISSION_1_DEMO_SCRIPT.md` - voiceover and click path.
-- `SUBMISSION_1_NARRATION.txt` - exact text-to-speech narration.
-- `SUBMISSION_1_NARRATION.aiff` - synthesized voiceover audio.
-- `SUBMISSION_1_FINAL_VIDEO.mp4` - narrated final video generated from the deck and narration.
+- `SUBMISSION_2_PITCH_DECK.pptx` - editable pitch deck.
+- `SUBMISSION_2_PITCH_DECK.pdf` - upload-ready pitch PDF.
+- `SUBMISSION_2_DEMO_SCRIPT.md` - two-minute demo script.
+- `KREMSIANS_PITCH_TALK_TRACK.md` - four-minute pitch talk track.
+- `SUBMISSION_2_NARRATION.txt` - exact text-to-speech narration.
+- `SUBMISSION_2_NARRATION.aiff` - synthesized voiceover audio.
+- `SUBMISSION_2_FINAL_VIDEO.mp4` - narrated demo video, under two minutes.
 
-The deck and final video make the same claim as the code package: the winning
-submission package is `SUBMISSION_1` because it uses a legal train-12/test-3 OOD
-protocol, ships official-format CSVs, includes the trained GPT checkpoint, and
-keeps a runnable n-gram fallback.
+The pitch should be delivered as Team Kremsians. The spoken story should not
+refer to the internal submission iteration number; that number is only used in
+repository artifact filenames.

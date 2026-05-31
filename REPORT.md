@@ -1,47 +1,64 @@
-# SUBMISSION_1 - Industrial AI Infineon Report
+# Team Kremsians - Industrial AI Infineon Report
 
 ## TL;DR
 
-`SUBMISSION_1` is a clean, reproducible process-sequence submission for
-next-step prediction, sequence completion, and anomaly detection. It includes
-official-format CSVs, a trained GPT checkpoint, a dependency-free n-gram
-fallback, synthetic data generation, and a documented train-12/test-3 OOD
-benchmark.
+We built a reproducible process-sequence system for next-step prediction,
+sequence completion, and anomaly detection. The main model is a from-scratch,
+step-token GPT decoder trained on process sequences, with a deterministic
+process-rule validator for anomaly decisions and a trigram n-gram fallback.
+
+The final package includes official-format CSVs, the trained checkpoint, loss
+curve, self-eval score reports from the organizer scorer, and a train-12/test-3
+OOD benchmark designed to test generalization rather than memorization.
 
 ## Problem
 
-The track rewards process-grammar learning, not memorization of known device
-families. The visible tasks score:
+The challenge is not just to continue known semiconductor process sequences. The
+hard part is whether a model can learn reusable process logic that survives an
+unseen or modified device family.
 
-- next-step ranking
-- sequence completion
-- anomaly validity and violated-rule attribution
+The three visible tasks are:
 
-The hidden risk is performance drop on an unseen or modified process family.
-Our benchmark therefore holds out three synthetic families and reports the
-family-wise average.
+- Task 1: rank the next process step.
+- Task 2: complete the remaining process sequence.
+- Task 3: detect invalid sequences and name the violated process rule.
+
+The hidden risk is overfitting to the three organizer families. We therefore
+evaluate with 15 families: 12 for training, 3 held out as OOD families.
 
 ## Approach
 
-- Step-level tokenizer: one process step string maps to one token.
-- Baseline: trigram n-gram with backoff.
-- Trained model: from-scratch GPT-2 style decoder, no pretrained weights.
-- Synthetic data: 12 generated `scfam` families built only from the existing
-  process-step vocabulary and validated with the organizer rule validator.
-- OOD benchmark: 15 families total, 12 train families, 3 held-out OOD families.
-- Anomaly detection: symbolic rule validation for hard process constraints,
-  with model surprisal available as a continuous score.
+- **Step-token GPT:** each process step string is one token. We train a GPT-2
+  style decoder from scratch; this is not an API wrapper and does not use
+  pretrained LLM weights.
+- **OOD protocol:** generated synthetic families use only the known process
+  vocabulary and the organizer validator. The model trains on 12 families and is
+  scored on 3 unseen families.
+- **Task 1:** GPT ranks the next step; the n-gram baseline is kept as a strong,
+  dependency-light comparator.
+- **Task 2:** the same GPT greedily rolls out the remaining sequence. We report
+  normalized edit distance, exact match, token accuracy, and block accuracy.
+- **Task 3:** hard validity and rule names come from deterministic rule
+  validation. Model surprisal can provide a continuous score, but the rule
+  decision is symbolic and family-agnostic.
 
-## Reproduce
+## How To Run
+
+Install:
 
 ```bash
 pip install -r requirements.txt
-python generate_submission_1_families.py --count-per-family 200
-python train.py --model gpt:large --submission-1-ood --epochs 30 --batch-size 64 --out outputs/gpt_large_train12
-python eval_guided.py --kind gpt --size large --submission-1-ood --checkpoint outputs/gpt_large_train12 --eval-seqs 500
 ```
 
-Regenerate the final GPT CSV bundle:
+Regenerate synthetic families and train:
+
+```bash
+python generate_submission_2_families.py --count-per-family 200
+python train.py --model gpt:large --submission-2-ood --epochs 30 --batch-size 64 --out outputs/gpt_large_train12
+python eval_guided.py --kind gpt --size large --submission-2-ood --checkpoint outputs/gpt_large_train12 --eval-seqs 500
+```
+
+Regenerate official-format GPT CSVs:
 
 ```bash
 python eval_runner.py \
@@ -49,71 +66,91 @@ python eval_runner.py \
   --checkpoint outputs/gpt_large_train12 \
   --valid tracks/industrial-infineon/participant_files/eval_input_valid.csv \
   --anomaly tracks/industrial-infineon/participant_files/eval_input_anomaly.csv \
-  --out final_submission/SUBMISSION_1_gpt_large_official \
+  --out final_submission/SUBMISSION_2_gpt_large_official \
   --official-names
 ```
 
+Score committed self-eval predictions with the organizer scorer:
+
+```bash
+python score_selfeval.py --pred-dir self_eval/gpt_large_submission
+python score_selfeval.py --pred-dir self_eval/ngram_submission
+```
+
+The same commands run on an Apple Silicon laptop with MPS or on Leonardo with
+CUDA. The committed checkpoint was trained locally on an Apple M4 Pro; Leonardo
+is the natural path for faster retraining.
+
 ## Results
 
-| Split | Families | Rows used by default |
-| --- | --- | ---: |
-| Train | `mosfet`, `igbt`, `ic`, `scfam01`-`scfam09` | 2,400 |
-| Held-out OOD | `scfam10`, `scfam11`, `scfam12` | 600 |
-| Reported metric | Family-wise average across OOD families | 3 families |
+### OOD Next-Step Benchmark
 
-| OOD3 metric | N-gram | GPT large |
+Train families are `mosfet`, `igbt`, `ic`, and `scfam01`-`scfam09`. Held-out
+families are `scfam10`, `scfam11`, and `scfam12`. The reported OOD number is
+the family-wise average across the three held-out families.
+
+| Model | Top-1 | Top-3 | Top-5 | MRR |
+| --- | ---: | ---: | ---: | ---: |
+| N-gram baseline | 0.662 | 0.937 | 0.976 | 0.799 |
+| GPT large | 0.720 | 0.981 | 0.999 | 0.847 |
+
+### Official-Scorer Self-Eval
+
+These numbers use `tracks/industrial-infineon/participant_files/eval_metrics.py`
+on our local self-eval split. The organizer still scores the hidden official
+ground truth.
+
+| Task | N-gram | GPT large |
 | --- | ---: | ---: |
-| Top-1 | 0.662 | 0.720 |
-| Top-3 | 0.937 | 0.981 |
-| Top-5 | 0.976 | 0.999 |
-| MRR | 0.799 | 0.847 |
+| Task 1 Top-1 / Top-5 / MRR | 0.575 / 0.979 / 0.758 | 0.661 / 0.999 / 0.824 |
+| Task 2 NED / token acc / block acc | 0.336 / 0.164 / 0.551 | 0.263 / 0.387 / 0.605 |
+| Task 3 F1 / ROC-AUC / rule attribution | 1.000 / 1.000 / 1.000 | 1.000 / 1.000 / 1.000 |
 
-Family-wise OOD3 average from `eval_guided.py`: Top-1 `0.7216`, Top-5
-`0.9989`, MRR `0.8474`.
+Full per-family breakdowns are saved in:
+
+- `self_eval/score_reports/ngram_official_metrics.txt`
+- `self_eval/score_reports/gpt_large_official_metrics.txt`
 
 ## Final Files
 
-Root submission files:
+- Root CSVs: `nextstep.csv`, `completion.csv`, `anomaly.csv`
+- GPT official bundle: `final_submission/SUBMISSION_2_gpt_large_official/`
+- Fallback official bundle: `final_submission/SUBMISSION_2_ngram_official/`
+- Checkpoint: `outputs/gpt_large_train12/`
+- Evidence: `training_artifacts/loss_curve.csv`,
+  `training_artifacts/training_log.md`, `training_artifacts/checkpoint_manifest.md`,
+  and `self_eval/score_reports/`
+- Presentation: `presentation/SUBMISSION_2_PITCH_DECK.pdf`
+- Demo video: `presentation/SUBMISSION_2_FINAL_VIDEO.mp4`
 
-- `nextstep.csv`
-- `completion.csv`
-- `anomaly.csv`
+## What Worked / What Didn't
 
-Reproducibility and evidence:
+Worked:
 
-- `outputs/gpt_large_train12/`
-- `training_artifacts/checkpoint_manifest.md`
-- `training_artifacts/SUBMISSION_1_gpt_large_metrics.json`
-- `training_artifacts/loss_curve.csv`
-- `self_eval/`
-- `tracks/industrial-infineon/participant_files/`
+- Step-level tokenization matched the scoring surface better than natural
+  language tokenization.
+- The OOD protocol made the model choice less dependent on self-eval leakage.
+- The symbolic validator made anomaly labels and rule attribution robust.
 
-Presentation:
+Limits:
 
-- `presentation/SUBMISSION_1_WIN_DECK.pptx`
-- `presentation/SUBMISSION_1_WIN_DECK.pdf`
-- `presentation/SUBMISSION_1_DEMO_SCRIPT.md`
-- `presentation/SUBMISSION_1_NARRATION.txt`
-- `presentation/SUBMISSION_1_DEMO_STORYBOARD.mp4`
-- `presentation/SUBMISSION_1_FINAL_VIDEO.mp4`
+- Task 2 exact match remains low because a long completion must match every
+  optional process choice exactly.
+- OOD Top-1 still drops on the most different held-out family; Top-5 is much
+  more stable.
+- We did not add a beam-search or validator-guided completion decoder before
+  freezing the result numbers.
 
-## Definition Of Done Check
+## Next 36 Hours
 
-- [x] Reproducible end-to-end workflow.
-- [x] Synthetic data generation.
-- [x] At least one trained model.
-- [x] Baseline-vs-trained comparison.
-- [x] Clearly documented benchmark for process sequences.
-- [x] Generalization test on unseen synthetic families.
-- [x] Eval report and final-format CSVs.
-- [x] Small demonstrator materials.
-- [x] Final narrated submission video.
+- Add validator-guided beam search for Task 2.
+- Calibrate the anomaly score with held-out valid/invalid examples.
+- Expand the synthetic family generator and repeat train-12/test-3 across
+  multiple random family splits.
 
-## Legal Boundary
+## Credits And Dependencies
 
-Official participant eval inputs are used only for final inference and format
-validation. They are not used as training data.
-
-## Dependencies
-
-See `requirements.txt`.
+Organizer-provided materials: process families, rule definitions, official eval
+inputs, and `eval_metrics.py`. Main libraries: PyTorch, Transformers, NumPy,
+Pandas, scikit-learn, Matplotlib, Plotly, and tqdm. No API keys or external
+model services are required.

@@ -1,7 +1,7 @@
-"""Reusable synthetic process blocks for SUBMISSION_1 family generation.
+"""Reusable synthetic process blocks for SUBMISSION_2 family generation.
 
 The blocks combine existing MOSFET, IGBT, and IC vocabulary in validated
-process orders. They are used by `generate_submission_1_families.py` to create
+process orders. They are used by `generate_submission_2_families.py` to create
 multiple train and held-out OOD families without introducing new step tokens.
 """
 

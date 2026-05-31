@@ -1,4 +1,4 @@
-# SUBMISSION_1 Checkpoint Manifest
+# SUBMISSION_2 Checkpoint Manifest
 
 ## Final Checkpoint
 
@@ -13,7 +13,7 @@
 ```bash
 .venv/bin/python train.py \
   --model gpt:large \
-  --submission-1-ood \
+  --submission-2-ood \
   --epochs 30 \
   --batch-size 64 \
   --out outputs/gpt_large_train12
@@ -36,7 +36,7 @@ Command:
 .venv/bin/python eval_guided.py \
   --kind gpt \
   --size large \
-  --submission-1-ood \
+  --submission-2-ood \
   --checkpoint outputs/gpt_large_train12 \
   --eval-seqs 500
 ```
@@ -63,9 +63,9 @@ The final GPT submission files are:
 - `nextstep.csv`
 - `completion.csv`
 - `anomaly.csv`
-- `final_submission/SUBMISSION_1_gpt_large_official/nextstep.csv`
-- `final_submission/SUBMISSION_1_gpt_large_official/completion.csv`
-- `final_submission/SUBMISSION_1_gpt_large_official/anomaly.csv`
+- `final_submission/SUBMISSION_2_gpt_large_official/nextstep.csv`
+- `final_submission/SUBMISSION_2_gpt_large_official/completion.csv`
+- `final_submission/SUBMISSION_2_gpt_large_official/anomaly.csv`
 
 The n-gram fallback remains available under
-`final_submission/SUBMISSION_1_ngram_official/`.
+`final_submission/SUBMISSION_2_ngram_official/`.

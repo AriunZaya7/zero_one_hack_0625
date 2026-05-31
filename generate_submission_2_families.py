@@ -1,4 +1,4 @@
-"""Generate the SUBMISSION_1 15-family OOD benchmark.
+"""Generate the SUBMISSION_2 15-family OOD benchmark.
 
 The active protocol is:
 
@@ -164,7 +164,7 @@ def write_family_csv(profile: SyntheticFamily, sequences: list[list[str]], out_d
 
 
 def write_manifest(out_dir: Path, count_per_family: int) -> Path:
-    path = out_dir / "SUBMISSION_1_15_FAMILY_MANIFEST.csv"
+    path = out_dir / "SUBMISSION_2_15_FAMILY_MANIFEST.csv"
     with path.open("w", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         writer.writerow(["family", "split", "source_file", "litho_levels", "second_field_via"])

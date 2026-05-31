@@ -1,0 +1,95 @@
+## GPT Large Self-Eval
+
+### Task 1 next-step
+
+============================================================
+EVAL RESULTS — NEXT-STEP PREDICTION
+============================================================
+Evaluated : 3000/3000 examples
+
+Top-1 Accuracy : 0.6613  (66.1%)
+Top-3 Accuracy : 0.9913  (99.1%)
+Top-5 Accuracy : 0.9993  (99.9%)
+MRR            : 0.8235
+
+By family:
+  IC        Top-1: 0.6000  Top-3: 0.9900  Top-5: 1.0000  MRR: 0.7958
+  IGBT      Top-1: 0.7050  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8517
+  MOSFET    Top-1: 0.7100  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8542
+  SCFAM01   Top-1: 0.7500  Top-3: 0.9950  Top-5: 1.0000  MRR: 0.8646
+  SCFAM02   Top-1: 0.6750  Top-3: 0.9800  Top-5: 0.9950  MRR: 0.8299
+  SCFAM03   Top-1: 0.7100  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8525
+  SCFAM04   Top-1: 0.6500  Top-3: 0.9700  Top-5: 0.9950  MRR: 0.8049
+  SCFAM05   Top-1: 0.6950  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8450
+  SCFAM06   Top-1: 0.6050  Top-3: 0.9950  Top-5: 1.0000  MRR: 0.7946
+  SCFAM07   Top-1: 0.7150  Top-3: 0.9950  Top-5: 1.0000  MRR: 0.8504
+  SCFAM08   Top-1: 0.6550  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8242
+  SCFAM09   Top-1: 0.5800  Top-3: 0.9600  Top-5: 1.0000  MRR: 0.7720
+  SCFAM10   Top-1: 0.4850  Top-3: 0.9850  Top-5: 1.0000  MRR: 0.7322
+  SCFAM11   Top-1: 0.6750  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8342
+  SCFAM12   Top-1: 0.7100  Top-3: 1.0000  Top-5: 1.0000  MRR: 0.8458
+
+By completion fraction:
+  0.6     Top-1: 0.6860  Top-3: 0.9860  Top-5: 0.9987  MRR: 0.8316
+  0.8     Top-1: 0.6367  Top-3: 0.9967  Top-5: 1.0000  MRR: 0.8153
+
+
+### Task 2 completion
+
+============================================================
+EVAL RESULTS — SEQUENCE COMPLETION
+============================================================
+Evaluated : 3000/3000 examples
+
+Mean Normalized Edit Distance : 0.2634  (lower is better)
+Exact Match Rate              : 0.0033  (0.3%)
+Mean Token Accuracy           : 0.3867  (38.7%)
+Mean Block-level Accuracy     : 0.6053  (60.5%)
+
+By family:
+  IC        NED: 0.2868  Exact: 0.0000
+  IGBT      NED: 0.2225  Exact: 0.0000
+  MOSFET    NED: 0.1577  Exact: 0.0100
+  SCFAM01   NED: 0.3006  Exact: 0.0250
+  SCFAM02   NED: 0.3144  Exact: 0.0000
+  SCFAM03   NED: 0.2344  Exact: 0.0050
+  SCFAM04   NED: 0.2497  Exact: 0.0000
+  SCFAM05   NED: 0.2458  Exact: 0.0050
+  SCFAM06   NED: 0.2513  Exact: 0.0000
+  SCFAM07   NED: 0.2726  Exact: 0.0000
+  SCFAM08   NED: 0.2643  Exact: 0.0000
+  SCFAM09   NED: 0.2500  Exact: 0.0050
+  SCFAM10   NED: 0.3312  Exact: 0.0000
+  SCFAM11   NED: 0.2651  Exact: 0.0000
+  SCFAM12   NED: 0.3042  Exact: 0.0000
+
+By completion fraction:
+  0.6     NED: 0.3490  Exact: 0.0000
+  0.8     NED: 0.1777  Exact: 0.0067
+
+
+### Task 3 anomaly
+  Supplemented with 1500 valid examples from ground_truth_anomaly_valid_supplement.csv
+
+============================================================
+EVAL RESULTS — ANOMALY DETECTION (FORBIDDEN PATTERNS)
+============================================================
+Evaluated       : 1887/1887 examples
+Ground-truth    : 387 invalid  /  1500 valid
+
+Binary Accuracy : 1.0000  (100.0%)
+Precision (invalid class) : 1.0000
+Recall (invalid class)    : 1.0000
+F1 (invalid class)        : 1.0000
+Confusion Matrix (invalid as positive):
+  TP=387  FP=0
+  FN=0  TN=1500
+ROC-AUC         : 1.0000  (requires --valid-supplement for meaningful value)
+Rule Attribution Accuracy : 1.0000  (among 387 correctly-detected invalid sequences)
+
+Detection rate by rule:
+  RULE_BACKSIDE_BEFORE_PASSIVATION          1.00  (64/64)
+  RULE_CMP_NO_DEP                           1.00  (13/13)
+  RULE_ETCH_NO_MASK                         1.00  (64/64)
+  RULE_SHIP_BEFORE_TEST                     1.00  (181/181)
+  RULE_TEST_BEFORE_PASSIVATION              1.00  (65/65)

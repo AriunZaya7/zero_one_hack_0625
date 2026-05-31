@@ -2,7 +2,7 @@
 
 The final submission path is:
 
-    python train.py --model gpt:large --submission-1-ood --epochs 30 \
+    python train.py --model gpt:large --submission-2-ood --epochs 30 \
       --batch-size 64 --out outputs/gpt_large_train12
 """
 from __future__ import annotations
@@ -163,9 +163,9 @@ def main():
     ap.add_argument("--leave-out", choices=FAMILIES, default=None)
     ap.add_argument("--train-families", nargs="+", default=None)
     ap.add_argument(
-        "--submission-1-ood",
+        "--submission-2-ood",
         action="store_true",
-        help="Train on the fixed 12-family SUBMISSION_1 split and evaluate on the 3 held-out OOD families.",
+        help="Train on the fixed 12-family SUBMISSION_2 split and evaluate on the 3 held-out OOD families.",
     )
     ap.add_argument("--epochs", type=int, default=8)
     ap.add_argument("--batch-size", type=int, default=64)
@@ -180,7 +180,7 @@ def main():
     lr = args.lr if args.lr is not None else 3e-4
 
     # ---- data split (shared between baseline and the model) ----------------
-    if args.submission_1_ood:
+    if args.submission_2_ood:
         train_seqs, test_seqs = train12_test3_split(seed=SEED)
         mode, holdout = "ood3", "scfam10+scfam11+scfam12"
     elif args.leave_out:

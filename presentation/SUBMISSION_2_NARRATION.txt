@@ -1,0 +1,31 @@
+Team Kremsians built an Industrial AI system for semiconductor process logic.
+The input is a partial process sequence. The output is three official files:
+nextstep dot csv, completion dot csv, and anomaly dot csv.
+
+For next-step prediction and completion, we trained a GPT decoder from scratch
+on process-step tokens. This is not a generic LLM wrapper. One fab step is one
+token, and the model is optimized directly for the unit the scorer evaluates.
+
+For anomaly detection, the process rules are explicit, so we use a deterministic
+validator. It returns validity, a score, and the official violated rule name.
+
+The key evaluation choice is out-of-distribution testing. We use fifteen
+families total: the three organizer families plus twelve synthetic process
+families. The benchmark trains on twelve families and tests on three held-out
+families, then reports the family-wise average. No official eval sequence is
+used as training data.
+
+On the held-out families, the trained GPT improves next-step Top-1 from zero
+point six six two to zero point seven two two, and Top-5 from zero point nine
+seven six to zero point nine nine nine. On the official-scorer self-eval split,
+completion normalized edit distance drops from zero point three three six to
+zero point two six three. For anomaly detection, F1, ROC-AUC, and rule
+attribution are all one point zero zero.
+
+The same-input demo shows the difference. On a MOSFET prefix, the n-gram
+baseline ranks STRIP PHOTORESIST second. The trained GPT ranks the exact
+ground-truth next step first.
+
+The repository contains the checkpoint, loss curve, score reports, official
+format CSVs, and exact commands. It runs on an Apple Silicon MacBook with MPS,
+or on Leonardo with CUDA using the included SLURM job.

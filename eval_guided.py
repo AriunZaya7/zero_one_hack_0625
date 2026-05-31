@@ -174,7 +174,7 @@ def _mean_metric(results: list[dict], section: str, metric: str) -> float:
 
 
 def aggregate_ood3(results: list[dict]) -> dict:
-    """Average the three SUBMISSION_1 OOD family results family-wise."""
+    """Average the three SUBMISSION_2 OOD family results family-wise."""
     return {
         "split": "OOD3 average — train12/test3",
         "families": OOD_3_FAMILIES,
@@ -210,14 +210,14 @@ def main():
     ap.add_argument("--size",      default="large", choices=["tiny", "small", "large"])
     ap.add_argument("--leave-out", default=None, choices=FAMILIES)
     ap.add_argument(
-        "--submission-1-ood",
+        "--submission-2-ood",
         action="store_true",
         help="Evaluate the fixed 15-family protocol: train on 12, report average over 3 held-out OOD families.",
     )
     ap.add_argument(
         "--checkpoint",
         default=None,
-        help="Checkpoint to evaluate. Defaults to outputs/gpt_<size>_train12 for --submission-1-ood.",
+        help="Checkpoint to evaluate. Defaults to outputs/gpt_<size>_train12 for --submission-2-ood.",
     )
     ap.add_argument("--eval-seqs", type=int, default=EVAL_SEQS)
     args = ap.parse_args()
@@ -227,14 +227,14 @@ def main():
     device = best_torch_device()
     print(f"[eval_guided]  kind={args.kind}  size={args.size}  device={device}")
 
-    if args.submission_1_ood:
+    if args.submission_2_ood:
         train_seqs, tests_by_family = train12_test3_by_family(seed=SEED)
         tok = StepTokenizer.build_from_sequences(train_seqs.values())
         print(f"  Tokenizer: {tok.vocab_size} tokens "
               f"({tok.vocab_size-4} process steps + 4 special)")
         ckpt_path = args.checkpoint or f"outputs/gpt_{args.size}_train12"
         results = []
-        print("\nSUBMISSION_1 protocol: 15 families total")
+        print("\nSUBMISSION_2 protocol: 15 families total")
         print(f"  train families ({len(TRAIN_12_FAMILIES)}): {', '.join(TRAIN_12_FAMILIES)}")
         print(f"  held-out families ({len(OOD_3_FAMILIES)}): {', '.join(OOD_3_FAMILIES)}")
         for family, test_seqs in tests_by_family.items():
@@ -243,13 +243,13 @@ def main():
             if r:
                 results.append(r)
         if not results:
-            print("No SUBMISSION_1 OOD results produced; checkpoint is missing or unreadable.")
+            print("No SUBMISSION_2 OOD results produced; checkpoint is missing or unreadable.")
             return
         if len(results) != len(OOD_3_FAMILIES):
             print(f"WARNING: expected {len(OOD_3_FAMILIES)} OOD family results, got {len(results)}.")
         avg = aggregate_ood3(results)
         print(f"\n{'='*65}")
-        print("  SUBMISSION_1 OOD3 FAMILY-WISE AVERAGE")
+        print("  SUBMISSION_2 OOD3 FAMILY-WISE AVERAGE")
         print(f"{'='*65}")
         print(f"  Base top1={avg['base']['top1']:.4f} top3={avg['base']['top3']:.4f} "
               f"top5={avg['base']['top5']:.4f} mrr={avg['base']['mrr']:.4f}")
@@ -257,7 +257,7 @@ def main():
               f"top5={avg['guided']['top5']:.4f} mrr={avg['guided']['mrr']:.4f}")
         results.append(avg)
         os.makedirs("results", exist_ok=True)
-        out = f"results/submission_1_ood3_{args.size}_{int(time.time())}.json"
+        out = f"results/submission_2_ood3_{args.size}_{int(time.time())}.json"
         with open(out, "w") as f:
             json.dump(results, f, indent=2)
         print(f"Results saved -> {out}")

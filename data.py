@@ -5,7 +5,7 @@ fallback long-format CSV parser so nobody is blocked on import paths.
 
 Key functions:
 - leave_one_family_out() -- legacy one-family OOD proxy.
-- train12_test3_split() -- SUBMISSION_1 protocol: 15 families total,
+- train12_test3_split() -- SUBMISSION_2 protocol: 15 families total,
   train on 12 and report the average across 3 held-out OOD families.
 """
 from __future__ import annotations
@@ -145,7 +145,7 @@ def _load_limited_family(family: str, limit: int | None, seed: int) -> dict[str,
 def leave_one_family_out(holdout: str, seed: int = 42):
     """Legacy one-family holdout split.
 
-    SUBMISSION_1 uses train12_test3_split() instead. This helper is kept for
+    SUBMISSION_2 uses train12_test3_split() instead. This helper is kept for
     older leave-one-family-out experiments.
     """
     holdout = holdout.lower()
@@ -161,7 +161,7 @@ def leave_one_family_out(holdout: str, seed: int = 42):
 
 
 def train12_test3_split(seed: int = 42, per_family_limit: int | None = 200):
-    """Return the fixed SUBMISSION_1 train/test split.
+    """Return the fixed SUBMISSION_2 train/test split.
 
     Training families are the 3 official families plus 9 synthetic families.
     Test families are 3 held-out synthetic OOD families. The OOD report should
