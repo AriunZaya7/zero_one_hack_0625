@@ -17,6 +17,12 @@ sequences. The local benchmark is intentionally OOD-focused: 15 families total,
 train on 12, test on 3 held-out synthetic families, and report the family-wise
 average.
 
+Compute was split across both environments we had available: Leonardo A100 runs
+were used for earlier modeling, pipeline, and OOD experiments, while the final
+committed `outputs/gpt_large_train12/` checkpoint was trained locally on an
+Apple M4 Pro. The same scripts auto-select CUDA on Leonardo, MPS on Apple
+Silicon, or CPU as a fallback.
+
 ## Root Structure
 
 ```text
@@ -68,10 +74,11 @@ Regenerate the 12 synthetic families and manifest:
 python generate_submission_2_families.py --count-per-family 200
 ```
 
-Train the final model. The script auto-selects CUDA on Leonardo, MPS on Apple
-Silicon, or CPU as a fallback. The committed checkpoint was trained locally on
-an Apple M4 Pro; the same command is valid on Leonardo after loading Python/CUDA
-and installing `requirements.txt`.
+Train the final model. The exact command works on Leonardo after loading
+Python/CUDA and installing `requirements.txt`, and also works locally on Apple
+Silicon through MPS. The committed checkpoint was produced on an Apple M4 Pro;
+related project experiments and Leonardo submission plumbing are preserved in
+`Attempts/` and `job.slurm`.
 
 ```bash
 python train.py \
@@ -98,6 +105,12 @@ Score the committed self-eval predictions with the organizer scorer:
 ```bash
 python score_selfeval.py --pred-dir self_eval/gpt_large_submission
 python score_selfeval.py --pred-dir self_eval/ngram_submission
+```
+
+For Leonardo, submit the full GPU path:
+
+```bash
+sbatch job.slurm
 ```
 
 ## Generate Official-Format Files
@@ -157,6 +170,7 @@ The slide materials are under `presentation/`:
 - `SUBMISSION_2_DEMO_SCRIPT.md`
 - `SUBMISSION_2_NARRATION.txt`
 - `KREMSIANS_PITCH_TALK_TRACK.md`
+- `build_terminal_demo_video.py`
 - `SUBMISSION_2_FINAL_VIDEO.mp4`
 
 `SUBMISSION_2_FINAL_VIDEO.mp4` is the narrated final video generated from the

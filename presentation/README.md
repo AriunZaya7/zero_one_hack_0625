@@ -8,6 +8,7 @@ Use these files for the final hackathon presentation layer:
 - `KREMSIANS_PITCH_TALK_TRACK.md` - four-minute pitch talk track.
 - `SUBMISSION_2_NARRATION.txt` - exact text-to-speech narration.
 - `SUBMISSION_2_NARRATION.aiff` - synthesized voiceover audio.
+- `build_terminal_demo_video.py` - terminal-animation video generator.
 - `SUBMISSION_2_FINAL_VIDEO.mp4` - narrated demo video, under two minutes.
 
 The pitch should be delivered as Team Kremsians. The spoken story should not

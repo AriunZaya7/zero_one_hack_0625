@@ -14,8 +14,9 @@ python train.py \
 ```
 
 The training script auto-selects CUDA on Leonardo, MPS on Apple Silicon, or CPU
-as a fallback. The committed checkpoint was trained locally on Apple MPS
-(`Apple M4 Pro`).
+as a fallback. Across the project we ran experiments on both Leonardo A100 and
+Apple Silicon. The committed final checkpoint was trained locally on Apple MPS
+(`Apple M4 Pro`); `job.slurm` is the matching Leonardo rerun path.
 
 ## Data Split
 

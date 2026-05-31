@@ -78,8 +78,10 @@ python score_selfeval.py --pred-dir self_eval/ngram_submission
 ```
 
 The same commands run on an Apple Silicon laptop with MPS or on Leonardo with
-CUDA. The committed checkpoint was trained locally on an Apple M4 Pro; Leonardo
-is the natural path for faster retraining.
+CUDA. Across the project we used both: Leonardo A100 runs for earlier modeling,
+pipeline, and OOD experiments, and Apple M4 Pro/MPS for the final committed
+`outputs/gpt_large_train12/` checkpoint. `job.slurm` documents the Leonardo
+path for a clean GPU rerun.
 
 ## Results
 
