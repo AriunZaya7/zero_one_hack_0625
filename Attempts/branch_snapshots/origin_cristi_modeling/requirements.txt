@@ -1,0 +1,25 @@
+# Industrial AI / Infineon hackathon — cristi/modeling submission
+# Tested on CINECA Leonardo: Python 3.11.7, CUDA 12.1, NVIDIA A100-SXM-64GB.
+#
+# Install torch first against the matching CUDA wheel index, e.g.:
+#   pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+# then:
+#   pip install -r requirements.txt
+
+# --- core training + inference (from-scratch GPT, Qwen2.5 ladder) ---
+torch==2.5.1
+transformers==5.9.0
+numpy==2.4.6
+
+# --- transformers runtime deps (pinned for reproducibility) ---
+accelerate==1.13.0
+safetensors==0.7.0
+tokenizers==0.22.2
+huggingface_hub>=0.35,<1.0
+
+# --- optional: data wrangling / interactive report ---
+pandas==3.0.3
+plotly==6.7.0
+
+# Task 1/2/3 scoring (participant_files/eval_metrics.py) and the symbolic
+# anomaly validator use only the Python standard library — no extra deps.

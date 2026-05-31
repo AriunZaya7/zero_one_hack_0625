@@ -461,11 +461,18 @@ Reports:
 
 ## Submission Checklist
 
-- [x] Task 1 (next-step prediction): `submissions/task1_gpt_large_ckpt.csv`
-- [x] Task 2 (sequence completion): `submissions/task2_gpt_large_ckpt.csv`
-- [x] Task 3 (anomaly detection): `submissions/task3_gpt_large_ckpt.csv`
-- [x] KREMSIANS OOD evaluation completed (4th-family simulation)
-- [ ] Replace `self_eval/` inputs with organiser-distributed `eval_input_valid.csv` + `eval_input_anomaly.csv`, then re-run `eval_runner.py`
+- [x] Task 1 (next-step prediction): `submissions_official/task1_gpt_large_ckpt.csv` (official `valid_0001` IDs)
+- [x] Task 2 (sequence completion): `submissions_official/task2_gpt_large_ckpt.csv`
+- [x] Task 3 (anomaly detection): `submissions_official/task3_gpt_large_ckpt.csv`
+- [x] KREMSIANS OOD evaluation completed (4th-family simulation), all 3 model sizes
+- [x] Official organiser inputs in `participant_files/`; submissions regenerated in official format
+- [x] Self-eval scored with the official `eval_metrics.py` (see `REPORT.md` §4 and `score_selfeval.py`)
+- [x] Required artifacts added: `REPORT.md`, `LICENSE` (MIT), `requirements.txt`
+
+> **Submission deliverable:** the three CSVs in `submissions_official/`. They carry the official
+> `EXAMPLE_ID`s and cannot be scored locally (organisers hold the hidden ground truth). The numbers
+> in this file and in `REPORT.md` are clearly-labelled **self-eval estimates** produced by the same
+> official metric code.
 
 ---
 

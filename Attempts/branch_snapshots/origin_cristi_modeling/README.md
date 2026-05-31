@@ -19,6 +19,14 @@ The stack is fully open and offline: no Hugging Face Hub downloads, no pretraine
 ```
 .
 ├── README.md                        ← this file
+├── REPORT.md                        ← required submission report (TL;DR, results, how-to-run)
+├── RESULTS.md                       ← full methodology + per-experiment tables
+├── LICENSE                          ← MIT
+├── requirements.txt                 ← pinned deps (torch 2.5.1 / transformers 5.9.0)
+├── job.slurm                        ← one-shot reproducible pipeline (train → submit → score → OOD)
+├── participant_files/               ← OFFICIAL organiser inputs + scorer (eval_metrics.py)
+├── submissions_official/            ← Task 1/2/3 CSVs in OFFICIAL id format (valid_0001 …)
+├── score_selfeval.py                ← scores self-eval preds with the official metric code
 ├── PLAN.md                          ← full implementation plan + pitch
 ├── tokenizer.py                     ← step-level tokenizer (1 step = 1 token)
 ├── data.py                          ← loaders, train/val split, leave_one_family_out()
@@ -176,11 +184,19 @@ Two-tier strategy: symbolic oracle (`validate_sequence()` checks all 10 rules) b
 | F1 | **1.0000** |
 | TP / FP / TN / FN | 387 / 0 / 300 / 0 |
 
-### Task 1 submission self-eval (GPT:large, 600 partial sequences)
+### Self-eval via the OFFICIAL scorer (GPT:large, includes KREMSIANS OOD)
 
-| Top-1 | Top-3 | Top-5 | MRR |
-|------:|------:|------:|----:|
-| 0.705 | 0.997 | 1.000 | 0.850 |
+Scored with `participant_files/eval_metrics.py` on the self-eval split (run `score_selfeval.py`):
+
+| Task | Metric | n-gram | **GPT:large** |
+|---|---|------:|------:|
+| 1 — next-step | Top-1 / Top-5 / MRR | 0.634 / 0.991 / 0.802 | **0.661 / 0.985 / 0.818** |
+| 2 — completion | NED ↓ / Token acc / Block acc | 0.569 / 0.254 / 0.541 | **0.227 / 0.418 / 0.661** |
+| 3 — anomaly | Accuracy / F1 / ROC-AUC | 1.00 / 1.00 / 1.00 | **1.00 / 1.00 / 1.00** |
+
+*Self-eval estimates — the organisers score the real submission. The trained GPT roughly halves
+the n-gram's completion edit distance; Task-1 Top-1 (0.66) is dragged down by the KREMSIANS OOD
+rows (per-family ID Top-1 is 0.64–0.73).*
 
 ---
 
@@ -190,10 +206,17 @@ Two-tier strategy: symbolic oracle (`validate_sequence()` checks all 10 rules) b
 
 ```bash
 module load python/3.11.7 cuda/12.1
-source ~/venv/bin/activate
-pip install torch transformers wandb scikit-learn umap-learn matplotlib pandas
+python -m venv ~/venv && source ~/venv/bin/activate
+pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cu121
+pip install -r requirements.txt
 export TOKENIZERS_PARALLELISM=false
-export WANDB_MODE=offline   # Leonardo is air-gapped; sync after
+```
+
+Or run the entire reproducible pipeline (train ladder → official submissions → self-eval
+scoring → KREMSIANS OOD) as one batch job:
+
+```bash
+sbatch job.slurm
 ```
 
 ### Train models
@@ -223,16 +246,31 @@ python eval_guided.py --kind gpt --size large --leave-out kremsians --eval-seqs 
 python eval_guided.py --kind gpt --size large   # all splits: ID + MOSFET + IGBT + IC + KREMSIANS
 ```
 
-### Generate submission CSVs
+### Generate submission CSVs (OFFICIAL format)
+
+The organiser input files live in `participant_files/`. Pointing `eval_runner.py` at them
+passes the official `EXAMPLE_ID`s (`valid_0001`, `anomaly_xxxx`) straight through to the
+output, so the CSVs score correctly against the official `eval_metrics.py`:
 
 ```bash
 python eval_runner.py \
     --model gpt:large \
     --checkpoint outputs/gpt_large_allfam \
-    --valid  self_eval/eval_input_valid.csv \
-    --anomaly self_eval/eval_input_anomaly.csv \
-    --out submissions/ \
-    --score
+    --valid   participant_files/eval_input_valid.csv \
+    --anomaly participant_files/eval_input_anomaly.csv \
+    --out submissions_official
+# → submissions_official/{task1,task2,task3}_gpt_large_ckpt.csv
+```
+
+### Self-eval estimates (we hold ground truth here)
+
+```bash
+python make_selfeval.py          # build self_eval/ split with injected violations
+python eval_runner.py --model gpt:large --checkpoint outputs/gpt_large_allfam \
+    --valid self_eval/eval_input_valid.csv --anomaly self_eval/eval_input_anomaly.csv \
+    --out submissions --score
+# Score Task 1/2/3 with the OFFICIAL metric code (incl. Task 2 NED/exact/token/block):
+python score_selfeval.py --tag gpt_large_ckpt
 ```
 
 ### Generate more KREMSIANS sequences

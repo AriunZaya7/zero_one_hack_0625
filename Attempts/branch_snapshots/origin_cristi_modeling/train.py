@@ -108,6 +108,7 @@ def run_training(model, loader, epochs, lr, device, pad_id):
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=lr, total_steps=total,
                                                 pct_start=0.05)
     model.train()
+    loss_curve = []   # per-epoch (loss, ppl) — saved for the report
     for ep in range(epochs):
         run_loss = 0.0
         for input_ids, labels in loader:
@@ -119,7 +120,10 @@ def run_training(model, loader, epochs, lr, device, pad_id):
             opt.step(); sched.step(); opt.zero_grad()
             run_loss += out.loss.item()
         avg = run_loss / len(loader)
+        loss_curve.append({"epoch": ep + 1, "loss": round(avg, 4),
+                           "ppl": round(float(np.exp(avg)), 4)})
         print(f"  epoch {ep+1}/{epochs}  loss={avg:.3f}  ppl={np.exp(avg):.2f}", flush=True)
+    return loss_curve
 
 
 # ======================= results logging =======================
@@ -192,7 +196,7 @@ def main():
     model.to(device)
     loader = DataLoader(IdDataset(enc), batch_size=args.batch_size, shuffle=True,
                         collate_fn=make_collate(pad_id))
-    run_training(model, loader, args.epochs, lr, device, pad_id)
+    loss_curve = run_training(model, loader, args.epochs, lr, device, pad_id)
 
     # ---- eval -------------------------------------------------------------
     if kind == "gpt":
@@ -217,12 +221,18 @@ def main():
         "n_eval_seqs": gm["n_predictions"], "ngram_top1": round(ng["top1"], 4),
         "top1": round(gm["top1"], 4), "top3": round(gm["top3"], 4),
         "top5": round(gm["top5"], 4), "mrr": round(gm["mrr"], 4),
+        "loss_curve": loss_curve,
     })
     print(f"[results] wrote {RESULTS_DIR}/{fname}")
 
     if args.out:
         os.makedirs(args.out, exist_ok=True)
         model.save_pretrained(args.out)
+        # Save the loss curve alongside the checkpoint for the report.
+        with open(os.path.join(args.out, "loss_curve.json"), "w") as f:
+            json.dump({"model": args.model, "mode": mode, "holdout": holdout,
+                       "epochs": args.epochs, "lr": lr,
+                       "loss_curve": loss_curve}, f, indent=2)
         print(f"[saved] {args.out}")
 
 

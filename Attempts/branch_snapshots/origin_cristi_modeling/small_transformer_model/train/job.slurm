@@ -1,14 +1,14 @@
 #!/bin/bash
 #SBATCH --job-name=qwen-0.5b
-#SBATCH --account=ACC
-#SBATCH --reservation=ACC
+#SBATCH --account=EUHPC_D30_031
+#SBATCH --reservation=s_tra_ncc
 #SBATCH --partition=boost_usr_prod
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --gpus-per-task=2
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=240GB
-#SBATCH --time=02:00:00
+#SBATCH --gpus-per-task=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=120GB
+#SBATCH --time=01:00:00
 #SBATCH --output=logs/qwen-0.5b_%j.log
 #SBATCH --error=logs/qwen-0.5b_%j.err
 
