@@ -1,9 +1,13 @@
 # Team Kremsians Presentation Package
 
+Final pitch deck:
+
+<https://docs.google.com/presentation/d/1RhzIug9uSvZUkk_WegGFM5QPT9axfNp_zD7kLDP5hqI/edit?slide=id.g3ed1f819785_2_0#slide=id.g3ed1f819785_2_0>
+
 Use these files for the final hackathon presentation layer:
 
-- `SUBMISSION_2_PITCH_DECK.pptx` - editable pitch deck.
-- `SUBMISSION_2_PITCH_DECK.pdf` - upload-ready pitch PDF.
+- `SUBMISSION_2_PITCH_DECK.pptx` - previous generated pitch backup/reference.
+- `SUBMISSION_2_PITCH_DECK.pdf` - previous generated pitch backup/reference.
 - `FAMILY_VARIATION_DIAGRAM_BANK.pptx` - editable diagram bank for explaining process-family variation.
 - `FAMILY_VARIATION_DIAGRAM_BANK.pdf` - PDF version of the diagram bank.
 - `family_variation_diagrams/` - individual PNG exports from the diagram bank.

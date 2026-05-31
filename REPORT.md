@@ -122,7 +122,9 @@ Full per-family breakdowns are saved in:
 - Evidence: `training_artifacts/loss_curve.csv`,
   `training_artifacts/training_log.md`, `training_artifacts/checkpoint_manifest.md`,
   and `self_eval/score_reports/`
-- Presentation: `presentation/SUBMISSION_2_PITCH_DECK.pdf`
+- Final pitch deck:
+  <https://docs.google.com/presentation/d/1RhzIug9uSvZUkk_WegGFM5QPT9axfNp_zD7kLDP5hqI/edit?slide=id.g3ed1f819785_2_0#slide=id.g3ed1f819785_2_0>
+- Local pitch backup/reference: `presentation/SUBMISSION_2_PITCH_DECK.pdf`
 - Demo video: `presentation/SUBMISSION_2_FINAL_VIDEO.mp4`
 
 ## What Worked / What Didn't

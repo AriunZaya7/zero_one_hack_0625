@@ -163,15 +163,22 @@ evidence, the loss curve, and the training log are in `training_artifacts/`.
 
 ## Presentation
 
-The slide materials are under `presentation/`:
+Final pitch deck:
+
+- Google Slides:
+  <https://docs.google.com/presentation/d/1RhzIug9uSvZUkk_WegGFM5QPT9axfNp_zD7kLDP5hqI/edit?slide=id.g3ed1f819785_2_0#slide=id.g3ed1f819785_2_0>
+
+Supporting local slide materials are under `presentation/`:
 
 - `SUBMISSION_2_PITCH_DECK.pptx`
-- `SUBMISSION_2_PITCH_DECK.pdf`
+- `SUBMISSION_2_PITCH_DECK.pdf` - previous generated pitch backup/reference.
+- `FAMILY_VARIATION_DIAGRAM_BANK.pptx`
+- `FAMILY_VARIATION_DIAGRAM_BANK.pdf`
+- `family_variation_diagrams/`
 - `SUBMISSION_2_DEMO_SCRIPT.md`
 - `SUBMISSION_2_NARRATION.txt`
 - `KREMSIANS_PITCH_TALK_TRACK.md`
 - `build_terminal_demo_video.py`
 - `SUBMISSION_2_FINAL_VIDEO.mp4`
 
-`SUBMISSION_2_FINAL_VIDEO.mp4` is the narrated final video generated from the
-planned script lines in `SUBMISSION_2_NARRATION.txt`.
+`SUBMISSION_2_FINAL_VIDEO.mp4` is the silent terminal-animation demo video.
